@@ -23,7 +23,7 @@ export const Navbar = () => {
     { name: "About", href: "/A-7483-783/34" },
     { name: "Services", href: "/S-6832-342/34" },
     { name: "Rooms", href: "/R-8763-327/34" },
-    { name: "Contact", href: "/" },
+    { name: "Contact", href: "/C-3872-2344/34" },
   ];
 
   const pageLinks = [

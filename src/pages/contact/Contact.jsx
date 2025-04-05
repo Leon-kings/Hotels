@@ -5,7 +5,7 @@ import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 
 export const ContactSection = () => {
   return (
-    <div className="py-16 ">
+    <div className="py-16 bg-gray-900 rounded-xl text-white dark:text-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -13,13 +13,13 @@ export const ContactSection = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h6 className="text-primary uppercase font-semibold tracking-wider">
+          <h6 className="text-blue-400 uppercase font-semibold tracking-wider">
             Contact Us
           </h6>
-          <h1 className="text-3xl md:text-4xl font-bold mt-2">
-            Get In <span className="text-primary">Touch</span>
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto mt-4">
+          <h2 className="text-3xl md:text-4xl font-bold mt-2">
+            Get In <span className="text-blue-400">Touch</span>
+          </h2>
+          <p className="text-white max-w-2xl mx-auto mt-4">
             Have questions or need assistance? Our team is here to help you with
             all your inquiries.
           </p>
@@ -42,25 +42,25 @@ export const ContactSection = () => {
             className="space-y-6"
           >
             <ContactInfoCard
-              icon={<FaPhone className="text-primary text-xl" />}
+              icon={<FaPhone className="text-blue-400 text-xl" />}
               title="Phone"
               items={["+1 (123) 456-7890", "+1 (987) 654-3210"]}
             />
 
             <ContactInfoCard
-              icon={<FaEnvelope className="text-primary text-xl" />}
+              icon={<FaEnvelope className="text-blue-400 text-xl" />}
               title="Email"
               items={["info@hotel.com", "support@hotel.com"]}
             />
 
             <ContactInfoCard
-              icon={<FaMapMarkerAlt className="text-primary text-xl" />}
+              icon={<FaMapMarkerAlt className="text-blue-400 text-xl" />}
               title="Address"
               items={["123 Luxury Street", "Hospitality District", "New York, NY 10001"]}
             />
 
             <ContactInfoCard
-              icon={<FaClock className="text-primary text-xl" />}
+              icon={<FaClock className="text-blue-400 text-xl" />}
               title="Working Hours"
               items={["Monday - Friday: 9:00 - 18:00", "Saturday: 10:00 - 16:00", "Sunday: Closed"]}
             />
@@ -77,7 +77,7 @@ const ContactInfoCard = ({ icon, title, items }) => {
       whileHover={{ y: -5 }}
       className="bg-white rounded-lg shadow-md p-6 flex items-start"
     >
-      <div className="bg-primary bg-opacity-10 p-3 rounded-full mr-4">
+      <div className="bg-blue-text-blue-400 bg-opacity-10 p-3 rounded-full mr-4">
         {icon}
       </div>
       <div>
@@ -184,13 +184,13 @@ const ContactForm = () => {
             />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold mb-2">Message Sent Successfully!</h3>
+        <h3 className="text-xl font-semibold text-black mb-2">Message Sent Successfully!</h3>
         <p className="text-gray-600 mb-6">
           Thank you for contacting us. We'll get back to you soon.
         </p>
         <button
           onClick={() => setSubmitSuccess(false)}
-          className="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg transition-colors"
+          className="bg-blue-text-blue-400 hover:bg-blue-text-blue-400-dark text-white font-medium py-2 px-6 rounded-lg transition-colors"
         >
           Send Another Message
         </button>
@@ -199,7 +199,7 @@ const ContactForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="bg-white text-black space-y-4">
       <div>
         <label htmlFor="name" className="block text-gray-700 mb-1">
           Full Name <span className="text-red-500">*</span>
@@ -210,7 +210,7 @@ const ContactForm = () => {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-text-blue-400 focus:border-transparent ${
             errors.name ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="John Doe"
@@ -231,7 +231,7 @@ const ContactForm = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-text-blue-400 focus:border-transparent ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
             placeholder="john@example.com"
@@ -251,7 +251,7 @@ const ContactForm = () => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-text-blue-400 focus:border-transparent"
             placeholder="+1 (123) 456-7890"
           />
         </div>
@@ -267,7 +267,7 @@ const ContactForm = () => {
           name="subject"
           value={formData.subject}
           onChange={handleChange}
-          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-text-blue-400 focus:border-transparent ${
             errors.subject ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="What's this about?"
@@ -287,7 +287,7 @@ const ContactForm = () => {
           value={formData.message}
           onChange={handleChange}
           rows={5}
-          className={`w-full text-black  px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+          className={`w-full text-black  px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-text-blue-400 focus:border-transparent ${
             errors.message ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Your message here..."
@@ -301,7 +301,7 @@ const ContactForm = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-blue-text-blue-400 hover:bg-blue-text-blue-400-dark text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center"
         >
           {isSubmitting ? (
             <>
