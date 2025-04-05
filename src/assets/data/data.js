@@ -1,10 +1,18 @@
 import cursol from "../images/img/carousel-1.jpg";
 import cursol1 from "../images/img/carousel-1.jpg";
-import services from "../images/img/carousel-2.jpg";
-import team1 from '../images/img/team-1.jpg'
-import team2 from '../images/img/team-2.jpg'
-import team3 from '../images/img/team-3.jpg'
-import team4 from '../images/img/team-4.jpg'
+import service from "../images/img/carousel-2.jpg";
+import team1 from "../images/img/team-1.jpg";
+import team2 from "../images/img/team-2.jpg";
+import team3 from "../images/img/team-3.jpg";
+import team4 from "../images/img/team-4.jpg";
+import {
+  FoodBank,
+  Hotel,
+  PartyMode,
+  Spa,
+  Sports,
+  SportsGymnastics,
+} from "@mui/icons-material";
 export const carouselItems = [
   {
     imgSrc: cursol,
@@ -60,7 +68,7 @@ export const initialRooms = [
     baths: 2,
     description:
       "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
-    image: services,
+    image: service,
   },
   {
     id: 3,
@@ -81,7 +89,7 @@ export const additionalRooms = [
     beds: 2,
     baths: 1,
     description: "Spacious room with modern amenities and a beautiful view.",
-    image: services,
+    image: service,
   },
   {
     id: 5,
@@ -89,7 +97,7 @@ export const additionalRooms = [
     price: 250,
     beds: 4,
     baths: 3,
-    description: "Luxurious suite with premium services and exclusive access.",
+    description: "Luxurious suite with premium service and exclusive access.",
     image: cursol,
   },
   {
@@ -99,7 +107,7 @@ export const additionalRooms = [
     beds: 4,
     baths: 2,
     description: "Perfect for families with children, featuring extra space.",
-    image: services,
+    image: service,
   },
 ];
 export const testimonials = [
@@ -115,7 +123,7 @@ export const testimonials = [
     text: "Tempor stet labore dolor clita stet diam amet ipsum dolor duo ipsum rebum stet dolor amet diam stet. Est stet ea lorem amet est kasd kasd et erat magna eos",
     name: "Client Name 2",
     profession: "Profession 2",
-    image: services,
+    image: service,
   },
   {
     id: 3,
@@ -175,5 +183,49 @@ export const about = [
     id: 4,
     url: team3,
     delay: 1.1,
+  },
+];
+export const services = [
+  {
+    title: "Rooms & Appartment",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.1,
+  },
+  {
+    title: "Food & Restaurant",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.2,
+  },
+  {
+    title: "Spa & Fitness",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.3,
+  },
+  {
+    title: "Sports & Gaming",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.4,
+  },
+  {
+    title: "Event & Party",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.5,
+  },
+  {
+    title: "GYM & Yoga",
+    icon: cursol,
+    description:
+      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+    delay: 0.6,
   },
 ];

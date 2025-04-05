@@ -12,6 +12,7 @@ import {
   FaArrowRight,
   FaBars,
 } from "react-icons/fa";
+import { Button } from "@mui/material";
 
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,16 +20,16 @@ export const Navbar = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/" },
-    { name: "Services", href: "/" },
-    { name: "Rooms", href: "/" },
+    { name: "About", href: "/A-7483-783/34" },
+    { name: "Services", href: "/S-6832-342/34" },
+    { name: "Rooms", href: "/R-8763-327/34" },
     { name: "Contact", href: "/" },
   ];
 
   const pageLinks = [
-    { name: "Booking", href: "/" },
-    { name: "Our Team", href: "/" },
-    { name: "Testimonial", href: "/" },
+    { name: "Booking", href: "/B-7839-283/34" },
+    { name: "Our Team", href: "/O-2973-342/34" },
+    { name: "Testimonial", href: "/T-8732-452/34" },
   ];
 
   const socialLinks = [
@@ -63,7 +64,8 @@ export const Navbar = () => {
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
               >
-                {link.icon}
+                {" "}
+                <Button href="/">{link.icon}</Button>
               </motion.button>
             ))}
           </div>
@@ -87,7 +89,6 @@ export const Navbar = () => {
           </div>
 
           <div className="w-full lg:w-3/4">
-
             <div className="flex justify-between items-center h-24 px-4 lg:px-0">
               {/* Logo - Mobile */}
               <div className="lg:hidden">
@@ -139,7 +140,9 @@ export const Navbar = () => {
                                     href={page.href}
                                     className="block px-4 py-2 hover:bg-gray-700 hover:text-blue-400"
                                   >
-                                    {page.name}
+                                    <Button href={page.href}>
+                                      {page.name}
+                                    </Button>
                                   </button>
                                 ))}
                               </motion.div>
@@ -147,23 +150,18 @@ export const Navbar = () => {
                           </AnimatePresence>
                         </div>
                       ) : (
-                        <button
-                          href={link.href}
-                          className="hover:text-blue-400"
-                        >
-                          {link.name}
+                        <button className="hover:text-blue-400">
+                          <Button href={link.href}>{link.name}</Button>
                         </button>
                       )}
                     </motion.div>
                   ))}
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-none text-white flex items-center"
-                >
-                  Premium Version
-                  <FaArrowRight className="ml-2" />
+                <motion.button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-none text-white flex items-center">
+                  <Button disabled>
+                    Order
+                    <FaArrowRight className="ml-2" />
+                  </Button>
                 </motion.button>
               </nav>
             </div>
@@ -215,11 +213,10 @@ export const Navbar = () => {
                 ))}
               </div>
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled
                 className="bg-blue-600 hover:bg-blue-700 mt-4 py-3 text-white w-full flex items-center justify-center"
               >
-                Premium Version
+                Order
                 <FaArrowRight className="ml-2" />
               </motion.button>
             </div>

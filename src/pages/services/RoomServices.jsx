@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { additionalRooms, initialRooms } from "../../assets/data/data";
 
-const RoomCard = ({ room, delay, onViewDetail, onBookNow }) => {
+const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -93,10 +93,10 @@ const RoomCard = ({ room, delay, onViewDetail, onBookNow }) => {
               View Detail
             </button>
             <button 
-              onClick={() => onBookNow(room)}
-              className="bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 px-4 rounded transition-colors"
+              onClick={() => onAddToCart(room)}
+              className="bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-4 rounded transition-colors"
             >
-              Book Now
+              Add to Cart
             </button>
           </div>
         </div>
@@ -105,7 +105,28 @@ const RoomCard = ({ room, delay, onViewDetail, onBookNow }) => {
   );
 };
 
-const RoomDetailModal = ({ room, onClose, onBookNow }) => {
+const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
+  const [nights, setNights] = useState(1);
+  
+  const handleNightsChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      setNights(value);
+    }
+  };
+
+  const incrementNights = () => {
+    setNights(prev => prev + 1);
+  };
+
+  const decrementNights = () => {
+    if (nights > 1) {
+      setNights(prev => prev - 1);
+    }
+  };
+
+  const totalPrice = room.price * nights;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -189,15 +210,356 @@ const RoomDetailModal = ({ room, onClose, onBookNow }) => {
             </div>
           </div>
           
-          <div className="flex justify-end">
-            <button 
-              onClick={() => onBookNow(room)}
-              className="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg transition-colors"
-            >
-              Book Now
-            </button>
+          <div className="border-t pt-6">
+            <h3 className="text-xl font-semibold mb-4">Booking Details</h3>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <label className="block text-gray-700 mb-2">Number of Nights</label>
+                <div className="flex items-center">
+                  <button 
+                    onClick={decrementNights}
+                    className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-l"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    value={nights}
+                    onChange={handleNightsChange}
+                    className="w-16 text-center border-t border-b border-gray-300 py-1"
+                  />
+                  <button 
+                    onClick={incrementNights}
+                    className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-r"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-gray-600">Price per night: ${room.price}</p>
+                <p className="text-xl font-semibold">Total: ${totalPrice}</p>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-4">
+              <button 
+                onClick={onClose}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors"
+              >
+                Close
+              </button>
+              <button 
+                onClick={() => onAddToCart({ ...room, nights, totalPrice })}
+                className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const CartModal = ({ cartItems, onClose, onRemoveItem, onProceedToPayment }) => {
+  const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const tax = subtotal * 0.1; // 10% tax
+  const total = subtotal + tax;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div 
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 50, opacity: 0 }}
+        className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Your Cart</h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          {cartItems.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Your cart is empty</p>
+            </div>
+          ) : (
+            <>
+              <div className="divide-y">
+                {cartItems.map((item, index) => (
+                  <div key={index} className="py-4 flex justify-between">
+                    <div className="flex">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                      <div className="ml-4">
+                        <h3 className="font-medium">{item.name}</h3>
+                        <p className="text-gray-600 text-sm">
+                          {item.nights} night{item.nights > 1 ? 's' : ''} × ${item.price}
+                        </p>
+                        <button 
+                          onClick={() => onRemoveItem(index)}
+                          className="text-red-500 text-sm mt-1 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">${item.totalPrice}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-600">Tax (10%)</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg mt-4">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+                
+                <button 
+                  onClick={onProceedToPayment}
+                  className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg mt-6 transition-colors"
+                >
+                  Proceed to Payment
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const PaymentModal = ({ cartTotal, onClose, onPaymentSuccess }) => {
+  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [cardDetails, setCardDetails] = useState({
+    number: '',
+    name: '',
+    expiry: '',
+    cvv: ''
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCardDetails(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      onPaymentSuccess();
+    }, 2000);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div 
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 50, opacity: 0 }}
+        className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Payment Details</h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="flex justify-between font-bold text-lg">
+              <span>Total Amount</span>
+              <span>${cartTotal.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2">Payment Method</label>
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded border ${paymentMethod === 'credit' ? 'border-primary bg-primary bg-opacity-10' : 'border-gray-300'}`}
+                  onClick={() => setPaymentMethod('credit')}
+                >
+                  Credit Card
+                </button>
+                <button
+                  type="button"
+                  className={`px-4 py-2 rounded border ${paymentMethod === 'paypal' ? 'border-primary bg-primary bg-opacity-10' : 'border-gray-300'}`}
+                  onClick={() => setPaymentMethod('paypal')}
+                >
+                  PayPal
+                </button>
+              </div>
+            </div>
+            
+            {paymentMethod === 'credit' ? (
+              <>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Card Number</label>
+                  <input
+                    type="text"
+                    name="number"
+                    value={cardDetails.number}
+                    onChange={handleInputChange}
+                    placeholder="1234 5678 9012 3456"
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Cardholder Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={cardDetails.name}
+                    onChange={handleInputChange}
+                    placeholder="John Doe"
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Expiry Date</label>
+                    <input
+                      type="text"
+                      name="expiry"
+                      value={cardDetails.expiry}
+                      onChange={handleInputChange}
+                      placeholder="MM/YY"
+                      className="w-full px-3 py-2 border rounded"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">CVV</label>
+                    <input
+                      type="text"
+                      name="cvv"
+                      value={cardDetails.cvv}
+                      onChange={handleInputChange}
+                      placeholder="123"
+                      className="w-full px-3 py-2 border rounded"
+                      required
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-yellow-800">You will be redirected to PayPal to complete your payment</p>
+              </div>
+            )}
+            
+            <button 
+              type="submit"
+              disabled={isProcessing}
+              className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg mt-4 transition-colors disabled:opacity-70 flex items-center justify-center"
+            >
+              {isProcessing ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                `Pay $${cartTotal.toFixed(2)}`
+              )}
+            </button>
+          </form>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const SuccessModal = ({ onClose }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div 
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 50, opacity: 0 }}
+        className="bg-white rounded-lg max-w-md w-full p-6 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Payment Successful!</h2>
+        <p className="text-gray-600 mb-6">Thank you for your booking. A confirmation has been sent to your email.</p>
+        <button 
+          onClick={onClose}
+          className="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg transition-colors"
+        >
+          Close
+        </button>
       </motion.div>
     </motion.div>
   );
@@ -208,7 +570,10 @@ export const RoomsServices = () => {
   const [rooms, setRooms] = useState(initialRooms);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleViewMore = () => {
     if (showAll) {
@@ -224,17 +589,28 @@ export const RoomsServices = () => {
     setShowDetailModal(true);
   };
 
-  const handleBookNow = (room) => {
-    setSelectedRoom(room);
+  const handleAddToCart = (room) => {
+    setCartItems(prev => [...prev, room]);
     setShowDetailModal(false);
-    setShowBookingModal(true);
-    // Here you would typically show a booking form
-    console.log("Booking room:", room.name);
+    // Show a notification or toast here if you want
   };
 
-  const closeDetailModal = () => {
-    setShowDetailModal(false);
+  const handleRemoveFromCart = (index) => {
+    setCartItems(prev => prev.filter((_, i) => i !== index));
   };
+
+  const handleProceedToPayment = () => {
+    setShowCartModal(false);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowPaymentModal(false);
+    setCartItems([]);
+    setShowSuccessModal(true);
+  };
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0) * 1.1; // Including 10% tax
 
   return (
     <div className="py-12 bg-white text-black px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -259,9 +635,24 @@ export const RoomsServices = () => {
             room={room} 
             delay={index * 0.1}
             onViewDetail={handleViewDetail}
-            onBookNow={handleBookNow}
+            onAddToCart={handleAddToCart}
           />
         ))}
+      </div>
+
+      <div className="fixed bottom-6 right-6 z-40">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowCartModal(true)}
+          className="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-5 rounded-full shadow-lg flex items-center"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <span className="mr-1">{cartItems.length}</span>
+          {cartItems.length === 1 ? 'Item' : 'Items'}
+        </motion.button>
       </div>
 
       <motion.div
@@ -281,8 +672,37 @@ export const RoomsServices = () => {
         {showDetailModal && selectedRoom && (
           <RoomDetailModal 
             room={selectedRoom} 
-            onClose={closeDetailModal}
-            onBookNow={handleBookNow}
+            onClose={() => setShowDetailModal(false)}
+            onAddToCart={handleAddToCart}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showCartModal && (
+          <CartModal 
+            cartItems={cartItems}
+            onClose={() => setShowCartModal(false)}
+            onRemoveItem={handleRemoveFromCart}
+            onProceedToPayment={handleProceedToPayment}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showPaymentModal && (
+          <PaymentModal 
+            cartTotal={cartTotal}
+            onClose={() => setShowPaymentModal(false)}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSuccessModal && (
+          <SuccessModal 
+            onClose={() => setShowSuccessModal(false)}
           />
         )}
       </AnimatePresence>

@@ -7,6 +7,7 @@ import { RoomsServices } from "../services/RoomServices";
 import { LuxuryHotel } from "../../components/videos/Video";
 import { Testimony } from "../testimony/Testimony";
 import { OurTeam } from "../our team/OurTeam";
+import { ContactSection } from "../contact/Contact";
 
 export default function Home() {
   return (
@@ -35,6 +36,9 @@ export default function Home() {
         </div>
         <div className="w-full">
           <OurTeam />
+        </div>
+        <div className="w-full">
+          <ContactSection />
         </div>
       </div>
     </>
