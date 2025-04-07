@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { additionalRooms, initialRooms } from "../../assets/data/data";
+import { Button } from "@mui/material";
 
 const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
@@ -33,9 +34,9 @@ const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
       <div className="shadow-lg rounded-lg overflow-hidden h-full flex flex-col">
         <div className="relative">
           <img className="w-full h-64 object-cover" src={room.image} alt="" />
-          <button className="absolute left-0 top-full -translate-y-1/2 bg-primary text-white rounded py-1 px-3 ml-4 text-sm">
+          <motion.button className="absolute left-0 top-full -translate-y-1/2 bg-blue-200 text-white rounded py-1 px-3 ml-4 text-sm">
             ${room.price}/Night
-          </button>
+          </motion.button>
         </div>
         <div className="p-4 mt-2 flex-grow">
           <div className="flex justify-between mb-3">

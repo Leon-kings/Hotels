@@ -22,6 +22,7 @@ import service5 from "../images/img/942db23a-16c1-441f-a948-baf37c1f3f8f_1078b03
 import service6 from "../images/img/Screenshot-2024-08-02-at-12.32.24.png";
 // room
 import room1 from "../images/img/room.jpg";
+import froom from '../images/img/Open-concept-living-room-TWP0380-CV1hghhEaBBAkX_uv8K9cw-3313dfd39e2b42f5b37f43b8dfa14e08.jpg'
 
 export const carouselItems = [
   {
@@ -87,7 +88,7 @@ export const initialRooms = [
     beds: 3,
     baths: 2,
     description:
-      "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
+      "The room features a private ensuite bathroom with both hot and cold shower options, a cozy sitting area, and a balcony offering stunning views of Kigali city.",
     image: room1,
   },
 ];
@@ -98,7 +99,7 @@ export const additionalRooms = [
     price: 120,
     beds: 2,
     baths: 1,
-    description: "Spacious room with modern amenities and a beautiful view.",
+    description: "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
     image: service,
   },
   {
@@ -107,7 +108,7 @@ export const additionalRooms = [
     price: 250,
     beds: 2,
     baths: 1,
-    description: "Luxurious suite with premium service and exclusive access.",
+    description: " a Presidential Suite is the most luxurious and expansive suite, often featuring multiple rooms, private amenities, and designed to accommodate high-profile guests. ",
     image: cursol,
   },
   {
@@ -116,8 +117,8 @@ export const additionalRooms = [
     price: 180,
     beds: 2,
     baths: 1,
-    description: "Perfect for families with children, featuring extra space.",
-    image: cursol1,
+    description: "A family room is an informal, all-purpose room designed as a recreation center and informal gathering place for family members, often used for activities like watching TV, playing games, or relaxing. ",
+    image: froom,
   },
 ];
 export const testimonials = [
@@ -176,22 +177,22 @@ export const teamMembers = [
 export const about = [
   {
     id: 1,
-    url: team4,
+    url: service5,
     delay: 0.2,
   },
   {
     id: 2,
-    url: team1,
+    url: froom,
     delay: 0.5,
   },
   {
     id: 3,
-    url: team2,
+    url: service,
     delay: 0.8,
   },
   {
     id: 4,
-    url: team3,
+    url: service3,
     delay: 1.1,
   },
 ];

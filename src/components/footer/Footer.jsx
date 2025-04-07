@@ -128,14 +128,15 @@ export const Footer = () => {
                   ></motion.span>
                 </motion.span>
                 <p className="text-gray-400 pt-4">
-                  By drinking this coffee, you are investing in women farmers as
-                  they produce high quality products that increase economic
-                  independence for themselves and their families.
+                  That means it will offer a range of onsite amenities that
+                  probably include restaurants, exercise spaces, spas and
+                  meeting spaces. These hotels are generally luxury, upscale or
+                  upper upscale properties.
                 </p>
                 <ul className="social flex mt-4 space-x-4">
                   <li>
                     <Button
-                      href="#"
+                      href="/"
                       className="text-gray-400 hover:text-yellow-500"
                     >
                       <Facebook className="size-6" />
@@ -143,7 +144,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Button
-                      href="#"
+                      href="/"
                       className="text-gray-400 hover:text-yellow-500"
                     >
                       <Twitter className="size-6" />
@@ -151,7 +152,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Button
-                      href="#"
+                      href="/"
                       className="text-gray-400 hover:text-yellow-500"
                     >
                       <Instagram className="size-6" />
@@ -159,7 +160,7 @@ export const Footer = () => {
                   </li>
                   <li>
                     <Button
-                      href="#"
+                      href="/"
                       className="text-gray-400 hover:text-yellow-500"
                     >
                       <LinkedIn className="size-6" />
@@ -196,10 +197,10 @@ export const Footer = () => {
                 </motion.span>
                 <ul className="text-gray-400 pt-4">
                   <li>
-                    Mon-Fri: <b> 08.00 A.M - 10.00 P.M</b>
+                    Mon-Fri: <b> 08.00 A.M - 08.00 P.M</b>
                   </li>
                   <li>
-                    Saturday: <b> 08.00 A.M - 02.00 P.M</b>
+                    Saturday: <b> 10.00 A.M - 09.00 P.M</b>
                   </li>
                   <li>
                     Sunday: <b> Closed</b>
@@ -266,5 +267,3 @@ export const Footer = () => {
     </section>
   );
 };
-
-
