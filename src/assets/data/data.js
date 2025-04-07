@@ -1,18 +1,28 @@
-import cursol from "../images/img/carousel-1.jpg";
-import cursol1 from "../images/img/carousel-1.jpg";
-import service from "../images/img/carousel-2.jpg";
+import cursol from "../images/img/DUF_4113-v-ok-1-1170x780.jpg";
+import cursol1 from "../images/img/Blog-6-scaled.webp";
+import cursol2 from "../images/img/RESIDENT-EDINBURGH-JUNIOR-SUITE-CASTLE-VIEW-PROMINENT-1400x928.jpg";
+// cursol-images
+import service from "../images/img/club_one-bedroom_executive-suite.jpg";
+// services-images
 import team1 from "../images/img/team-1.jpg";
 import team2 from "../images/img/team-2.jpg";
 import team3 from "../images/img/team-3.jpg";
 import team4 from "../images/img/team-4.jpg";
-import {
-  FoodBank,
-  Hotel,
-  PartyMode,
-  Spa,
-  Sports,
-  SportsGymnastics,
-} from "@mui/icons-material";
+// team-images
+import image from "../images/img/room.jpg";
+import image1 from "../images/img/65045f093c166fdddb4a94a5_x-65045f0266217.webp";
+import image2 from "../images/img/LUMI-KITCHEN.jpg";
+import image3 from "../images/img/virunga-1.jpg";
+// images
+import service1 from "../images/img/1407953244000-177513283.webp";
+import service2 from "../images/img/daldtn-omni-dallas-bobs-dinner-1170.jpg";
+import service3 from "../images/img/Pick-out-a-theme.jpg";
+import service4 from "../images/img/yoga-hotel-monaco-joe-longo-940x540.jpg";
+import service5 from "../images/img/942db23a-16c1-441f-a948-baf37c1f3f8f_1078b037.webp";
+import service6 from "../images/img/Screenshot-2024-08-02-at-12.32.24.png";
+// room
+import room1 from "../images/img/room.jpg";
+
 export const carouselItems = [
   {
     imgSrc: cursol,
@@ -33,7 +43,7 @@ export const carouselItems = [
     ],
   },
   {
-    imgSrc: cursol,
+    imgSrc: cursol2,
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living",
     buttons: [
@@ -43,21 +53,21 @@ export const carouselItems = [
   },
 ];
 export const images = [
-  { src: cursol, width: "75%", margin: "25% 0 0 0", delay: 0.1 },
-  { src: cursol, width: "100%", delay: 0.3 },
-  { src: cursol, width: "50%", align: "right", delay: 0.5 },
-  { src: cursol, width: "75%", align: "left", delay: 0.7 },
+  { src: image, width: "85%", margin: "15% 0 0 0", delay: 0.1 },
+  { src: image1, width: "100%", delay: 0.3 },
+  { src: image2, width: "70%", align: "right", delay: 0.5 },
+  { src: image3, width: "95%", align: "left", delay: 0.7 },
 ];
 
 export const initialRooms = [
   {
     id: 1,
     name: "Junior Suite",
-    price: 100,
+    price: 90,
     beds: 3,
     baths: 2,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "A Junior Suite in a hotel is a room type that offers a larger space than a standard room, typically including a separate sleeping area and a living area, but in a smaller size than a full suite. ",
     image: cursol,
   },
   {
@@ -67,7 +77,7 @@ export const initialRooms = [
     beds: 3,
     baths: 2,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "An executive suite in a hotel is a larger, more luxurious room designed for business travelers, often featuring a separate living area, a work desk, and amenities like a mini-bar, and complimentary Wi-Fi. ",
     image: service,
   },
   {
@@ -77,8 +87,8 @@ export const initialRooms = [
     beds: 3,
     baths: 2,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
-    image: cursol,
+      "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
+    image: room1,
   },
 ];
 export const additionalRooms = [
@@ -95,8 +105,8 @@ export const additionalRooms = [
     id: 5,
     name: "Presidential Suite",
     price: 250,
-    beds: 4,
-    baths: 3,
+    beds: 2,
+    baths: 1,
     description: "Luxurious suite with premium service and exclusive access.",
     image: cursol,
   },
@@ -104,10 +114,10 @@ export const additionalRooms = [
     id: 6,
     name: "Family Room",
     price: 180,
-    beds: 4,
-    baths: 2,
+    beds: 2,
+    baths: 1,
     description: "Perfect for families with children, featuring extra space.",
-    image: service,
+    image: cursol1,
   },
 ];
 export const testimonials = [
@@ -188,44 +198,44 @@ export const about = [
 export const services = [
   {
     title: "Rooms & Appartment",
-    icon: cursol,
+    icon: service1,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "A standard room is one of the cheapest hotel rooms, and usually includes a double or queen bed. It's usually a rectangular space with a private bathroom, a desk, an armchair or sofa and perhaps a cupboard and dressing table.",
     delay: 0.1,
   },
   {
     title: "Food & Restaurant",
-    icon: cursol,
+    icon: service2,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "/ˈres·tər·ənt, -təˌrɑnt/ a place of business where people can choose a meal to be prepared and served to them at a table, and for which they pay, usually after eating: a Chinese/Italian/Mexican restaurant.",
     delay: 0.2,
   },
   {
     title: "Spa & Fitness",
-    icon: cursol,
+    icon: service6,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "Beauty and Skin Care: Health and fitness spas often provide a wide range of beauty and skin care treatments. These may include facials, body wraps, massages, and manicures/pedicures.",
     delay: 0.3,
   },
   {
     title: "Sports & Gaming",
-    icon: cursol,
+    icon: service5,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "Gamification, or the use of game features and ideas in non-game situations, has found a home in the hospitality sector where it adds elements of engagement, satisfaction and entertainment to the guest experience.",
     delay: 0.4,
   },
   {
     title: "Event & Party",
-    icon: cursol,
+    icon: service3,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "Known for its exclusive 5-star address and flexible meeting and conference rooms, including an 800-seat ballroom and a 500-seat auditorium. Provides a variety of indoor and outdoor event spaces, suitable for both business meetings and weddings, and is centrally located. ",
     delay: 0.5,
   },
   {
     title: "GYM & Yoga",
-    icon: cursol,
+    icon: service4,
     description:
-      "Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.",
+      "In Remera, Kigali, hotels like The Hut Hotel Rwanda offer state-of-the-art gyms with modern equipment and personal training, while Heaven Rwanda provides a gym with Technogym equipment and yoga sessions. ",
     delay: 0.6,
   },
 ];

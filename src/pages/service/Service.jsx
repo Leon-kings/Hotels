@@ -65,7 +65,7 @@ export default function Service() {
               >
                 <div className="service-icon bg-transparent  mx-auto mb-4">
                   <div className="w-full h-full  flex items-center justify-center">
-                    <img src={service.icon} className="text-blue-400" alt="" />
+                    <img src={service.icon} className="w-full object-cover rounded-xl h-[180px]" title={service.title} alt="" />
                   </div>
                 </div>
                 <h5 className="text-xl text-gray-900 font-semibold mb-3 text-center">

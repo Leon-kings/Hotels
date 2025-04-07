@@ -44,7 +44,7 @@ export const ContactSection = () => {
             <ContactInfoCard
               icon={<FaPhone className="text-blue-400 text-xl" />}
               title="Phone"
-              items={["+1 (123) 456-7890", "+1 (987) 654-3210"]}
+              items={["+250 (78) 794-4577", "+250 (72) 755-6145"]}
             />
 
             <ContactInfoCard
@@ -56,13 +56,22 @@ export const ContactSection = () => {
             <ContactInfoCard
               icon={<FaMapMarkerAlt className="text-blue-400 text-xl" />}
               title="Address"
-              items={["123 Luxury Street", "Hospitality District", "New York, NY 10001"]}
+              items={[
+                "123 Luxury Street",
+                "Hospitality District",
+                "Kigali, KG 191",
+              ]}
             />
 
             <ContactInfoCard
               icon={<FaClock className="text-blue-400 text-xl" />}
               title="Working Hours"
-              items={["Monday - Friday: 9:00 - 18:00", "Saturday: 10:00 - 16:00", "Sunday: Closed"]}
+              className="text-black font-bold"
+              items={[
+                "Monday - Friday: 9:00 - 18:00",
+                "Saturday: 10:00 - 16:00",
+                "Sunday: Closed",
+              ]}
             />
           </motion.div>
         </div>
@@ -73,15 +82,15 @@ export const ContactSection = () => {
 
 const ContactInfoCard = ({ icon, title, items }) => {
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ y: -5 }}
       className="bg-white rounded-lg shadow-md p-6 flex items-start"
     >
-      <div className="bg-blue-text-blue-400 bg-opacity-10 p-3 rounded-full mr-4">
+      <h2 className="bg-blue-text-blue-400 bg-opacity-10 p-3 rounded-full mr-4">
         {icon}
-      </div>
+      </h2>
       <div>
-        <h3 className="font-semibold text-lg mb-2">{title}</h3>
+        <h3 className="font-semibold text-black text-lg mb-2">{title}</h3>
         <ul className="space-y-1">
           {items.map((item, index) => (
             <li key={index} className="text-gray-600">
@@ -132,14 +141,14 @@ const ContactForm = () => {
     }
     if (!formData.subject.trim()) newErrors.subject = "Subject is required";
     if (!formData.message.trim()) newErrors.message = "Message is required";
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -184,7 +193,9 @@ const ContactForm = () => {
             />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-black mb-2">Message Sent Successfully!</h3>
+        <h3 className="text-xl font-semibold text-black mb-2">
+          Message Sent Successfully!
+        </h3>
         <p className="text-gray-600 mb-6">
           Thank you for contacting us. We'll get back to you soon.
         </p>

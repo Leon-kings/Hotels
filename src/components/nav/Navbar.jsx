@@ -13,6 +13,8 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { Button } from "@mui/material";
+import logo from "../../assets/images/logo/276-2763872_hospitality-hotel-icon.png";
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,11 +50,11 @@ export const Navbar = () => {
           <div className="flex space-x-6">
             <div className="flex items-center">
               <FaEnvelope className="text-blue-600 mr-2" />
-              <span className="text-sm">info@example.com</span>
+              <span className="text-sm">info@hotel.com</span>
             </div>
             <div className="flex items-center">
               <FaPhone className="text-blue-600 mr-2" />
-              <span className="text-sm">+012 345 6789</span>
+              <span className="text-sm">+250 (78) 794-4577</span>
             </div>
           </div>
           <div className="flex space-x-4">
@@ -82,9 +84,13 @@ export const Navbar = () => {
               className="flex items-center"
               whileHover={{ scale: 1.05 }}
             >
-              <h1 className="text-blue-600 uppercase font-bold text-3xl">
-                Hotelier
-              </h1>
+              <Link to={"/"}>
+                <img
+                  src={logo}
+                  alt=""
+                  className="w-24 rounded-xl object-cover"
+                />
+              </Link>
             </motion.div>
           </div>
 
@@ -93,9 +99,13 @@ export const Navbar = () => {
               {/* Logo - Mobile */}
               <div className="lg:hidden">
                 <motion.p>
-                  <h3 className="text-blue-600 uppercase font-bold text-2xl">
-                    Hotelier
-                  </h3>
+                  <Link to={"/"}>
+                    <img
+                      src={logo}
+                      alt=""
+                      className="w-24 rounded-xl object-cover"
+                    />
+                  </Link>
                 </motion.p>
               </div>
 
@@ -140,7 +150,7 @@ export const Navbar = () => {
                                     href={page.href}
                                     className="block px-4 py-2 hover:bg-gray-700 hover:text-blue-400"
                                   >
-                                    <Button href={page.href}>
+                                    <Button href={page.href} className="font-bold">
                                       {page.name}
                                     </Button>
                                   </button>
@@ -151,7 +161,7 @@ export const Navbar = () => {
                         </div>
                       ) : (
                         <button className="hover:text-blue-400">
-                          <Button href={link.href}>{link.name}</Button>
+                          <Button className="font-bold" href={link.href}>{link.name}</Button>
                         </button>
                       )}
                     </motion.div>

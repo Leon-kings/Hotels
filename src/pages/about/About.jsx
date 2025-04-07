@@ -94,13 +94,12 @@ export const About = () => {
                     About Us
                   </Typography>
                   <Typography variant="h3" component="h1">
-                    Welcome to{" "}
                     <Box
                       component="span"
                       color="primary.main"
                       sx={{ textTransform: "uppercase" }}
                     >
-                      Hotelier
+                      LD Hotel
                     </Box>
                   </Typography>
                 </motion.div>
@@ -114,10 +113,9 @@ export const About = () => {
                   style={{ marginTop: theme.spacing(4) }}
                 >
                   <Typography variant="body1" color="text.secondary">
-                    Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit.
-                    Aliqu diam amet diam et eos. Clita erat ipsum et lorem et
-                    sit, sed stet lorem sit clita duo justo magna dolore erat
-                    amet
+                    Great savings on hotels in Kigali, Rwanda online. Good
+                    availability and great rates. Read hotel reviews and choose
+                    the best hotel deal for your stay.
                   </Typography>
                 </motion.div>
 
