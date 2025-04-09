@@ -14,12 +14,15 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+import axios from "axios";
 
 export const Booking = () => {
   const [formData, setFormData] = useState({
     checkIn: "",
     checkOut: "",
     adults: 1,
+    name:"",
+    email:"",
     children: 0,
     roomType: "standard",
   });
@@ -76,7 +79,7 @@ export const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log(formData);
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -84,7 +87,18 @@ export const Booking = () => {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      try {
+        const results = await axios.post(
+          "https://hotel-nodejs-oa32.onrender.com/84383/92823",
+          formData
+        );
+        console.log(results);
+      } catch (error) {
+        console.error("Submission error:", error);
+      }
+      finally {
+        setIsSubmitting(false);
+      }
       console.log("Form submitted:", formData);
       setSubmitSuccess(true);
 
@@ -94,6 +108,8 @@ export const Booking = () => {
           checkIn: "",
           checkOut: "",
           adults: 1,
+          name:"",
+          email:"",
           children: 0,
           roomType: "standard",
         });
@@ -235,7 +251,50 @@ export const Booking = () => {
                           }}
                         />
                       </Box>
+                      {/* name and email components */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 2,
+                          flexDirection: { xs: "column", sm: "row" },
+                        }}
+                      >
+                        <TextField
+                          fullWidth
+                          label="Names"
+                          type="txt"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          error={!!errors.name}
+                          helperText={errors.name}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          inputProps={{
+                            min: new Date().toISOString().split("T")[0],
+                          }}
+                        />
 
+                        <TextField
+                          fullWidth
+                          label="Email"
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          error={!!errors.email}
+                          helperText={errors.email}
+                          InputLabelProps={{
+                            shrink: true,
+                          }}
+                          inputProps={{
+                            min:
+                              formData.checkIn ||
+                              new Date().toISOString().split("T")[0],
+                          }}
+                        />
+                      </Box>
                       <Box
                         sx={{
                           display: "flex",

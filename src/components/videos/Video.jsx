@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@mui/material";
 
 export const LuxuryHotel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,9 +67,11 @@ export const LuxuryHotel = () => {
                   whileInView={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit.
-                  Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit,
-                  sed stet lorem sit clita duo justo magna dolore erat amet
+                  LD Hotel is happy to serve you one of the best suite and room
+                  to host your familly and also we are able to host board
+                  meeting on best suitable room . <br /> Provides a variety of
+                  indoor and outdoor event spaces, suitable for both business
+                  meetings and weddings, and is centrally located.
                 </motion.p>
                 <motion.div
                   className="flex flex-col sm:flex-row gap-4"
@@ -76,26 +79,30 @@ export const LuxuryHotel = () => {
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <button
-                    onClick={handleRoomsClick}
-                    className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
-                      activeTab === "rooms"
-                        ? "bg-blue-700 text-white"
-                        : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
-                  >
-                    Our Rooms
-                  </button>
-                  <button
-                    onClick={handleBookClick}
-                    className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
-                      activeTab === "book"
-                        ? "bg-gray-200 text-gray-900"
-                        : "bg-white hover:bg-gray-100 text-gray-900"
-                    }`}
-                  >
-                    Book A Room
-                  </button>
+                  <Button href="/R-8763-327/34">
+                    <motion.button
+                      onClick={handleRoomsClick}
+                      className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
+                        activeTab === "rooms"
+                          ? "bg-blue-700 text-white"
+                          : "bg-blue-600 hover:bg-blue-700 text-white"
+                      }`}
+                    >
+                      Our Rooms
+                    </motion.button>
+                  </Button>
+                  <Button href="/C-3872-2344/34">
+                    <motion.button
+                      onClick={handleBookClick}
+                      className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
+                        activeTab === "book"
+                          ? "bg-gray-200 text-gray-900"
+                          : "bg-white hover:bg-gray-100 text-gray-900"
+                      }`}
+                    >
+                      Book A Room
+                    </motion.button>
+                  </Button>
                 </motion.div>
               </div>
             </div>

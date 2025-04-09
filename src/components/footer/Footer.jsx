@@ -5,6 +5,7 @@ import { Facebook, Instagram, LinkedIn, Twitter } from "@mui/icons-material";
 import { Button, Card } from "@mui/material";
 import { about } from "../../assets/data/data";
 import { Time } from "../time/Time";
+import axios from "axios";
 
 export const Footer = () => {
   const [email, setEmail] = useState("");
@@ -17,30 +18,26 @@ export const Footer = () => {
     setLoading(true);
     setError("");
     setSuccess(false);
-
+  
     try {
-      const response = await fetch("https://your-api-endpoint.com/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to subscribe");
-      }
-
-      const result = await response.json();
+      const response = await axios.post(
+        "https://hotel-nodejs-oa32.onrender.com/63729/892308",
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
       setSuccess(true);
       setEmail("");
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      setError(err.response?.data?.message || err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <section
       id="footer"

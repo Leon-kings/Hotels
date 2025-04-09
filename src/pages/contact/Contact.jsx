@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock } from "react-icons/fa";
-
+import axios from 'axios';
 export const ContactSection = () => {
   return (
     <div className="py-16 bg-gray-900 rounded-xl text-white dark:text-white">
@@ -148,14 +148,19 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
-
+  
     setIsSubmitting(true);
-
-    // Simulate API call
+  
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Replace with your actual API endpoint
+      const response = await axios.post('https://hotel-nodejs-oa32.onrender.com/83920/92303', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
       setSubmitSuccess(true);
       setFormData({
         name: "",
@@ -166,6 +171,8 @@ const ContactForm = () => {
       });
     } catch (error) {
       console.error("Submission error:", error);
+      // You might want to set an error state here
+      // setSubmissionError(error.response?.data?.message || "Submission failed");
     } finally {
       setIsSubmitting(false);
     }

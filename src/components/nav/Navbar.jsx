@@ -13,7 +13,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { Button } from "@mui/material";
-import logo from "../../assets/images/logo/276-2763872_hospitality-hotel-icon.png";
+import logo from "../../assets/images/logo/hotel-icon-black-logo-symbol-your-web-site-design-app-vector-illustration-isolated-white-background-240118715.webp";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
@@ -111,12 +111,12 @@ export const Navbar = () => {
 
               {/* Mobile Menu Button */}
 
-              <button
+              <motion.button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden text-white focus:outline-none"
               >
-                <FaBars className="text-2xl" />
-              </button>
+                  <FaBars className="text-2xl" />
+              </motion.button>
 
               {/* Desktop Navigation */}
               <nav className="hidden lg:flex items-center space-x-8">
@@ -150,7 +150,10 @@ export const Navbar = () => {
                                     href={page.href}
                                     className="block px-4 py-2 hover:bg-gray-700 hover:text-blue-400"
                                   >
-                                    <Button href={page.href} className="font-bold">
+                                    <Button
+                                      href={page.href}
+                                      className="font-bold"
+                                    >
                                       {page.name}
                                     </Button>
                                   </button>
@@ -161,16 +164,22 @@ export const Navbar = () => {
                         </div>
                       ) : (
                         <button className="hover:text-blue-400">
-                          <Button className="font-bold" href={link.href}>{link.name}</Button>
+                          <Button className="font-bold" href={link.href}>
+                            {link.name}
+                          </Button>
                         </button>
                       )}
                     </motion.div>
                   ))}
                 </div>
-                <motion.button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-none text-white flex items-center">
-                  <Button disabled>
+                <motion.button
+                  disabled
+                  className="bg-blue-600 hover:bg-blue-700 rounded-none text-white flex items-center"
+                >
+                  {" "}
+                  <Button>
                     Order
-                    <FaArrowRight className="ml-2" />
+                    <FaArrowRight className="ml-1" />
                   </Button>
                 </motion.button>
               </nav>
@@ -188,6 +197,20 @@ export const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-gray-800 overflow-hidden"
           >
+            <div className="w-full flex space-x-4">
+              {socialLinks.map((link, index) => (
+                <motion.button
+                  key={index}
+                  href={link.href}
+                  className="text-gray-700 hover:text-blue-600 text-lg"
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {" "}
+                  <Button href="/">{link.icon}</Button>
+                </motion.button>
+              ))}
+            </div>
             <div className="flex flex-col space-y-4 p-4">
               {navLinks.map((link, index) => (
                 <motion.div
@@ -195,13 +218,15 @@ export const Navbar = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <a
-                    href={link.href}
-                    className="block py-2 hover:text-blue-400"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.name}
-                  </a>
+                  <Link to={link.href}>
+                    <motion.button
+                      href={link.href}
+                      className="block w-full py-2 hover:text-blue-400"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </motion.button>
+                  </Link>
                 </motion.div>
               ))}
               <div className="pt-4 border-t border-gray-700">
@@ -211,14 +236,16 @@ export const Navbar = () => {
                     key={i}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    className="mt-2"
                   >
-                    <a
-                      href={page.href}
-                      className="block py-2 pl-4 hover:text-blue-400"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {page.name}
-                    </a>
+                    <Link to={page.href}>
+                      <motion.button
+                        className="block py-2 w-full pl-4 hover:text-blue-400"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {page.name}
+                      </motion.button>
+                    </Link>
                   </motion.div>
                 ))}
               </div>

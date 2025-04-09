@@ -246,15 +246,15 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
           <div className="p-6">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-2xl font-bold">{room.name}</h2>
-              <div className="text-primary font-semibold text-xl">
-                ${room.price}/Night
+              <div className="font-semibold text-xl">
+                $ <span className="text-blue-400 font-bold">{room.price}</span>/Night
               </div>
             </div>
 
             <div className="flex flex-wrap gap-4 mb-6">
-              <div className="flex items-center">
+              <div className="bg-amber-50 p-2 flex items-center">
                 <svg
-                  className="w-5 h-5 text-primary mr-2"
+                  className="w-6 h-6 text-green-400 mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -266,11 +266,11 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                <span>{room.beds} Beds</span>
+                <span className="font-semibold">{room.beds} Beds</span>
               </div>
-              <div className="flex items-center">
+              <div className="bg-amber-50 p-2 flex items-center">
                 <svg
-                  className="w-5 h-5 text-primary mr-2"
+                  className="w-6 h-6 text-green-400 mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -282,11 +282,11 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <span>{room.baths} Baths</span>
+                <span className="font-semibold">{room.baths} Baths</span>
               </div>
-              <div className="flex items-center">
+              <div className="bg-amber-50 p-2 flex items-center">
                 <svg
-                  className="w-5 h-5 text-primary mr-2"
+                  className="w-6 h-6 text-green-400 mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -298,11 +298,11 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
                   />
                 </svg>
-                <span>Free WiFi</span>
+                <span className="font-semibold">Free WiFi</span>
               </div>
-              <div className="flex items-center">
+              <div className="bg-amber-50 p-2 flex items-center">
                 <svg
-                  className="w-5 h-5 text-primary mr-2"
+                  className="w-6 h-6 text-green-400 mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -314,35 +314,13 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <span>{room.size} sq.ft</span>
+                <span className="font-semibold">{room.size} sq.ft</span>
               </div>
             </div>
 
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-3">Description</h3>
               <p className="text-gray-700">{room.description}</p>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="text-xl font-semibold mb-3">Amenities</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {room.amenities?.map((amenity, index) => (
-                  <div key={index} className="flex items-center">
-                    <svg
-                      className="w-6 h-6 text-green-400 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>{amenity}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="border-t pt-6">
@@ -407,16 +385,23 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
               <div className="flex justify-between items-center mb-6 p-4 bg-gray-50 rounded-lg">
                 <div>
                   <p className="text-gray-600">
-                    Price per night: ${room.price}
+                    Price per night: <span className="text-gray-950 font-bold">$ </span><span className="text-blue-500 font-bold">{room.price}</span>
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {quantity} room{quantity > 1 ? "s" : ""} × {nights} night
+                  <p className="text-sm ">
+                    <span className="text-red-600 font-bold"> {quantity}</span>{" "}
+                    room {quantity > 1 ? "s" : ""} ×{" "}
+                    <span className="text-green-500 font-bold">{nights} </span>
+                    night
                     {nights > 1 ? "s" : ""}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-xl font-semibold">
-                    Total: ${totalPrice.toFixed(2)}
+                    Total:{" "}
+                    <span className="text-blue-500 font-bold">
+                      {" "}
+                      ${totalPrice.toFixed(2)}
+                    </span>
                   </p>
                 </div>
               </div>
