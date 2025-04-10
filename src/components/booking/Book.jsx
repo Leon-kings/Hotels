@@ -18,8 +18,8 @@ import axios from "axios";
 
 export const Booking = () => {
   const [formData, setFormData] = useState({
-    checkIn: "",
-    checkOut: "",
+    checkInDate: "",
+    checkOutDate: "",
     adults: 1,
     name:"",
     email:"",
@@ -40,17 +40,17 @@ export const Booking = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.checkIn) {
-      newErrors.checkIn = "Check-in date is required";
+    if (!formData.checkInDate) {
+      newErrors.checkInDate = "Check-in date is required";
     }
 
-    if (!formData.checkOut) {
-      newErrors.checkOut = "Check-out date is required";
+    if (!formData.checkOutDate) {
+      newErrors.checkOutDate = "Check-out date is required";
     } else if (
-      formData.checkIn &&
-      new Date(formData.checkOut) < new Date(formData.checkIn)
+      formData.checkInDate &&
+      new Date(formData.checkOutDate) < new Date(formData.checkInDate)
     ) {
-      newErrors.checkOut = "Check-out must be after check-in";
+      newErrors.checkOutDate = "Check-out must be after check-in";
     }
 
     if (formData.adults < 1) {
@@ -86,27 +86,27 @@ export const Booking = () => {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       try {
         const results = await axios.post(
           "https://hotel-nodejs-oa32.onrender.com/84383/92823",
           formData
         );
         console.log(results);
+        alert('Check for confirmation email');
       } catch (error) {
         console.error("Submission error:", error);
       }
       finally {
         setIsSubmitting(false);
       }
-      console.log("Form submitted:", formData);
-      setSubmitSuccess(true);
+     
 
       // Reset form after successful submission
       setTimeout(() => {
         setFormData({
-          checkIn: "",
-          checkOut: "",
+          checkInDate: "",
+          checkOutDate: "",
           adults: 1,
           name:"",
           email:"",
@@ -219,11 +219,11 @@ export const Booking = () => {
                           fullWidth
                           label="Check in"
                           type="date"
-                          name="checkIn"
-                          value={formData.checkIn}
+                          name="checkInDate"
+                          value={formData.checkInDate}
                           onChange={handleChange}
-                          error={!!errors.checkIn}
-                          helperText={errors.checkIn}
+                          error={!!errors.checkInDate}
+                          helperText={errors.checkInDate}
                           InputLabelProps={{
                             shrink: true,
                           }}
@@ -236,17 +236,17 @@ export const Booking = () => {
                           fullWidth
                           label="Check out"
                           type="date"
-                          name="checkOut"
-                          value={formData.checkOut}
+                          name="checkOutDate"
+                          value={formData.checkOutDate}
                           onChange={handleChange}
-                          error={!!errors.checkOut}
-                          helperText={errors.checkOut}
+                          error={!!errors.checkOutDate}
+                          helperText={errors.checkOutDate}
                           InputLabelProps={{
                             shrink: true,
                           }}
                           inputProps={{
                             min:
-                              formData.checkIn ||
+                              formData.checkInDate ||
                               new Date().toISOString().split("T")[0],
                           }}
                         />
@@ -290,7 +290,7 @@ export const Booking = () => {
                           }}
                           inputProps={{
                             min:
-                              formData.checkIn ||
+                              formData.checkInDate ||
                               new Date().toISOString().split("T")[0],
                           }}
                         />

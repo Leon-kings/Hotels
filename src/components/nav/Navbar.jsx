@@ -59,16 +59,16 @@ export const Navbar = () => {
           </div>
           <div className="flex space-x-4">
             {socialLinks.map((link, index) => (
-              <motion.button
-                key={index}
-                href={link.href}
-                className="text-gray-700 hover:text-blue-600 text-lg"
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                {" "}
-                <Button href="/">{link.icon}</Button>
-              </motion.button>
+              <Link key={index} to={link.href}>
+                <motion.button
+                  className="text-gray-700 hover:text-blue-600 text-lg"
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {" "}
+                  <Button>{link.icon}</Button>
+                </motion.button>
+              </Link>
             ))}
           </div>
         </div>
@@ -115,7 +115,7 @@ export const Navbar = () => {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden text-white focus:outline-none"
               >
-                  <FaBars className="text-2xl" />
+                <FaBars className="text-2xl" />
               </motion.button>
 
               {/* Desktop Navigation */}
@@ -145,29 +145,24 @@ export const Navbar = () => {
                                 className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10"
                               >
                                 {pageLinks.map((page, i) => (
-                                  <button
-                                    key={i}
-                                    href={page.href}
-                                    className="block px-4 py-2 hover:bg-gray-700 hover:text-blue-400"
-                                  >
-                                    <Button
-                                      href={page.href}
-                                      className="font-bold"
-                                    >
-                                      {page.name}
-                                    </Button>
-                                  </button>
+                                  <Link key={i} to={page.href}>
+                                    <button className="block px-4 py-2 hover:bg-gray-700 hover:text-blue-400">
+                                      <Button className="font-bold">
+                                        {page.name}
+                                      </Button>
+                                    </button>
+                                  </Link>
                                 ))}
                               </motion.div>
                             )}
                           </AnimatePresence>
                         </div>
                       ) : (
-                        <button className="hover:text-blue-400">
-                          <Button className="font-bold" href={link.href}>
-                            {link.name}
-                          </Button>
-                        </button>
+                        <Link to={link.href}>
+                          <button className="hover:text-blue-400">
+                            <Button className="font-bold">{link.name}</Button>
+                          </button>
+                        </Link>
                       )}
                     </motion.div>
                   ))}
@@ -199,16 +194,16 @@ export const Navbar = () => {
           >
             <div className="w-full flex space-x-4">
               {socialLinks.map((link, index) => (
-                <motion.button
-                  key={index}
-                  href={link.href}
-                  className="text-gray-700 hover:text-blue-600 text-lg"
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  {" "}
-                  <Button href="/">{link.icon}</Button>
-                </motion.button>
+                <Link key={index} to={link.href}>
+                  <motion.button
+                    className="text-gray-700 hover:text-blue-600 text-lg"
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    {" "}
+                    <Button href="/">{link.icon}</Button>
+                  </motion.button>
+                </Link>
               ))}
             </div>
             <div className="flex flex-col space-y-4 p-4">
@@ -218,6 +213,7 @@ export const Navbar = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
+                  
                   <Link to={link.href}>
                     <motion.button
                       href={link.href}
