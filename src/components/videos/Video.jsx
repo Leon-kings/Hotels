@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export const LuxuryHotel = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,30 +80,34 @@ export const LuxuryHotel = () => {
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Button href="/R-8763-327/34">
-                    <motion.button
-                      onClick={handleRoomsClick}
-                      className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
-                        activeTab === "rooms"
-                          ? "bg-blue-700 text-white"
-                          : "bg-blue-600 hover:bg-blue-700 text-white"
-                      }`}
-                    >
-                      Our Rooms
-                    </motion.button>
-                  </Button>
-                  <Button href="/C-3872-2344/34">
-                    <motion.button
-                      onClick={handleBookClick}
-                      className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
-                        activeTab === "book"
-                          ? "bg-gray-200 text-gray-900"
-                          : "bg-white hover:bg-gray-100 text-gray-900"
-                      }`}
-                    >
-                      Book A Room
-                    </motion.button>
-                  </Button>
+                  <Link to={"/R-8763-327/34"}>
+                    <Button>
+                      <motion.button
+                        onClick={handleRoomsClick}
+                        className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
+                          activeTab === "rooms"
+                            ? "bg-blue-700 text-white"
+                            : "bg-blue-600 hover:bg-blue-700 text-white"
+                        }`}
+                      >
+                        Our Rooms
+                      </motion.button>
+                    </Button>
+                  </Link>
+                  <Link to={"/C-3872-2344/34"}>
+                    <Button>
+                      <motion.button
+                        onClick={handleBookClick}
+                        className={`py-3 px-5 md:px-8 rounded-md text-center transition duration-300 ${
+                          activeTab === "book"
+                            ? "bg-gray-200 text-gray-900"
+                            : "bg-white hover:bg-gray-100 dark:text-white text-gray-900"
+                        }`}
+                      >
+                        Book A Room
+                      </motion.button>
+                    </Button>
+                  </Link>
                 </motion.div>
               </div>
             </div>
@@ -113,7 +118,7 @@ export const LuxuryHotel = () => {
                 type="button"
                 className="absolute inset-0 flex items-center justify-center w-full h-full"
                 onClick={() =>
-                  handlePlayClick("https://www.youtube.com/embed/DWRcNpR6Kdc")
+                  handlePlayClick("https://youtu.be/BKFcvnd0aaU")
                 }
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

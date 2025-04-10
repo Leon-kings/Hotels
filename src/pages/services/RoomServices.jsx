@@ -111,7 +111,7 @@ const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
               <div className="flex items-center border rounded">
                 <button
                   onClick={decrementQuantity}
-                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200"
+                  className="px-2 dark:text-white py-1 bg-gray-100 hover:bg-gray-200"
                 >
                   -
                 </button>
@@ -124,7 +124,7 @@ const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
                 />
                 <button
                   onClick={incrementQuantity}
-                  className="px-2 py-1 bg-gray-100 hover:bg-gray-200"
+                  className="px-2 py-1 dark:text-white bg-gray-100 hover:bg-gray-200"
                 >
                   +
                 </button>
@@ -334,7 +334,7 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                   <div className="flex items-center">
                     <button
                       onClick={decrementNights}
-                      className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-l"
+                      className="bg-white dark:text-white hover:bg-gray-300 px-3 py-1 rounded-l"
                     >
                       -
                     </button>
@@ -347,7 +347,7 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     />
                     <button
                       onClick={incrementNights}
-                      className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-r"
+                      className="bg-white dark:text-white hover:bg-gray-300 px-3 py-1 rounded-r"
                     >
                       +
                     </button>
@@ -361,7 +361,7 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                   <div className="flex items-center">
                     <button
                       onClick={decrementQuantity}
-                      className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-l"
+                      className="bg-white dark:text-white hover:bg-gray-300 px-3 py-1 rounded-l"
                     >
                       -
                     </button>
@@ -374,7 +374,7 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
                     />
                     <button
                       onClick={incrementQuantity}
-                      className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-r"
+                      className="bg-white dark:text-white hover:bg-gray-300 px-3 py-1 rounded-r"
                     >
                       +
                     </button>
@@ -409,7 +409,7 @@ const RoomDetailModal = ({ room, onClose, onAddToCart }) => {
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={onClose}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors"
+                  className="bg-white dark:text-white hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition-colors"
                 >
                   Close
                 </button>
