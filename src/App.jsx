@@ -13,6 +13,7 @@ import Service from "./pages/service/Service";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home";
 import { ContactSection } from "./pages/contact/Contact";
+import Dashboard from "./components/dashboard/index/Dashboard";
 
 export default function App() {
   return (
@@ -28,6 +29,8 @@ export default function App() {
           <Route element={<OurTeam />} path="/O-2973-342/34" />
           <Route element={<Testimony />} path="/T-8732-452/34" />
           <Route element={<ContactSection />} path="/C-3872-2344/34" />
+          {/* private routes */}
+          <Route element={<Dashboard />} path="/Dash-32793" />
         </Routes>{" "}
         <Footer />
       </BrowserRouter>

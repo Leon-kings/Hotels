@@ -159,18 +159,21 @@ const ContactForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+   
       });
-  
-      setSubmitSuccess(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      });
+      if (response) {
+        alert('Message sent successfully !!');
+        setSubmitSuccess(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      }
     } catch (error) {
-      console.error("Submission error:", error);
+      alert("Submission error:", error)
       // You might want to set an error state here
       // setSubmissionError(error.response?.data?.message || "Submission failed");
     } finally {

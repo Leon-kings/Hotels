@@ -20,11 +20,11 @@ export const Booking = () => {
   const [formData, setFormData] = useState({
     checkInDate: "",
     checkOutDate: "",
-    adults: 1,
-    name:"",
-    email:"",
-    children: 0,
-    roomType: "standard",
+    adults: "",
+    name: "",
+    email: "",
+    children: "",
+    roomType: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,6 +35,7 @@ export const Booking = () => {
     { value: "deluxe", label: "Deluxe Room" },
     { value: "suite", label: "Suite" },
     { value: "executive", label: "Executive Suite" },
+    { value: "presidential", label: "Presidential Suite" },
   ];
 
   const validateForm = () => {
@@ -79,28 +80,24 @@ export const Booking = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
     try {
       // Simulate API call
-
       try {
         const results = await axios.post(
           "https://hotel-nodejs-oa32.onrender.com/84383/92823",
           formData
         );
-        console.log(results);
-        alert('Check for confirmation email');
+        if (results) {
+          alert("Check for confirmation email .");
+        } else {
+          alert("Server error !!");
+        }
       } catch (error) {
-        console.error("Submission error:", error);
-      }
-      finally {
+        alert("Submission error:", error);
+      } finally {
         setIsSubmitting(false);
       }
-     
 
       // Reset form after successful submission
       setTimeout(() => {
@@ -108,8 +105,8 @@ export const Booking = () => {
           checkInDate: "",
           checkOutDate: "",
           adults: 1,
-          name:"",
-          email:"",
+          name: "",
+          email: "",
           children: 0,
           roomType: "standard",
         });
@@ -169,6 +166,7 @@ export const Booking = () => {
                 component="h2"
                 gutterBottom
                 textAlign="center"
+                className="dark:bg-white text-black"
                 sx={{ mb: 4 }}
               >
                 Book Your Stay
@@ -220,6 +218,7 @@ export const Booking = () => {
                           label="Check in"
                           type="date"
                           name="checkInDate"
+                          className="dark:bg-white text-black"
                           value={formData.checkInDate}
                           onChange={handleChange}
                           error={!!errors.checkInDate}
@@ -237,6 +236,7 @@ export const Booking = () => {
                           label="Check out"
                           type="date"
                           name="checkOutDate"
+                          className="dark:bg-white text-black"
                           value={formData.checkOutDate}
                           onChange={handleChange}
                           error={!!errors.checkOutDate}
@@ -264,6 +264,8 @@ export const Booking = () => {
                           label="Names"
                           type="txt"
                           name="name"
+                          placeholder="LD"
+                          className="dark:bg-white text-black"
                           value={formData.name}
                           onChange={handleChange}
                           error={!!errors.name}
@@ -281,6 +283,8 @@ export const Booking = () => {
                           label="Email"
                           type="email"
                           name="email"
+                          placeholder="ld@mail.com"
+                          className="dark:bg-white text-black"
                           value={formData.email}
                           onChange={handleChange}
                           error={!!errors.email}
@@ -308,6 +312,7 @@ export const Booking = () => {
                             name="adults"
                             value={formData.adults}
                             label="Adults"
+                            className="dark:bg-white text-black"
                             onChange={handleChange}
                           >
                             {[1, 2, 3, 4, 5].map((num) => (
@@ -329,6 +334,7 @@ export const Booking = () => {
                             name="children"
                             value={formData.children}
                             label="Children"
+                            className="dark:bg-white text-black"
                             onChange={handleChange}
                           >
                             {[0, 1, 2, 3, 4].map((num) => (
@@ -346,6 +352,7 @@ export const Booking = () => {
                           name="roomType"
                           value={formData.roomType}
                           label="Room Type"
+                          className="dark:bg-white text-black"
                           onChange={handleChange}
                         >
                           {roomTypes.map((room) => (

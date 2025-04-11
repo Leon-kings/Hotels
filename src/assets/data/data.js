@@ -1,6 +1,8 @@
 import cursol from "../images/img/DUF_4113-v-ok-1-1170x780.jpg";
 import cursol1 from "../images/img/Blog-6-scaled.webp";
 import cursol2 from "../images/img/RESIDENT-EDINBURGH-JUNIOR-SUITE-CASTLE-VIEW-PROMINENT-1400x928.jpg";
+import cursol3 from '../images/img/hero-bg.jpg'
+import cursol4 from '../images/img/cta-bg.jpg'
 // cursol-images
 import service from "../images/img/club_one-bedroom_executive-suite.jpg";
 // services-images
@@ -45,6 +47,25 @@ export const carouselItems = [
   },
   {
     imgSrc: cursol2,
+    title: "Discover A Brand Luxurious Hotel",
+    subtitle: "Luxury Living",
+    buttons: [
+      { text: "Our Rooms", variant: "contained", color: "primary" },
+      { text: "Book A Room", variant: "outlined", color: "inherit" },
+    ],
+  },
+  // 
+  {
+    imgSrc: cursol3,
+    title: "Discover A Brand Luxurious Hotel",
+    subtitle: "Luxury Living",
+    buttons: [
+      { text: "Our Rooms", variant: "contained", color: "primary" },
+      { text: "Book A Room", variant: "outlined", color: "inherit" },
+    ],
+  },
+  {
+    imgSrc: cursol4,
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living",
     buttons: [
