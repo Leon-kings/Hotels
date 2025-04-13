@@ -31,6 +31,7 @@ import { MessagesSection } from "../components/messageContainer";
 import { MessagesManager } from "../message/MessageManager";
 import HeadingButton from "../components/HeadingButton";
 import { SubscriptionManager } from "../components/SubscriptionManager";
+import { MessagesAnalytics } from "../components/Graph2";
 
 export const Dashboard = () => {
   const [dateFilter, setDateFilter] = useState("monthly");
@@ -404,9 +405,11 @@ export const Dashboard = () => {
       transition={{ duration: 0.5 }}
       className="px-4 sm:px-6 lg:px-8 py-6 text-black bg-white mt-4 mb-4"
     >
-      <div className="w-full">
-        <HeadingButton/>
-      </div>
+<div className="grid">
+  <div className="w-full">
+    <MessagesAnalytics/>
+  </div>
+</div>
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold">Dashboard Overview</h1>
         <div className="flex gap-2">
