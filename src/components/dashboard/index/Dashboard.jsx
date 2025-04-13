@@ -28,6 +28,9 @@ import {
 import AdminBookingView from "../booking/AdminBookingView";
 import { LatestBookings } from "../components/LatestBooking";
 import { MessagesSection } from "../components/messageContainer";
+import { MessagesManager } from "../message/MessageManager";
+import HeadingButton from "../components/HeadingButton";
+import { SubscriptionManager } from "../components/SubscriptionManager";
 
 export const Dashboard = () => {
   const [dateFilter, setDateFilter] = useState("monthly");
@@ -73,29 +76,7 @@ export const Dashboard = () => {
             status: "Processing",
           },
         ],
-        books: [
-          {
-            id: "B001",
-            title: "React Mastery",
-            author: "Jane Doe",
-            stock: 45,
-            price: "$29.99",
-            category: "Programming",
-            published: "2022-03-15",
-            description:
-              "Comprehensive guide to React development with hooks and context API",
-          },
-          {
-            id: "B002",
-            title: "JavaScript ES6",
-            author: "John Smith",
-            stock: 32,
-            price: "$24.99",
-            category: "Programming",
-            published: "2021-11-10",
-            description: "Master modern JavaScript features and best practices",
-          },
-        ],
+ 
         payments: [
           {
             id: "P001",
@@ -118,26 +99,7 @@ export const Dashboard = () => {
             items: 2,
           },
         ],
-        messages: [
-          {
-            id: "M001",
-            sender: "customer@example.com",
-            subject: "Order Inquiry",
-            status: "Unread",
-            date: "2023-05-15 10:30",
-            body: "Hello, I would like to inquire about the status of my order #12345. When can I expect delivery?",
-            priority: "High",
-          },
-          {
-            id: "M002",
-            sender: "support@example.com",
-            subject: "Your ticket #4567",
-            status: "Read",
-            date: "2023-05-14 14:15",
-            body: "We've resolved your support ticket regarding the login issue. Please let us know if you need further assistance.",
-            priority: "Normal",
-          },
-        ],
+   
       },
       yearly: {
         stats: [
@@ -251,7 +213,7 @@ export const Dashboard = () => {
                 onClick={() => setExpandedView(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <Close />
+                <Close className="text-red-500"/>
               </button>
             </div>
             <div className="space-y-6">
@@ -368,7 +330,7 @@ export const Dashboard = () => {
                 onClick={() => setExpandedView(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <Close />
+                <Close className="text-red-500"/>
               </button>
             </div>
             <div className="space-y-6">
@@ -442,6 +404,9 @@ export const Dashboard = () => {
       transition={{ duration: 0.5 }}
       className="px-4 sm:px-6 lg:px-8 py-6 text-black bg-white mt-4 mb-4"
     >
+      <div className="w-full">
+        <HeadingButton/>
+      </div>
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold">Dashboard Overview</h1>
         <div className="flex gap-2">
@@ -493,7 +458,6 @@ export const Dashboard = () => {
 
       {/* Components Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 mt-6">
-
         <motion.div
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -528,11 +492,8 @@ export const Dashboard = () => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className={`bg-gray-100 rounded-lg p-4 cursor-pointer transition-all ${
-            selectedComponent === "messages"
-              ? "ring-2  bg-blue-600"
-              : ""
+            selectedComponent === "messages" ? "ring-2  bg-blue-600" : ""
           }`}
-          
         >
           <div className=" w-full justify-between">
             <MessagesSection />
@@ -604,6 +565,13 @@ export const Dashboard = () => {
       </div>
       <div className="w-full mt-4 mb-4">
         <AdminBookingView />
+      </div>
+      <div className="w-full mt-4 mb-4">
+        <MessagesManager />
+      </div>
+      {/* subsc */}
+      <div className="w-full mt-4 mb-4">
+        <SubscriptionManager />
       </div>
     </motion.div>
   );

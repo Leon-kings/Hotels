@@ -154,14 +154,6 @@ export const LatestBookings = () => {
           </tbody>
         </table>
       </div>
-      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 text-right">
-        <a 
-          href="/admin/bookings" 
-          className="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline"
-        >
-          View all bookings →
-        </a>
-      </div>
     </div>
   );
 };
