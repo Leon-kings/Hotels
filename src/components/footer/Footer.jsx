@@ -21,7 +21,7 @@ export const Footer = () => {
   
     try {
       const response = await axios.post(
-        "https://hotel-nodejs-oa32.onrender.com/63729/892308",
+        "https://hotel-nodejs-oa32.onrender.com/83920/92303",
         { email },
         {
           headers: {
@@ -32,8 +32,10 @@ export const Footer = () => {
   
       setSuccess(true);
       setEmail("");
+      alert('Subscription successfull');
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Something went wrong");
+      // setError(err.response?.data?.message || err.message || "Something went wrong");
+      alert('Subscription failed',err);
     } finally {
       setLoading(false);
     }

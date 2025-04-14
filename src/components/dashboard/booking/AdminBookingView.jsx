@@ -404,12 +404,10 @@ export default function AdminBookingView() {
         payload
       );
 
-      console.log("Update response:", response.data);
+      console.log("Update response:", response.data.data);
 
       const updatedBooking =
-        response.data?.updatedBooking ||
-        response.data?.booking ||
-        response.data;
+        response.data?.updatedBooking || response.data.data || response.data;
       console.log(updatedBooking);
 
       if (!updatedBooking) {
@@ -627,18 +625,7 @@ export default function AdminBookingView() {
                         {booking.roomType}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={booking.status}
-                          onChange={(e) =>
-                            handleStatusChange(booking._id, e.target.value)
-                          }
-                          className="border rounded px-2 py-1 capitalize"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="cancelled">Cancelled</option>
-                          <option value="completed">Completed</option>
-                        </select>
+                        {booking.status}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap space-x-2">
                         <button

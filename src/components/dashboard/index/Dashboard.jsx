@@ -29,9 +29,10 @@ import AdminBookingView from "../booking/AdminBookingView";
 import { LatestBookings } from "../components/LatestBooking";
 import { MessagesSection } from "../components/messageContainer";
 import { MessagesManager } from "../message/MessageManager";
-import HeadingButton from "../components/HeadingButton";
+
 import { SubscriptionManager } from "../components/SubscriptionManager";
 import { MessagesAnalytics } from "../components/Graph2";
+
 
 export const Dashboard = () => {
   const [dateFilter, setDateFilter] = useState("monthly");
@@ -77,7 +78,7 @@ export const Dashboard = () => {
             status: "Processing",
           },
         ],
- 
+
         payments: [
           {
             id: "P001",
@@ -100,7 +101,6 @@ export const Dashboard = () => {
             items: 2,
           },
         ],
-   
       },
       yearly: {
         stats: [
@@ -214,7 +214,7 @@ export const Dashboard = () => {
                 onClick={() => setExpandedView(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <Close className="text-red-500"/>
+                <Close className="text-red-500" />
               </button>
             </div>
             <div className="space-y-6">
@@ -331,7 +331,7 @@ export const Dashboard = () => {
                 onClick={() => setExpandedView(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <Close className="text-red-500"/>
+                <Close className="text-red-500" />
               </button>
             </div>
             <div className="space-y-6">
@@ -405,59 +405,12 @@ export const Dashboard = () => {
       transition={{ duration: 0.5 }}
       className="px-4 sm:px-6 lg:px-8 py-6 text-black bg-white mt-4 mb-4"
     >
-<div className="grid">
-  <div className="w-full">
-    <MessagesAnalytics/>
-  </div>
-</div>
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold">Dashboard Overview</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setDateFilter("monthly")}
-            className={`py-2 px-4 rounded-md text-sm ${
-              dateFilter === "monthly"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setDateFilter("yearly")}
-            className={`py-2 px-4 rounded-md text-sm ${
-              dateFilter === "yearly" ? "bg-blue-600 text-white" : "bg-gray-200"
-            }`}
-          >
-            Yearly
-          </button>
+      <div className="grid">
+        <div className="w-full">
+          <MessagesAnalytics />
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <div
-            key={stat.title}
-            className="bg-gray-100 rounded-lg p-4 flex items-center gap-4"
-          >
-            <div className="text-3xl">{statIcons[i]}</div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-              <p className="text-lg font-bold">{stat.value}</p>
-              <p
-                className={`text-xs ${
-                  stat.change.startsWith("+")
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}
-              >
-                {stat.change}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
 
       {/* Components Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 mt-6">
