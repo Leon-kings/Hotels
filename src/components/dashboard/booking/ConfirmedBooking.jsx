@@ -98,7 +98,7 @@ export default function AdminBookingViewConfirmed() {
       // Optimistic update - remove from confirmed list
       setConfirmedBookings(prev => prev.filter(b => b._id !== bookingId));
 
-      const response = await axios.patch(
+      const response = await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
         { status: "cancelled" },
         { headers: { "Content-Type": "application/json" } }
