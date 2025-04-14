@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     // Redirect to login if not authenticated
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/L-6382-8279/34" replace />;
   }
 
   return children;
@@ -56,7 +56,7 @@ export default function App() {
           <Route element={<OurTeam />} path="/O-2973-342/34" />
           <Route element={<Testimony />} path="/T-8732-452/34" />
           <Route element={<ContactSection />} path="/C-3872-2344/34" />
-          <Route element={<Login />} path="/login" />
+          <Route element={<Login />} path="/L-6382-8279/34" />
 
           {/* Protected Dashboard Route */}
           <Route

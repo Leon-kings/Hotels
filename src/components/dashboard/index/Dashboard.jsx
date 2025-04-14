@@ -32,6 +32,8 @@ import { MessagesManager } from "../message/MessageManager";
 
 import { SubscriptionManager } from "../components/SubscriptionManager";
 import { MessagesAnalytics } from "../components/Graph2";
+import AdminBookingViewConfirmed from "../booking/ConfirmedBooking";
+import AdminBookingViewCancel from "../booking/CancelledBookings";
 
 
 export const Dashboard = () => {
@@ -528,6 +530,12 @@ export const Dashboard = () => {
       {/* subsc */}
       <div className="w-full mt-4 mb-4">
         <SubscriptionManager />
+      </div>
+      <div className="w-full mt-4 mb-4">
+        <AdminBookingViewConfirmed />
+      </div>
+      <div className="w-full mt-4 mb-4">
+        <AdminBookingViewCancel />
       </div>
     </motion.div>
   );

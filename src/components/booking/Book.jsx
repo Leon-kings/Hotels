@@ -104,11 +104,11 @@ export const Booking = () => {
         setFormData({
           checkInDate: "",
           checkOutDate: "",
-          adults: 1,
+          adults: "",
           name: "",
           email: "",
-          children: 0,
-          roomType: "standard",
+          children: "",
+          roomType: "",
         });
         setSubmitSuccess(false);
       }, 3000);
