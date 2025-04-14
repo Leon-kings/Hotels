@@ -263,13 +263,13 @@ export default function AdminBookingViewPending() {
                         }
                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                       >
-                       <Cancel className="text-red-500 size-6"/>
+                       <Cancel className="text-red-300 size-6"/>
                       </button>
                       <button
                         onClick={() => handleDelete(booking._id)}
                         className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
                       >
-                        <Delete fontSize="small" />
+                        <Delete className="text-red-600 size-6" />
                       </button>
                     </td>
                   </tr>
