@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import { AddTask, Delete, Edit } from "@mui/icons-material";
+import axios from "axios";
+import { AddTask, Cancel, Clear, Delete, Edit, Search } from "@mui/icons-material";
 
 const BookingSearch = ({ onSearchResults }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +30,7 @@ const BookingSearch = ({ onSearchResults }) => {
         onClick={handleSearch}
         className="ml-2 bg-blue-500 text-white p-2 rounded"
       >
-        Search
+        <Search className="size-6 text-blue-500" />
       </button>
       <button
         onClick={() => {
@@ -39,7 +39,7 @@ const BookingSearch = ({ onSearchResults }) => {
         }}
         className="ml-2 bg-gray-500 text-white p-2 rounded"
       >
-        Clear
+        <Cancel className="text-red-500 size-6" />
       </button>
     </div>
   );
@@ -62,13 +62,12 @@ export default function AdminBookingViewCancel() {
         const response = await axios.get(
           "https://hotel-nodejs-oa32.onrender.com/84383/92823"
         );
-        
-        const bookingsData = response.data?.bookings || 
-                           response.data?.data?.bookings || 
-                           [];
-        
+
+        const bookingsData =
+          response.data?.bookings || response.data?.data?.bookings || [];
+
         setAllBookings(bookingsData);
-        const cancelled = bookingsData.filter(b => b.status === "cancelled");
+        const cancelled = bookingsData.filter((b) => b.status === "cancelled");
         setCancelledBookings(cancelled);
         setTotalPages(Math.ceil(cancelled.length / bookingsPerPage));
         updateCurrentBookings(cancelled, 1);
@@ -97,10 +96,11 @@ export default function AdminBookingViewCancel() {
   // Handle status change (only allow changing to confirmed)
   const handleStatusChange = async (bookingId) => {
     try {
-      if (!window.confirm("Are you sure you want to confirm this booking?")) return;
+      if (!window.confirm("Are you sure you want to confirm this booking?"))
+        return;
 
       // Optimistic update - remove from cancelled list
-      setCancelledBookings(prev => prev.filter(b => b._id !== bookingId));
+      setCancelledBookings((prev) => prev.filter((b) => b._id !== bookingId));
 
       const response = await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
@@ -109,22 +109,29 @@ export default function AdminBookingViewCancel() {
       );
 
       // Update all bookings with the new status
-      setAllBookings(prev => 
-        prev.map(b => b._id === bookingId ? { ...b, status: "confirmed" } : b)
+      setAllBookings((prev) =>
+        prev.map((b) =>
+          b._id === bookingId ? { ...b, status: "confirmed" } : b
+        )
       );
 
       if (!response.data) throw new Error("No confirmation from server");
       alert("Booking confirmed successfully!");
     } catch (error) {
       // Revert on error
-      const originalBooking = allBookings.find(b => b._id === bookingId);
+      const originalBooking = allBookings.find((b) => b._id === bookingId);
       if (originalBooking?.status === "cancelled") {
-        setCancelledBookings(prev => [...prev, originalBooking].sort((a, b) => 
-          new Date(a.checkInDate) - new Date(b.checkInDate)
-        ));
+        setCancelledBookings((prev) =>
+          [...prev, originalBooking].sort(
+            (a, b) => new Date(a.checkInDate) - new Date(b.checkInDate)
+          )
+        );
       }
-      
-      console.error("Status update failed:", error.response?.data || error.message);
+
+      console.error(
+        "Status update failed:",
+        error.response?.data || error.message
+      );
       alert(error.response?.data?.message || "Failed to confirm booking");
     }
   };
@@ -132,29 +139,38 @@ export default function AdminBookingViewCancel() {
   // Handle delete booking
   const handleDelete = async (bookingId) => {
     try {
-      if (!window.confirm("Are you sure you want to permanently delete this booking?")) return;
+      if (
+        !window.confirm(
+          "Are you sure you want to permanently delete this booking?"
+        )
+      )
+        return;
 
       // Optimistic update - remove from cancelled list
-      setCancelledBookings(prev => prev.filter(b => b._id !== bookingId));
-      setAllBookings(prev => prev.filter(b => b._id !== bookingId));
+      setCancelledBookings((prev) => prev.filter((b) => b._id !== bookingId));
+      setAllBookings((prev) => prev.filter((b) => b._id !== bookingId));
 
       await axios.delete(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`
       );
 
       // Recalculate total pages after deletion
-      setTotalPages(Math.ceil((cancelledBookings.length - 1) / bookingsPerPage));
-      
+      setTotalPages(
+        Math.ceil((cancelledBookings.length - 1) / bookingsPerPage)
+      );
+
       alert("Booking deleted successfully!");
     } catch (error) {
       // Revert on error
-      const originalBooking = allBookings.find(b => b._id === bookingId);
+      const originalBooking = allBookings.find((b) => b._id === bookingId);
       if (originalBooking?.status === "cancelled") {
-        setCancelledBookings(prev => [...prev, originalBooking].sort((a, b) => 
-          new Date(a.checkInDate) - new Date(b.checkInDate)
-        ));
+        setCancelledBookings((prev) =>
+          [...prev, originalBooking].sort(
+            (a, b) => new Date(a.checkInDate) - new Date(b.checkInDate)
+          )
+        );
       }
-      
+
       console.error("Delete failed:", error.response?.data || error.message);
       alert(error.response?.data?.message || "Failed to delete booking");
     }
@@ -166,7 +182,7 @@ export default function AdminBookingViewCancel() {
       updateCurrentBookings(cancelledBookings, 1);
       setTotalPages(Math.ceil(cancelledBookings.length / bookingsPerPage));
     } else {
-      const cancelledResults = results.filter(b => b.status === "cancelled");
+      const cancelledResults = results.filter((b) => b.status === "cancelled");
       setCurrentBookings(cancelledResults.slice(0, bookingsPerPage));
       setTotalPages(Math.ceil(cancelledResults.length / bookingsPerPage));
     }
@@ -180,7 +196,7 @@ export default function AdminBookingViewCancel() {
   return (
     <div className="container mx-auto p-4">
       <h4 className="text-2xl font-bold mb-4">Cancelled Bookings</h4>
-      
+
       <BookingSearch onSearchResults={handleSearchResults} />
 
       {loading ? (
@@ -191,32 +207,50 @@ export default function AdminBookingViewCancel() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-In</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-Out</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Check-In
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Check-Out
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Room Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentBookings.map((booking) => (
                   <tr key={booking._id} className="bg-red-50 hover:bg-red-100">
-                    <td className="px-6 py-4 whitespace-nowrap">{booking.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{booking.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {booking.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {booking.email}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {new Date(booking.checkInDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {new Date(booking.checkOutDate).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap capitalize">{booking.roomType}</td>
+                    <td className="px-6 py-4 whitespace-nowrap capitalize">
+                      {booking.roomType}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <button
                         onClick={() => handleStatusChange(booking._id)}
                         className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                       >
-                        <AddTask className="size-6 text-green-500"/>
+                        <AddTask className="size-6 text-green-500" />
                       </button>
                       <button
                         onClick={() => handleDelete(booking._id)}
@@ -232,15 +266,20 @@ export default function AdminBookingViewCancel() {
           </div>
 
           {cancelledBookings.length === 0 && !loading && (
-            <div className="p-4 text-center text-gray-500">No cancelled bookings found</div>
+            <div className="p-4 text-center text-gray-500">
+              No cancelled bookings found
+            </div>
           )}
 
           {totalPages > 1 && (
             <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">
               <div>
                 Showing {(currentPage - 1) * bookingsPerPage + 1} to{" "}
-                {Math.min(currentPage * bookingsPerPage, cancelledBookings.length)} of{" "}
-                {cancelledBookings.length} bookings
+                {Math.min(
+                  currentPage * bookingsPerPage,
+                  cancelledBookings.length
+                )}{" "}
+                of {cancelledBookings.length} bookings
               </div>
               <div className="flex space-x-2">
                 <button
@@ -254,19 +293,21 @@ export default function AdminBookingViewCancel() {
                 >
                   Prev
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 rounded ${
-                      currentPage === page
-                        ? "bg-blue-600 text-white"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white"
+                          : "bg-blue-500 text-white hover:bg-blue-600"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}

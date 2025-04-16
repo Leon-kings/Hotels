@@ -167,16 +167,15 @@ export const Navbar = () => {
                     </motion.div>
                   ))}
                 </div>
-                <motion.button
-                  disabled
-                  className="bg-blue-600 hover:bg-blue-700 rounded-none text-white flex items-center"
-                >
-                  {" "}
-                  <Button>
-                    Order
-                    <FaArrowRight className="ml-1" />
-                  </Button>
-                </motion.button>
+                <Link to={"/L-6382-8279/34"}>
+                  <motion.button className="bg-blue-600 hover:bg-blue-700 rounded-none text-white flex items-center">
+                    {" "}
+                    <Button>
+                      Order
+                      <FaArrowRight className="ml-1" />
+                    </Button>
+                  </motion.button>
+                </Link>
               </nav>
             </div>
           </div>
@@ -213,7 +212,6 @@ export const Navbar = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  
                   <Link to={link.href}>
                     <motion.button
                       href={link.href}
@@ -245,13 +243,12 @@ export const Navbar = () => {
                   </motion.div>
                 ))}
               </div>
-              <motion.button
-                disabled
-                className="bg-blue-600 hover:bg-blue-700 mt-4 py-3 text-white w-full flex items-center justify-center"
-              >
-                Order
-                <FaArrowRight className="ml-2" />
-              </motion.button>
+              <Link to={"/L-6382-8279/34"}>
+                <motion.button className="bg-blue-600 hover:bg-blue-700 mt-4 py-3 text-white w-full flex items-center justify-center">
+                  Order
+                  <FaArrowRight className="ml-2" />
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         )}

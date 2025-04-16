@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Cancel, Delete } from "@mui/icons-material";
+import { Cancel, Delete, Search } from "@mui/icons-material";
 
 const BookingSearch = ({ onSearchResults }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,7 +30,7 @@ const BookingSearch = ({ onSearchResults }) => {
         onClick={handleSearch}
         className="ml-2 bg-blue-500 text-white p-2 rounded"
       >
-        Search
+        <Search className="size-6 text-blue-400"/>
       </button>
       <button
         onClick={() => {
@@ -39,7 +39,7 @@ const BookingSearch = ({ onSearchResults }) => {
         }}
         className="ml-2 bg-gray-500 text-white p-2 rounded"
       >
-        Clear
+        <Cancel className="text-red-500 size-6"/>
       </button>
     </div>
   );

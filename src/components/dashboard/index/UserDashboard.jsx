@@ -35,7 +35,7 @@ import AdminBookingViewConfirmed from "../booking/ConfirmedBooking";
 import AdminBookingViewCancel from "../booking/CancelledBookings";
 import AdminBookingViewPending from "../booking/PendingBooking";
 
-export const Dashboard = () => {
+export const UserDashboard = () => {
   const [dateFilter, setDateFilter] = useState("monthly");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
@@ -473,14 +473,22 @@ export const Dashboard = () => {
       <div className="flex-1 bg-gray-100 rounded-lg p-4">
         <LatestBookings />
       </div>
-      <div className="w-full mt-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-4">
+        <div className="bookings-part">
+          <AdminBookingView />
+        </div>
+        <div className="message-part">
+          <MessagesManager />
+        </div>
+      </div>
+      {/* <div className="w-full mt-4 mb-4">
         <AdminBookingView />
       </div>
       <div className="w-full mt-4 mb-4">
         <MessagesManager />
-      </div>
+      </div> */}
       {/* subsc */}
-      <div className="w-full mt-4 mb-4">
+      {/* <div className="w-full mt-4 mb-4">
         <SubscriptionManager />
       </div>
       <div className="w-full mt-4 mb-4">
@@ -491,7 +499,7 @@ export const Dashboard = () => {
       </div>
       <div className="w-full mt-4 mb-4">
         <AdminBookingViewPending />
-      </div>
+      </div> */}
     </motion.div>
   );
 };
