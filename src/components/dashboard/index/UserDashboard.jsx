@@ -14,23 +14,12 @@ import {
   ExpandMore,
   ExpandLess,
 } from "@mui/icons-material";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-
 import AdminBookingView from "../booking/AdminBookingView";
 import { LatestBookings } from "../components/LatestBooking";
 import { MessagesSection } from "../components/messageContainer";
 import { MessagesManager } from "../message/MessageManager";
 import { SubscriptionManager } from "../components/SubscriptionManager";
-import { MessagesAnalytics } from "../components/Graph2";
+import { Analytics } from "../components/Analytics";
 import AdminBookingViewConfirmed from "../booking/ConfirmedBooking";
 import AdminBookingViewCancel from "../booking/CancelledBookings";
 import AdminBookingViewPending from "../booking/PendingBooking";
@@ -205,186 +194,7 @@ export const UserDashboard = () => {
     const data = currentData[selectedComponent];
     if (!data || data.length === 0) return null;
 
-    switch (selectedComponent) {
-      case "books":
-        return (
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Book Details</h3>
-              <button
-                onClick={() => setExpandedView(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Close className="text-red-500" />
-              </button>
-            </div>
-            <div className="space-y-6">
-              {data.map((book) => (
-                <div key={book.id} className="border-b pb-4 last:border-b-0">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <h4 className="text-lg font-semibold">{book.title}</h4>
-                      <p className="text-gray-600">by {book.author}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>
-                        <span className="font-medium">Price:</span> {book.price}
-                      </p>
-                      <p>
-                        <span className="font-medium">Stock:</span> {book.stock}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>
-                        <span className="font-medium">Category:</span>{" "}
-                        {book.category}
-                      </p>
-                      <p>
-                        <span className="font-medium">Published:</span>{" "}
-                        {book.published}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <p className="text-gray-700">{book.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "payments":
-        return (
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Payment Details</h3>
-              <button
-                onClick={() => setExpandedView(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Close />
-              </button>
-            </div>
-            <div className="space-y-6">
-              {data.map((payment) => (
-                <div key={payment.id} className="border-b pb-4 last:border-b-0">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <h4 className="text-lg font-semibold">
-                        Payment #{payment.id}
-                      </h4>
-                      <p
-                        className={`text-lg font-bold ${
-                          payment.status === "Completed"
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                        }`}
-                      >
-                        {payment.status}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>
-                        <span className="font-medium">Amount:</span>{" "}
-                        {payment.amount}
-                      </p>
-                      <p>
-                        <span className="font-medium">Method:</span>{" "}
-                        {payment.method}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p>
-                        <span className="font-medium">Date:</span>{" "}
-                        {payment.date}
-                      </p>
-                      <p>
-                        <span className="font-medium">Customer:</span>{" "}
-                        {payment.customer}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-3 grid grid-cols-2 gap-4">
-                    <div>
-                      <p>
-                        <span className="font-medium">Invoice:</span>{" "}
-                        {payment.invoice}
-                      </p>
-                    </div>
-                    <div>
-                      <p>
-                        <span className="font-medium">Items:</span>{" "}
-                        {payment.items}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "messages":
-        return (
-          <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Message Details</h3>
-              <button
-                onClick={() => setExpandedView(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Close className="text-red-500" />
-              </button>
-            </div>
-            <div className="space-y-6">
-              {data.map((message) => (
-                <div key={message.id} className="border-b pb-4 last:border-b-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h4 className="text-lg font-semibold">
-                        {message.subject}
-                      </h4>
-                      <p className="text-gray-600">From: {message.sender}</p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        message.priority === "High"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {message.priority}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                    <div>
-                      <p>
-                        <span className="font-medium">Date:</span>{" "}
-                        {message.date}
-                      </p>
-                    </div>
-                    <div>
-                      <p
-                        className={`${
-                          message.status === "Unread"
-                            ? "text-blue-600 font-semibold"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {message.status}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded">
-                    <p className="whitespace-pre-line">{message.body}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
+
   };
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -408,7 +218,7 @@ export const UserDashboard = () => {
     >
       <div className="grid">
         <div className="w-full">
-          <MessagesAnalytics />
+          <Analytics />
         </div>
       </div>
       {/* Components Grid */}

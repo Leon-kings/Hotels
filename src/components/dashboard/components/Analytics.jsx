@@ -8,7 +8,7 @@ import {
   Refresh,
 } from "@mui/icons-material";
 
-export const MessagesAnalytics = () => {
+export const Analytics = () => {
   const [counts, setCounts] = useState({
     users: { count: 0, loading: true, error: null },
     messages: { count: 0, loading: true, error: null },

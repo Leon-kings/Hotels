@@ -13,8 +13,8 @@ import team4 from "../images/img/team-4.jpg";
 // team-images
 import image from "../images/img/room.jpg";
 import image1 from "../images/img/65045f093c166fdddb4a94a5_x-65045f0266217.webp";
-import image2 from "../images/img/LUMI-KITCHEN.jpg";
-import image3 from "../images/img/virunga-1.jpg";
+import image2 from "../images/img/Pick-out-a-theme.jpg";
+import image3 from "../images/img/15975686-banda-at-virunga-lodge.webp";
 // images
 import service1 from "../images/img/1407953244000-177513283.webp";
 import service2 from "../images/img/daldtn-omni-dallas-bobs-dinner-1170.jpg";

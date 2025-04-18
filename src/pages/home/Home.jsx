@@ -34,9 +34,9 @@ export default function Home() {
         <div className="w-full">
           <Testimony />
         </div>
-        <div className="w-full">
+        {/* <div className="w-full">
           <OurTeam />
-        </div>
+        </div> */}
         <div className="w-full">
           <ContactSection />
         </div>
