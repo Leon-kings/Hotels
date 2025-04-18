@@ -29,10 +29,10 @@ const BookingSearch = ({ onSearchResults }) => {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 bg-white text-black">
       <input
         type="text"
-        placeholder="Search cancelled bookings..."
+        placeholder="Search bookings..."
         className="border p-2 rounded"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
@@ -125,7 +125,7 @@ export default function AdminBookingView() {
       }
     } catch (error) {
       console.error("Error deleting booking:", error);
-      alert("Failed to delete booking. Please try again.");
+      // alert("Failed to delete booking. Please try again.");
     }
   };
 
@@ -336,7 +336,7 @@ export default function AdminBookingView() {
         }}
       />
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white text-black rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

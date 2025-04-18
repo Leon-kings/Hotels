@@ -12,14 +12,11 @@ import {
   ShoppingCart,
   Message,
 } from "@mui/icons-material";
-import { Analytics } from "../Analytics";
-import LineGraph from "../charts/LineGraph";
-import { BookingChart } from "../charts/BookingChart";
-import { PieChartData } from "../charts/PieChart";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { MessagesManager } from "../../message/MessageManager";
 
-export const Layout = () => {
+export const MessagePannel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -200,10 +197,7 @@ export const Layout = () => {
           >
             <Menu className="size-6" />
           </button>
-          <Analytics />
-          <LineGraph />
-          <BookingChart />
-          <PieChartData />
+          <MessagesManager />
         </div>
       </main>
     </div>

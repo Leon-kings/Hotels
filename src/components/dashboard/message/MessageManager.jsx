@@ -321,14 +321,14 @@ export const MessagesManager = () => {
                           className="text-green-600 hover:text-green-900"
                           title="Save"
                         >
-                          <SaveIcon />
+                          <SaveIcon className="text-blue-500 size-6"/>
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
                           className="text-red-600 hover:text-red-900"
                           title="Cancel"
                         >
-                          <CancelIcon />
+                          <CancelIcon className="text-red-500 size-6"/>
                         </button>
                       </td>
                     </>
@@ -360,14 +360,14 @@ export const MessagesManager = () => {
                           className="text-blue-600 hover:text-blue-900"
                           title="Edit"
                         >
-                          <EditIcon />
+                          <EditIcon className="text-green-500 size-6"/>
                         </button>
                         <button
                           onClick={() => handleDelete(message._id)}
                           className="text-red-600 hover:text-red-900"
                           title="Delete"
                         >
-                          <DeleteIcon />
+                          <DeleteIcon className="text-red-500 size-6"/>
                         </button>
                       </td>
                     </>

@@ -73,7 +73,7 @@ export default function AdminBookingViewPending() {
         updateCurrentBookings(pending, 1);
       } catch (error) {
         console.error("Error fetching bookings:", error);
-        alert("Failed to load bookings. Please try again.");
+        // alert("Failed to load bookings. Please try again.");
       } finally {
         setLoading(false);
       }
