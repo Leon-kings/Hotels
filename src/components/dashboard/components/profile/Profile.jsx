@@ -14,9 +14,9 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import UserView from "../user/UserView";
+import { ProfileData } from "./PData";
 
-export const UserPannel = () => {
+export const Profile = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -197,7 +197,7 @@ export const UserPannel = () => {
           >
             <Menu className="size-6" />
           </button>
-          <UserView />
+          <ProfileData />
         </div>
       </main>
     </div>

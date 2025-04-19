@@ -72,7 +72,7 @@ export const BookingPannel = () => {
       title: "Settings",
       icon: <Settings className="size-6" />,
       submenu: [
-        { title: "Profile", link: "/settings/profile" },
+        { title: "Profile", link: "/PF-5638-893" },
         { title: "Security", link: "/settings/security" },
       ],
     },

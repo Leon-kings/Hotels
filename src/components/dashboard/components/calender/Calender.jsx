@@ -1,125 +1,206 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import {
+  People,
+  Settings,
+  PieChart,
+  CalendarToday,
+  ExpandMore,
+  ChevronRight,
+  Menu,
+  Close,
+  Dashboard as DashboardIcon,
+  ShoppingCart,
+  Message,
+} from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
+import AdminBookingView from "../../booking/AdminBookingView";
+import { CalendarData } from "./CalenderData";
 
 export const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [openSubMenu, setOpenSubMenu] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  // Update time every second
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      // Auto-collapse menu on mobile
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Get current month and year
-  const month = currentDate.toLocaleString('default', { month: 'long' });
-  const year = currentDate.getFullYear();
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: <DashboardIcon className="size-6" />,
+      link: "/Dash-32793",
+    },
+    {
+      title: "Users",
+      icon: <People className="size-6" />,
+      link: "/UV-2390-389",
+    },
+    {
+      title: "Bookings",
+      icon: <ShoppingCart className="size-6" />,
+      link: "/AB-7832-342",
+    },
+    {
+      title: "Messages",
+      icon: <Message className="size-6" />,
+      link: "/MS-3562-922",
+    },
+    {
+      title: "Analytics",
+      icon: <PieChart className="size-6" />,
+      submenu: [
+        { title: "Charts", link: "/analytics/charts" },
+        { title: "Reports", link: "/ARG-3832-382" },
+      ],
+    },
+    {
+      title: "Calendar",
+      icon: <CalendarToday className="size-6" />,
+      link: "/C-6784-873",
+    },
+    {
+      title: "Settings",
+      icon: <Settings className="size-6" />,
+      submenu: [
+        { title: "Profile", link: "/settings/profile" },
+        { title: "Security", link: "/settings/security" },
+      ],
+    },
+  ];
 
-  // Get days in month
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
+  const toggleMenu = () => setIsCollapsed(!isCollapsed);
 
-  // Get first day of month (0-6, where 0 is Sunday)
-  const firstDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  ).getDay();
-
-  // Create array of days
-  const days = [];
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(i);
-  }
-
-  // Add empty slots for days before the first day of the month
-  const emptySlots = Array(firstDayOfMonth).fill(null);
-
-  // Navigation functions
-  const prevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
-
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
-
-  // Check if a day is today
-  const isToday = (day) => {
-    return (
-      day === currentTime.getDate() &&
-      currentDate.getMonth() === currentTime.getMonth() &&
-      currentDate.getFullYear() === currentTime.getFullYear()
-    );
+  const toggleSubMenu = (title) => {
+    const menuItem = menuItems.find((item) => item.title === title);
+    if (menuItem?.submenu) {
+      setOpenSubMenu(openSubMenu === title ? null : title);
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
-      <div className="p-6">
-        {/* Calendar Header */}
-        <div className="flex justify-between items-center mb-4">
-          <button 
-            onClick={prevMonth}
-            className="p-2 rounded-full hover:bg-gray-100"
+    <div className="flex flex-col lg:flex-row h-screen">
+      {/* Mobile Overlay */}
+      {!isCollapsed && isMobile && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20"
+          onClick={toggleMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`bg-gray-800 text-white h-screen fixed lg:relative z-30
+        ${
+          isCollapsed
+            ? "w-16 -translate-x-full lg:translate-x-0"
+            : "w-64 lg:w-1/4 translate-x-0"
+        } transition-all duration-300 ease-in-out`}
+      >
+        <div className="flex justify-end p-4 lg:hidden">
+          <Button
+            onClick={toggleMenu}
+            className="text-white hover:bg-gray-700 p-2 rounded-lg"
+            aria-label={isCollapsed ? "Open menu" : "Close menu"}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          </button>
-          <h2 className="text-xl font-bold text-gray-800">
-            {month} {year}
-          </h2>
-          <button 
-            onClick={nextMonth}
-            className="p-2 rounded-full hover:bg-gray-100"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-            </svg>
-          </button>
+            {isCollapsed ? (
+              <Menu className="size-6 text-green-500" />
+            ) : (
+              <Close className="size-6 text-red-500" />
+            )}
+          </Button>
         </div>
 
-        {/* Current Time Display */}
-        <div className="text-center mb-4">
-          <div className="text-2xl font-semibold text-blue-600">
-            {currentTime.toLocaleTimeString()}
-          </div>
-          <div className="text-sm text-gray-500">
-            {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-          </div>
+        <div className="p-4 flex justify-center border-b border-gray-700">
+          {isCollapsed ? "⚡" : "Admin Panel"}
         </div>
 
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-1">
-          {/* Day names */}
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center font-medium text-gray-500 py-1">
-              {day}
+        <nav className="mt-6 overflow-y-auto h-[calc(100vh-120px)]">
+          {menuItems.map((item) => (
+            <div key={item.title}>
+              <div
+                onClick={() => {
+                  if (!item.submenu && item.link) {
+                    // Close menu when clicking non-submenu items on mobile
+                    if (isMobile) setIsCollapsed(true);
+                  }
+                  toggleSubMenu(item.title);
+                }}
+                className={`flex items-center p-3 mx-2 rounded-lg cursor-pointer
+                  ${
+                    openSubMenu === item.title
+                      ? "bg-gray-700"
+                      : "hover:bg-gray-700"
+                  }`}
+              >
+                <Link to={item.link}>
+                  <div className="text-gray-300">{item.icon}</div>
+                </Link>
+
+                {!isCollapsed && (
+                  <>
+                    <Link to={item.link}>
+                      <div className="ml-3 text-sm">{item.title}</div>
+                    </Link>
+                    {item.submenu && (
+                      <span className="ml-auto text-gray-400 transition-transform">
+                        {openSubMenu === item.title ? (
+                          <ExpandMore className="size-6" />
+                        ) : (
+                          <ChevronRight className="size-6" />
+                        )}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Dropdown Content */}
+              {!isCollapsed && item.submenu && openSubMenu === item.title && (
+                <div className="ml-4 pl-6 border-l-2 border-gray-600">
+                  {item.submenu.map((subItem) => (
+                    <Link key={subItem.index} to={subItem.link}>
+                      <Button
+                        onClick={() => isMobile && setIsCollapsed(true)}
+                        className="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-lg"
+                      >
+                        {subItem.title}
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
-
-          {/* Empty slots for days before the first day of the month */}
-          {emptySlots.map((_, index) => (
-            <div key={`empty-${index}`} className="h-10"></div>
-          ))}
-
-          {/* Days of the month */}
-          {days.map((day) => (
-            <div
-              key={day}
-              className={`h-10 flex items-center justify-center rounded-full 
-                ${isToday(day) ? 'bg-blue-500 text-white font-bold' : 'hover:bg-gray-100'}`}
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+        </nav>
       </div>
+
+      {/* Main Content */}
+      <main
+        className={`flex-1 overflow-auto bg-gray-100 transition-all duration-300
+        ${isCollapsed ? "lg:ml-6" : "lg:ml-6"}`}
+      >
+        <div className="p-4 lg:p-6">
+          {/* Mobile menu toggle button */}
+          <button
+            onClick={toggleMenu}
+            className="lg:hidden mb-4 p-2 bg-gray-200 rounded-lg"
+          >
+            <Menu className="size-6" />
+          </button>
+          <CalendarData />
+        </div>
+      </main>
     </div>
   );
 };
-

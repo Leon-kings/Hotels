@@ -15,15 +15,12 @@ import { Dashboard } from "./components/dashboard/index/Dashboard";
 // You'll need to create this
 import { Login } from "./components/dashboard/login/Login";
 import { UserDashboard } from "./components/dashboard/index/UserDashboard";
-import { BookingChart } from "./components/dashboard/components/charts/BookingChart";
-import AdminBookingView from "./components/dashboard/booking/AdminBookingView";
-import { MessagesManager } from "./components/dashboard/message/MessageManager";
-import { UserView } from "./components/dashboard/components/user/UserView";
 import { AdminReportGenerator } from "./components/dashboard/components/report/AdminReportGenerator";
 import { BookingPannel } from "./components/dashboard/components/pannel/BookingPannel";
 import { MessagePannel } from "./components/dashboard/components/pannel/MessagePannel";
 import { UserPannel } from "./components/dashboard/components/pannel/UserPannel";
 import { Calendar } from "./components/dashboard/components/calender/Calender";
+import { Profile } from "./components/dashboard/components/profile/Profile";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -97,6 +94,7 @@ export default function App() {
           <Route element={<UserPannel />} path="/UV-2390-389" />
           <Route element={<AdminReportGenerator />} path="/ARG-3832-382" />
           <Route element={<Calendar />} path="/C-6784-873" />
+          <Route element={<Profile />} path="/PF-5638-893" />
         </Routes>
         {/* Protected Dashboard Route Ended */}
         <Footer />
