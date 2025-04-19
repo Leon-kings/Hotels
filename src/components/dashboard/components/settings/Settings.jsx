@@ -14,10 +14,9 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import AdminBookingView from "../../booking/AdminBookingView";
-import { CalendarData } from "./CalenderData";
+import SettDatas from "./SetData";
 
-export const Calendar = () => {
+export const SettingsPannel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -198,7 +197,7 @@ export const Calendar = () => {
           >
             <Menu className="size-6" />
           </button>
-          <CalendarData />
+        <SettDatas/>
         </div>
       </main>
     </div>

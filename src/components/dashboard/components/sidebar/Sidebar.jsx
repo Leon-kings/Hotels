@@ -62,7 +62,7 @@ export const Layout = () => {
       title: "Analytics",
       icon: <PieChart className="size-6" />,
       submenu: [
-        { title: "Charts", link: "/analytics/charts" },
+        { title: "Charts", link: "/GD-2761-823" },
         { title: "Reports", link: "/ARG-3832-382" },
       ],
     },
@@ -76,7 +76,7 @@ export const Layout = () => {
       icon: <Settings className="size-6" />,
       submenu: [
         { title: "Profile", link: "/PF-5638-893" },
-        { title: "Security", link: "/settings/security" },
+        { title: "Security", link: "/SG-6788-327" },
       ],
     },
   ];

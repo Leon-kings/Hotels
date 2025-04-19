@@ -1,75 +1,205 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
+  People,
+  Settings,
   PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import LineGraph from "./LineGraph";
-import { MessagesSection } from "../messageContainer";
+  CalendarToday,
+  ExpandMore,
+  ChevronRight,
+  Menu,
+  Close,
+  Dashboard as DashboardIcon,
+  ShoppingCart,
+  Message,
+} from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 import { BookingChart } from "./BookingChart";
 
-export const Graphs = () => {
-  // Sample Data for Charts
+export const GraphicalData = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [openSubMenu, setOpenSubMenu] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-  const pieData = [
-    { name: "Users", value: 400 },
-    { name: "Bookings", value: 400 },
-    { name: "Messages", value: 100 },
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      // Auto-collapse menu on mobile
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: <DashboardIcon className="size-6" />,
+      link: "/Dash-32793",
+    },
+    {
+      title: "Users",
+      icon: <People className="size-6" />,
+      link: "/UV-2390-389",
+    },
+    {
+      title: "Bookings",
+      icon: <ShoppingCart className="size-6" />,
+      link: "/AB-7832-342",
+    },
+    {
+      title: "Messages",
+      icon: <Message className="size-6" />,
+      link: "/MS-3562-922",
+    },
+    {
+      title: "Analytics",
+      icon: <PieChart className="size-6" />,
+      submenu: [
+        { title: "Charts", link: "/GD-2761-823" },
+        { title: "Reports", link: "/ARG-3832-382" },
+      ],
+    },
+    {
+      title: "Calendar",
+      icon: <CalendarToday className="size-6" />,
+      link: "/C-6784-873",
+    },
+    {
+      title: "Settings",
+      icon: <Settings className="size-6" />,
+      submenu: [
+        { title: "Profile", link: "/PF-5638-893" },
+        { title: "Security", link: "/SG-6788-327" },
+      ],
+    },
   ];
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
+
+  const toggleMenu = () => setIsCollapsed(!isCollapsed);
+
+  const toggleSubMenu = (title) => {
+    const menuItem = menuItems.find((item) => item.title === title);
+    if (menuItem?.submenu) {
+      setOpenSubMenu(openSubMenu === title ? null : title);
+    }
+  };
 
   return (
-    <div className="w-full flex flex-col  bg-gray-100">
-      {/* Main Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        {/* Line Chart */}
-        <div className="graphic">
-          <LineGraph />
+    <div className="flex flex-col lg:flex-row h-screen">
+      {/* Mobile Overlay */}
+      {!isCollapsed && isMobile && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20"
+          onClick={toggleMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`bg-gray-800 text-white h-screen fixed lg:relative z-30
+        ${
+          isCollapsed
+            ? "w-16 -translate-x-full lg:translate-x-0"
+            : "w-64 lg:w-1/4 translate-x-0"
+        } transition-all duration-300 ease-in-out`}
+      >
+        <div className="flex justify-end p-4 lg:hidden">
+          <Button
+            onClick={toggleMenu}
+            className="text-white hover:bg-gray-700 p-2 rounded-lg"
+            aria-label={isCollapsed ? "Open menu" : "Close menu"}
+          >
+            {isCollapsed ? (
+              <Menu className="size-6 text-green-500" />
+            ) : (
+              <Close className="size-6 text-red-500" />
+            )}
+          </Button>
         </div>
-        <div className="data">
-          <MessagesSection />
+
+        <div className="p-4 flex justify-center border-b border-gray-700">
+          {isCollapsed ? "⚡" : "Admin Panel"}
         </div>
-      </div>
-      {/* Make some analysis of data gathered here on API data */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        {/* Bar Chart */}
-        <BookingChart />
-        {/* Pie Chart */}
-        <div className="bg-white shadow-md rounded-lg p-4">
-          <h4 className="text-lg font-semibold mb-2">Pie Chart</h4>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                cx="50%"
-                cy="50%"
-                outerRadius={60}
+
+        <nav className="mt-6 overflow-y-auto h-[calc(100vh-120px)]">
+          {menuItems.map((item) => (
+            <div key={item.title}>
+              <div
+                onClick={() => {
+                  if (!item.submenu && item.link) {
+                    // Close menu when clicking non-submenu items on mobile
+                    if (isMobile) setIsCollapsed(true);
+                  }
+                  toggleSubMenu(item.title);
+                }}
+                className={`flex items-center p-3 mx-2 rounded-lg cursor-pointer
+                  ${
+                    openSubMenu === item.title
+                      ? "bg-gray-700"
+                      : "hover:bg-gray-700"
+                  }`}
               >
-                {pieData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                    data={entry.name}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+                <Link to={item.link}>
+                  <div className="text-gray-300">{item.icon}</div>
+                </Link>
+
+                {!isCollapsed && (
+                  <>
+                    <Link to={item.link}>
+                      <div className="ml-3 text-sm">{item.title}</div>
+                    </Link>
+                    {item.submenu && (
+                      <span className="ml-auto text-gray-400 transition-transform">
+                        {openSubMenu === item.title ? (
+                          <ExpandMore className="size-6" />
+                        ) : (
+                          <ChevronRight className="size-6" />
+                        )}
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Dropdown Content */}
+              {!isCollapsed && item.submenu && openSubMenu === item.title && (
+                <div className="ml-4 pl-6 border-l-2 border-gray-600">
+                  {item.submenu.map((subItem) => (
+                    <Link key={subItem.index} to={subItem.link}>
+                      <Button
+                        onClick={() => isMobile && setIsCollapsed(true)}
+                        className="block py-2 px-4 text-sm text-gray-300 hover:bg-gray-700 rounded-lg"
+                      >
+                        {subItem.title}
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
       </div>
+
+      {/* Main Content */}
+      <main
+        className={`flex-1 overflow-auto bg-gray-100 transition-all duration-300
+        ${isCollapsed ? "lg:ml-6" : "lg:ml-6"}`}
+      >
+        <div className="p-4 lg:p-6">
+          {/* Mobile menu toggle button */}
+          <button
+            onClick={toggleMenu}
+            className="lg:hidden mb-4 p-2 bg-gray-200 rounded-lg"
+          >
+            <Menu className="size-6" />
+          </button>
+          <BookingChart />
+        </div>
+      </main>
     </div>
   );
 };

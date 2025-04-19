@@ -14,10 +14,9 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import AdminBookingView from "../../booking/AdminBookingView";
-import { CalendarData } from "./CalenderData";
+import UserData from "./UserData";
 
-export const Calendar = () => {
+export const UserViewMe = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -39,12 +38,12 @@ export const Calendar = () => {
     {
       title: "Dashboard",
       icon: <DashboardIcon className="size-6" />,
-      link: "/Dash-32793",
+      link: "/U-23-Dash-32793",
     },
     {
       title: "Users",
       icon: <People className="size-6" />,
-      link: "/UV-2390-389",
+      link: "/U-23-Dash-32793",
     },
     {
       title: "Bookings",
@@ -198,7 +197,7 @@ export const Calendar = () => {
           >
             <Menu className="size-6" />
           </button>
-          <CalendarData />
+          <UserData />
         </div>
       </main>
     </div>

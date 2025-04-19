@@ -200,7 +200,7 @@ export default function AdminBookingViewConfirmed() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container text-black mx-auto p-4">
       <h4 className="text-2xl font-bold mb-4">Confirmed Bookings</h4>
 
       <BookingSearch onSearchResults={handleSearchResults} />
@@ -208,7 +208,7 @@ export default function AdminBookingViewConfirmed() {
       {loading ? (
         <div className="text-center py-8">Loading confirmed bookings...</div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white text-black rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -233,7 +233,7 @@ export default function AdminBookingViewConfirmed() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y text-black divide-gray-200">
                 {currentBookings.map((booking) => (
                   <tr
                     key={booking._id}

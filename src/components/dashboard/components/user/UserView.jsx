@@ -16,7 +16,7 @@ import {
   AdminPanelSettings as AdminIcon,
   AccountCircle as UserIcon,
   Check as CheckIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from "@mui/icons-material";
 
 const UserSearch = ({ onSearchResults }) => {
@@ -73,7 +73,7 @@ export default function UserView() {
     email: "",
     phone: "",
     role: "user",
-    status: "active"
+    status: "active",
   });
   const [errors, setErrors] = useState({});
   const usersPerPage = 10;
@@ -82,8 +82,11 @@ export default function UserView() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("https://hotel-nodejs-oa32.onrender.com/37829/7892");
-        const usersData = response.data?.data || response.data?.data?.users || [];
+        const response = await axios.get(
+          "https://hotel-nodejs-oa32.onrender.com/37829/7892"
+        );
+        const usersData =
+          response.data?.data || response.data?.data?.users || [];
         setAllUsers(usersData);
         setTotalPages(Math.ceil(usersData.length / usersPerPage));
         updateCurrentUsers(usersData, 1);
@@ -110,11 +113,47 @@ export default function UserView() {
   const handleDelete = async (id) => {
     try {
       if (window.confirm("Are you sure you want to delete this user?")) {
-        await axios.delete(`https://hotel-nodejs-oa32.onrender.com/37829/7892/${id}`);
-        setAllUsers(allUsers.filter((user) => user._id !== id));
+        console.log('Attempting to delete user with ID:', id);
+        
+        // Add authentication headers if needed
+        const config = {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        };
+  
+        const response = await axios.delete(
+          `https://hotel-nodejs-oa32.onrender.com/37829/7892/${id}`, // Updated endpoint
+          config
+        );
+  
+        console.log('Delete response:', response.data.data);
+        
+        // Ensure we're comparing the same types
+        setAllUsers(prevUsers => 
+          prevUsers.filter((user) => String(user._id) === String(id))
+        );
+        
+        alert('User deleted successfully');
       }
     } catch (error) {
       console.error("Error deleting user:", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+        alert(`Error: ${error.response.data.message || error.message}`);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Request:', error.request);
+        alert('No response received from server');
+      } else {
+        // Something happened in setting up the request
+        console.error('Error message:', error.message);
+        alert(`Error: ${error.message}`);
+      }
     }
   };
 
@@ -126,7 +165,7 @@ export default function UserView() {
       email: user.email,
       phone: user.phone || "",
       role: user.role,
-      status: user.status || "active"
+      status: user.status || "active",
     });
     setErrors({});
   };
@@ -165,7 +204,8 @@ export default function UserView() {
         formData
       );
 
-      const updatedUser = response.data?.updatedUser || response.data.data || response.data;
+      const updatedUser =
+        response.data?.updatedUser || response.data.data || response.data;
 
       setAllUsers((prevUsers) =>
         prevUsers.map((user) =>
@@ -197,7 +237,7 @@ export default function UserView() {
 
       await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/37829/7892/${userId}`,
-        { status: newStatus }
+        { role: newStatus }
       );
     } catch (error) {
       console.error("Status update failed:", error);
@@ -259,9 +299,6 @@ export default function UserView() {
                   Phone
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -274,7 +311,7 @@ export default function UserView() {
                 <tr key={user._id}>
                   {editingId === user._id ? (
                     <>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <PersonIcon className="h-5 w-5 text-gray-400" />
@@ -290,10 +327,12 @@ export default function UserView() {
                           />
                         </div>
                         {errors.name && (
-                          <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.name}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <EmailIcon className="h-5 w-5 text-gray-400" />
@@ -309,10 +348,12 @@ export default function UserView() {
                           />
                         </div>
                         {errors.email && (
-                          <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.email}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <PhoneIcon className="h-5 w-5 text-gray-400" />
@@ -328,13 +369,15 @@ export default function UserView() {
                           />
                         </div>
                         {errors.phone && (
-                          <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.phone}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            {formData.role === 'admin' ? (
+                            {formData.role === "admin" ? (
                               <AdminIcon className="h-5 w-5 text-gray-400" />
                             ) : (
                               <UserIcon className="h-5 w-5 text-gray-400" />
@@ -343,7 +386,7 @@ export default function UserView() {
                           <select
                             name="role"
                             value={formData.role}
-                            onChange={handleInputChange}
+                            onSubmit={handleStatusChange}
                             className={`border rounded px-2 py-1 w-full pl-10 appearance-none ${
                               errors.role ? "border-red-500" : ""
                             }`}
@@ -353,10 +396,12 @@ export default function UserView() {
                           </select>
                         </div>
                         {errors.role && (
-                          <p className="text-red-500 text-xs mt-1">{errors.role}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.role}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <select
                           name="status"
                           value={formData.status}
@@ -370,41 +415,49 @@ export default function UserView() {
                           <option value="suspended">Suspended</option>
                         </select>
                         {errors.status && (
-                          <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.status}
+                          </p>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
                         <button
                           onClick={() => handleUpdate(user._id)}
                           className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                         >
-                          <CheckIcon className="text-white" />
+                          <CheckIcon className="text-blue-500 size-6" />
                         </button>
                         <button
                           onClick={cancelEditing}
                           className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
                         >
-                          <CloseIcon className="text-white" />
+                          <CloseIcon className="text-red-500" />
                         </button>
                       </td>
                     </>
                   ) : (
                     <>
-                      <td className="px-6 py-4 whitespace-nowrap flex items-center">
-                        <PersonIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        {user.fullname}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap flex items-center">
-                        <EmailIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        {user.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap flex items-center">
-                        <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
-                        {user.phone || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap capitalize">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div className="flex items-center">
-                          {user.role === 'admin' ? (
+                          <PersonIcon className="h-5 w-5 text-gray-400 mr-2" />
+                          {user.fullname}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <EmailIcon className="h-5 w-5 text-gray-400 mr-2" />
+                          {user.email}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
+                          {user.phone || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex items-center">
+                          {user.role === "admin" ? (
                             <>
                               <AdminIcon className="h-5 w-5 text-purple-400 mr-2" />
                               <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
@@ -421,29 +474,31 @@ export default function UserView() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.status === 'active' 
-                            ? 'bg-green-100 text-green-800' 
-                            : user.status === 'inactive' 
-                              ? 'bg-yellow-100 text-yellow-800' 
-                              : 'bg-red-100 text-red-800'
-                        }`}>
-                          {user.role}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            user.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : user.status === "inactive"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {user.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button
                           onClick={() => startEditing(user)}
                           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                         >
-                          <Edit className="text-white" />
+                          <Edit className="text-green-500 size-6" />
                         </button>
                         <button
                           onClick={() => handleDelete(user._id)}
                           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         >
-                          <Delete className="text-white" />
+                          <Delete className="text-red-400 size-6" />
                         </button>
                       </td>
                     </>

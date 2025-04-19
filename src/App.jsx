@@ -14,13 +14,18 @@ import { ContactSection } from "./pages/contact/Contact";
 import { Dashboard } from "./components/dashboard/index/Dashboard";
 // You'll need to create this
 import { Login } from "./components/dashboard/login/Login";
-import { UserDashboard } from "./components/dashboard/index/UserDashboard";
+import UserDashboard from "./components/dashboard/index/UserDashboard";
 import { AdminReportGenerator } from "./components/dashboard/components/report/AdminReportGenerator";
 import { BookingPannel } from "./components/dashboard/components/pannel/BookingPannel";
 import { MessagePannel } from "./components/dashboard/components/pannel/MessagePannel";
 import { UserPannel } from "./components/dashboard/components/pannel/UserPannel";
 import { Calendar } from "./components/dashboard/components/calender/Calender";
 import { Profile } from "./components/dashboard/components/profile/Profile";
+import { SettingsPannel } from "./components/dashboard/components/settings/Settings";
+import { GraphicalData } from "./components/dashboard/components/charts/DataGraphs";
+import UserView from "./components/dashboard/components/user/UserView";
+import { UserViewMe } from "./components/dashboard/userDashComponent/user/UserViewMe";
+import { UserBooking } from "./components/dashboard/userDashComponent/bookings/UserBookingsView";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -95,6 +100,11 @@ export default function App() {
           <Route element={<AdminReportGenerator />} path="/ARG-3832-382" />
           <Route element={<Calendar />} path="/C-6784-873" />
           <Route element={<Profile />} path="/PF-5638-893" />
+          <Route element={<SettingsPannel />} path="/SG-6788-327" />
+          <Route element={<GraphicalData />} path="/GD-2761-823" />
+          {/* userDashboard */}
+          <Route element={<UserViewMe />} path="/UVM-7289-2782" />
+          <Route element={<UserBooking />} path="/UBV-7929-2092" />
         </Routes>
         {/* Protected Dashboard Route Ended */}
         <Footer />

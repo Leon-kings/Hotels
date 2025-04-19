@@ -33,7 +33,6 @@ export const UserPannel = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
   const menuItems = [
     {
       title: "Dashboard",
@@ -59,7 +58,7 @@ export const UserPannel = () => {
       title: "Analytics",
       icon: <PieChart className="size-6" />,
       submenu: [
-        { title: "Charts", link: "/analytics/charts" },
+        { title: "Charts", link: "/GD-2761-823" },
         { title: "Reports", link: "/ARG-3832-382" },
       ],
     },
@@ -73,11 +72,10 @@ export const UserPannel = () => {
       icon: <Settings className="size-6" />,
       submenu: [
         { title: "Profile", link: "/PF-5638-893" },
-        { title: "Security", link: "/settings/security" },
+        { title: "Security", link: "/SG-6788-327" },
       ],
     },
   ];
-
   const toggleMenu = () => setIsCollapsed(!isCollapsed);
 
   const toggleSubMenu = (title) => {
