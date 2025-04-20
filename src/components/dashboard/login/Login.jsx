@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 export const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    name: "",
+    fullname: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    phone: "",
+    // confirmPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,10 +19,10 @@ export const Login = () => {
     setIsLogin(!isLogin);
     setError("");
     setFormData({
-      name: "",
+      fullname: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      // confirmPassword: "",
       phone: "",
     });
   };
@@ -40,12 +42,8 @@ export const Login = () => {
     }
 
     if (!isLogin) {
-      if (!formData.name) {
+      if (!formData.fullname) {
         setError("Name is required");
-        return false;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
         return false;
       }
       if (formData.password.length < 6) {
@@ -57,63 +55,76 @@ export const Login = () => {
     return true;
   };
 
-  // handle Forget password
-
   const handleForgottPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
   };
 
-  // handle submitt changes
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
+  
     if (!validateForm()) {
       setLoading(false);
       return;
     }
-
+  
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       if (isLogin) {
-        // Login logic
-        if (
-          formData.email === "admin@example.com" &&
-          formData.password === "admin123"
-        ) {
-          localStorage.setItem("authToken", "dummy-auth-token");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              name: "Admin User",
-              email: formData.email,
-            })
-          );
-          navigate("/Dash-32793");
+        // Login API call with Axios
+        const response = await axios.post('https://hotel-nodejs-oa32.onrender.com/37829/7892/login', {
+          email: formData.email,
+          password: formData.password
+        });
+  
+        const { token, user } = response.data;
+  
+        // Store authentication data
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("user", JSON.stringify(user));
+  
+        // Redirect based on user status
+        if (user.status === 'admin') {
+          navigate("/Dash-32793"); // Admin dashboard
+        } else if (user.status === 'user') {
+          navigate("/U-23-Dash-32793"); // User dashboard
         } else {
-          throw new Error("Invalid credentials");
+          throw new Error("Unauthorized account status");
         }
+  
       } else {
-        // Registration logic
-        localStorage.setItem("authToken", "dummy-auth-token");
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-          })
-        );
-        navigate("/U-23-Dash-32793");
+        // Registration API call with Axios
+        await axios.post('https://hotel-nodejs-oa32.onrender.com/37829/7892', {
+          fullname: formData.fullname,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password
+        });
+  
+        // After successful registration, switch to login mode
+        setIsLogin(true);
+        setFormData({
+          ...formData,
+          fullname: "",
+          phone: "",
+          // confirmPassword: ""
+        });
+        setError("");
+        alert("Registration successful! Please login with your credentials.");
       }
     } catch (err) {
-      setError(
-        err.message || (isLogin ? "Login failed" : "Registration failed")
-      );
+      if (err.response) {
+        setError(err.response.data.message || "Authentication failed");
+      } else if (err.request) {
+        setError("Network error. Please try again.");
+      } else {
+        setError(err.message || (isLogin ? "Login failed" : "Registration failed"));
+      }
+      
+      if (err.message.includes("credentials") || err.response?.status === 401) {
+        alert("Invalid credentials. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -151,23 +162,23 @@ export const Login = () => {
               {!isLogin && (
                 <>
                   <div>
-                    <label htmlFor="name" className="sr-only">
+                    <label htmlFor="fullname" className="sr-only">
                       Full Name
                     </label>
                     <input
-                      id="name"
-                      name="name"
+                      id="fullname"
+                      name="fullname"
                       type="text"
                       autoComplete="name"
                       required={!isLogin}
                       className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                       placeholder="Full Name"
-                      value={formData.name}
+                      value={formData.fullname}
                       onChange={handleChange}
                     />
                   </div>
                   <div>
-                    <label htmlFor="password" className="sr-only">
+                    <label htmlFor="phone" className="sr-only">
                       Phone
                     </label>
                     <input

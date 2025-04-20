@@ -26,6 +26,7 @@ import { GraphicalData } from "./components/dashboard/components/charts/DataGrap
 import UserView from "./components/dashboard/components/user/UserView";
 import { UserViewMe } from "./components/dashboard/userDashComponent/user/UserViewMe";
 import { UserBooking } from "./components/dashboard/userDashComponent/bookings/UserBookingsView";
+import { UserMessageView } from "./components/dashboard/userDashComponent/messages/UserMessageView";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -105,6 +106,8 @@ export default function App() {
           {/* userDashboard */}
           <Route element={<UserViewMe />} path="/UVM-7289-2782" />
           <Route element={<UserBooking />} path="/UBV-7929-2092" />
+          <Route element={<UserMessageView />} path="/UMV-7988-0023" />
+          {/* <Route element={<UserBooking />} path="/UBV-7929-2092" /> */}
         </Routes>
         {/* Protected Dashboard Route Ended */}
         <Footer />

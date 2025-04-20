@@ -38,29 +38,29 @@ export const UserBooking = () => {
     {
       title: "Dashboard",
       icon: <DashboardIcon className="size-6" />,
-      link: "/Dash-32793",
+      link: "/U-23-Dash-32793",
     },
     {
       title: "Users",
       icon: <People className="size-6" />,
-      link: "/UV-2390-389",
+      link: "/UVM-7289-2782",
     },
     {
       title: "Bookings",
       icon: <ShoppingCart className="size-6" />,
-      link: "/AB-7832-342",
+      link: "/UBV-7929-2092",
     },
     {
       title: "Messages",
       icon: <Message className="size-6" />,
-      link: "/MS-3562-922",
+      link: "/UMV-7988-0023",
     },
     {
       title: "Analytics",
       icon: <PieChart className="size-6" />,
       submenu: [
         { title: "Charts", link: "/GD-2761-823" },
-        { title: "Reports", link: "/ARG-3832-382" },
+        { title: "Reports", link: "" },
       ],
     },
     {
@@ -73,7 +73,7 @@ export const UserBooking = () => {
       icon: <Settings className="size-6" />,
       submenu: [
         { title: "Profile", link: "/PF-5638-893" },
-        { title: "Security", link: "/SG-6788-327" },
+        { title: "Security", link: "" },
       ],
     },
   ];

@@ -56,14 +56,14 @@ export const ULayout = () => {
     {
       title: "Messages",
       icon: <Message className="size-6" />,
-      link: "/MS-3562-922",
+      link: "/UMV-7988-0023",
     },
     {
       title: "Analytics",
       icon: <PieChart className="size-6" />,
       submenu: [
         { title: "Charts", link: "/GD-2761-823" },
-        { title: "Reports", link: "/ARG-3832-382" },
+        { title: "Reports", link: "" },
       ],
     },
     {
@@ -76,7 +76,7 @@ export const ULayout = () => {
       icon: <Settings className="size-6" />,
       submenu: [
         { title: "Profile", link: "/PF-5638-893" },
-        { title: "Security", link: "/SG-6788-327" },
+        { title: "Security", link: "" },
       ],
     },
   ];
