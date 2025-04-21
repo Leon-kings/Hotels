@@ -114,7 +114,7 @@ export const Hero = () => {
                       sx={{ display: "flex", gap: 2, justifyContent: "center" }}
                     >
                       {item.buttons.map((button, btnIndex) => (
-                        <Link key={btnIndex} to={button.text}>
+                        <Link key={btnIndex} to={button.href}>
                           <Button
                             variant={button.variant}
                             color={button.color}

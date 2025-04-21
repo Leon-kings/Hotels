@@ -35,11 +35,11 @@ export const Navbar = () => {
   ];
 
   const socialLinks = [
-    { icon: <FaFacebook />, href: "/" },
-    { icon: <FaTwitter />, href: "/" },
-    { icon: <FaLinkedin />, href: "/" },
-    { icon: <FaInstagram />, href: "/" },
-    { icon: <FaYoutube />, href: "/" },
+    { icon: <FaFacebook className="text-blue-500"/>, href: "https://facebook.com/" },
+    { icon: <FaTwitter className="text-blue-300"/>, href: "https://twitter.com/" },
+    { icon: <FaLinkedin className="text-gray-500"/>, href: "https://linkedIn.com/" },
+    { icon: <FaInstagram  className="text-red-500"/>, href: "https://Instagram.com/" },
+    { icon: <FaYoutube className="text-red-400"/>, href: "https://youtube.com/" },
   ];
 
   return (
@@ -50,7 +50,7 @@ export const Navbar = () => {
           <div className="flex space-x-6">
             <div className="flex items-center">
               <FaEnvelope className="text-blue-600 mr-2" />
-              <span className="text-sm">info@hotel.com</span>
+              <span className="text-sm">info@example.com</span>
             </div>
             <div className="flex items-center">
               <FaPhone className="text-blue-600 mr-2" />

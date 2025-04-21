@@ -124,7 +124,7 @@ export const ULayout = () => {
         </div>
 
         <div className="p-4 flex justify-center border-b border-gray-700">
-          {isCollapsed ? "⚡" : "Admin Panel"}
+          {isCollapsed ? "⚡" : "User Panel"}
         </div>
 
         <nav className="mt-6 overflow-y-auto h-[calc(100vh-120px)]">

@@ -13,7 +13,8 @@ import Home from "./pages/home/Home";
 import { ContactSection } from "./pages/contact/Contact";
 import { Dashboard } from "./components/dashboard/index/Dashboard";
 // You'll need to create this
-import { Login } from "./components/dashboard/login/Login";
+import { Login } from "./pages/login/Login";
+// Dashboard routes
 import UserDashboard from "./components/dashboard/index/UserDashboard";
 import { AdminReportGenerator } from "./components/dashboard/components/report/AdminReportGenerator";
 import { BookingPannel } from "./components/dashboard/components/pannel/BookingPannel";
@@ -23,7 +24,6 @@ import { Calendar } from "./components/dashboard/components/calender/Calender";
 import { Profile } from "./components/dashboard/components/profile/Profile";
 import { SettingsPannel } from "./components/dashboard/components/settings/Settings";
 import { GraphicalData } from "./components/dashboard/components/charts/DataGraphs";
-import UserView from "./components/dashboard/components/user/UserView";
 import { UserViewMe } from "./components/dashboard/userDashComponent/user/UserViewMe";
 import { UserBooking } from "./components/dashboard/userDashComponent/bookings/UserBookingsView";
 import { UserMessageView } from "./components/dashboard/userDashComponent/messages/UserMessageView";

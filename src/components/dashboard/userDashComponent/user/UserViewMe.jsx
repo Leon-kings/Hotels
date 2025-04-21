@@ -121,7 +121,7 @@ export const UserViewMe = () => {
         </div>
 
         <div className="p-4 flex justify-center border-b border-gray-700">
-          {isCollapsed ? "⚡" : "Admin Panel"}
+          {isCollapsed ? "⚡" : "User Panel"}
         </div>
 
         <nav className="mt-6 overflow-y-auto h-[calc(100vh-120px)]">
@@ -142,8 +142,8 @@ export const UserViewMe = () => {
                       : "hover:bg-gray-700"
                   }`}
               >
-                <Link to={item.link}>
-                  <div className="text-gray-300">{item.icon}</div>
+                <Link to={item.link} className="hover:bg-gray-700">
+                  <div className="text-gray-300 font-bold">{item.icon}</div>
                 </Link>
 
                 {!isCollapsed && (

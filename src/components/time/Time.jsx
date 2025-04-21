@@ -40,7 +40,7 @@ export const Time = () => {
         animate={{ scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
       >
-        <p className="text-4xl font-bold mb-4">
+        <p className="text-xl font-bold mb-4">
           Current Time in Kigali, Rwanda
         </p>
         <motion.div

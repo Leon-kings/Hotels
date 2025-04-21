@@ -1,8 +1,8 @@
 import cursol from "../images/img/DUF_4113-v-ok-1-1170x780.jpg";
 import cursol1 from "../images/img/Blog-6-scaled.webp";
 import cursol2 from "../images/img/RESIDENT-EDINBURGH-JUNIOR-SUITE-CASTLE-VIEW-PROMINENT-1400x928.jpg";
-import cursol3 from '../images/img/hero-bg.jpg'
-import cursol4 from '../images/img/cta-bg.jpg'
+import cursol3 from "../images/img/hero-bg.jpg";
+import cursol4 from "../images/img/cta-bg.jpg";
 // cursol-images
 import service from "../images/img/club_one-bedroom_executive-suite.jpg";
 // services-images
@@ -24,53 +24,53 @@ import service5 from "../images/img/942db23a-16c1-441f-a948-baf37c1f3f8f_1078b03
 import service6 from "../images/img/Screenshot-2024-08-02-at-12.32.24.png";
 // room
 import room1 from "../images/img/room.jpg";
-import froom from '../images/img/Open-concept-living-room-TWP0380-CV1hghhEaBBAkX_uv8K9cw-3313dfd39e2b42f5b37f43b8dfa14e08.jpg'
+import froom from "../images/img/Open-concept-living-room-TWP0380-CV1hghhEaBBAkX_uv8K9cw-3313dfd39e2b42f5b37f43b8dfa14e08.jpg";
 
 export const carouselItems = [
   {
     imgSrc: cursol,
     title: "Discover A Brand Luxurious Hotel",
-    subtitle: "Luxury Living",
+    subtitle: "Luxury Living Rooms Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" },
+      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
+      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
     ],
   },
   {
     imgSrc: cursol1,
     title: "Discover A Brand Luxurious Hotel",
-    subtitle: "Luxury Living",
+    subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" },
+      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
+      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
     ],
   },
   {
     imgSrc: cursol2,
     title: "Discover A Brand Luxurious Hotel",
-    subtitle: "Luxury Living",
+    subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" },
+      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
+      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
     ],
   },
-  // 
+  //
   {
     imgSrc: cursol3,
     title: "Discover A Brand Luxurious Hotel",
-    subtitle: "Luxury Living",
+    subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" },
+      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34" },
+      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
     ],
   },
   {
     imgSrc: cursol4,
     title: "Discover A Brand Luxurious Hotel",
-    subtitle: "Luxury Living",
+    subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" },
+      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34"},
+      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
     ],
   },
 ];
@@ -120,7 +120,8 @@ export const additionalRooms = [
     price: 120,
     beds: 2,
     baths: 1,
-    description: "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
+    description:
+      "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
     image: service,
   },
   {
@@ -129,7 +130,8 @@ export const additionalRooms = [
     price: 250,
     beds: 2,
     baths: 1,
-    description: " a Presidential Suite is the most luxurious and expansive suite, often featuring multiple rooms, private amenities, and designed to accommodate high-profile guests. ",
+    description:
+      " a Presidential Suite is the most luxurious and expansive suite, often featuring multiple rooms, private amenities, and designed to accommodate high-profile guests. ",
     image: cursol,
   },
   {
@@ -138,7 +140,8 @@ export const additionalRooms = [
     price: 180,
     beds: 2,
     baths: 1,
-    description: "A family room is an informal, all-purpose room designed as a recreation center and informal gathering place for family members, often used for activities like watching TV, playing games, or relaxing. ",
+    description:
+      "A family room is an informal, all-purpose room designed as a recreation center and informal gathering place for family members, often used for activities like watching TV, playing games, or relaxing. ",
     image: froom,
   },
 ];
