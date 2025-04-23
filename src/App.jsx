@@ -27,6 +27,8 @@ import { GraphicalData } from "./components/dashboard/components/charts/DataGrap
 import { UserViewMe } from "./components/dashboard/userDashComponent/user/UserViewMe";
 import { UserBooking } from "./components/dashboard/userDashComponent/bookings/UserBookingsView";
 import { UserMessageView } from "./components/dashboard/userDashComponent/messages/UserMessageView";
+import { NotFound } from "./pages/not found/NotFound";
+import { Layout } from "./pages/layout/Layout";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -65,7 +67,7 @@ export default function App() {
     <>
       <BrowserRouter>
         <Navbar />
-        <Routes>
+        <Routes element={<Layout />}>
           {/* Public routes Route */}
           <Route element={<Home />} path="/" />
           <Route element={<About />} path="/A-7483-783/34" />
@@ -76,6 +78,7 @@ export default function App() {
           <Route element={<Testimony />} path="/T-8732-452/34" />
           <Route element={<ContactSection />} path="/C-3872-2344/34" />
           <Route element={<Login />} path="/L-6382-8279/34" />
+          <Route element={<NotFound />} path="*" />
           {/* end of public Route */}
           {/* Protected Dashboard Route */}
           <Route
