@@ -9,7 +9,6 @@ export const Login = () => {
     email: "",
     password: "",
     phone: "",
-    // confirmPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,6 @@ export const Login = () => {
       fullname: "",
       email: "",
       password: "",
-      // confirmPassword: "",
       phone: "",
     });
   };
@@ -139,6 +137,7 @@ export const Login = () => {
           ...formData,
           fullname: "",
           phone: "",
+          email:""
           // confirmPassword: ""
         });
         setError("");

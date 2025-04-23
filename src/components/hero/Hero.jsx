@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
+
 import React from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Button, Typography, Box } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { carouselItems } from "../../assets/data/data";
 import { Link } from "react-router-dom";
 
@@ -12,58 +11,13 @@ export const Hero = () => {
     <>
       <div className="w-full mt-0 mb-1 rounded-2xl">
         <Box sx={{ width: "100%", mb: 5, position: "relative" }}>
-          <Carousel
-            infiniteLoop
-            autoPlay
-            showThumbs={false}
-            showStatus={false}
-            renderArrowPrev={(onClickHandler, hasPrev, label) =>
-              hasPrev && (
-                <Button
-                  onClick={onClickHandler}
-                  sx={{
-                    position: "absolute",
-                    left: 0,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    zIndex: 2,
-                    minWidth: "auto",
-                    color: "white",
-                    bgcolor: "rgba(0,0,0,0.3)",
-                    "&:hover": { bgcolor: "rgba(0,0,0,0.5)" },
-                  }}
-                >
-                  <ArrowBack />
-                </Button>
-              )
-            }
-            renderArrowNext={(onClickHandler, hasNext, label) =>
-              hasNext && (
-                <Button
-                  onClick={onClickHandler}
-                  sx={{
-                    position: "absolute",
-                    right: 0,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    zIndex: 2,
-                    minWidth: "auto",
-                    color: "white",
-                    bgcolor: "rgba(0,0,0,0.3)",
-                    "&:hover": { bgcolor: "rgba(0,0,0,0.5)" },
-                  }}
-                >
-                  <ArrowForward />
-                </Button>
-              )
-            }
-          >
+          <Carousel infiniteLoop autoPlay>
             {carouselItems.map((item, index) => (
               <Box key={index} sx={{ position: "relative", height: "80vh" }}>
                 <Box
                   component="img"
                   src={item.imgSrc}
-                  alt={`Slide ${index + 1}`}
+                  alt=''
                   sx={{
                     width: "100%",
                     height: "100%",

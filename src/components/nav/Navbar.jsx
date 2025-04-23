@@ -11,6 +11,7 @@ import {
   FaPhone,
   FaArrowRight,
   FaBars,
+  FaWhatsapp,
 } from "react-icons/fa";
 import { Button } from "@mui/material";
 import logo from "../../assets/images/logo/hotel-icon-black-logo-symbol-your-web-site-design-app-vector-illustration-isolated-white-background-240118715.webp";
@@ -56,18 +57,22 @@ export const Navbar = () => {
               <FaPhone className="text-blue-600 mr-2" />
               <span className="text-sm">+250 (78) 794-4577</span>
             </div>
+            <div className="flex items-center">
+              <FaWhatsapp className="text-blue-600 mr-2" />
+              <span className="text-sm">+250 (72) 755-6145</span>
+            </div>
           </div>
           <div className="flex space-x-4">
             {socialLinks.map((link, index) => (
               <Link key={index} to={link.href}>
-                <motion.button
+                <motion.p
                   className="text-gray-700 hover:text-blue-600 text-lg"
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   {" "}
-                  <Button>{link.icon}</Button>
-                </motion.button>
+                  {link.icon}
+                </motion.p>
               </Link>
             ))}
           </div>
@@ -80,7 +85,6 @@ export const Navbar = () => {
           {/* Logo - Desktop */}
           <div className="hidden p-4 lg:flex items-center justify-center w-1/4 h-24">
             <motion.div
-              href="/"
               className="flex items-center"
               whileHover={{ scale: 1.05 }}
             >
@@ -88,7 +92,7 @@ export const Navbar = () => {
                 <img
                   src={logo}
                   alt=""
-                  className="w-24 rounded-xl object-cover"
+                  className="w-20 rounded-xl object-cover"
                 />
               </Link>
             </motion.div>
@@ -103,7 +107,7 @@ export const Navbar = () => {
                     <img
                       src={logo}
                       alt=""
-                      className="w-24 rounded-xl object-cover"
+                      className="w-16 rounded-xl object-cover"
                     />
                   </Link>
                 </motion.p>
@@ -191,17 +195,17 @@ export const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-gray-800 overflow-hidden"
           >
-            <div className="w-full flex space-x-4">
+            <div className="w-full flex sm:text-center justify-items-center px-4 space-x-4">
               {socialLinks.map((link, index) => (
                 <Link key={index} to={link.href}>
-                  <motion.button
+                  <motion.p
                     className="text-gray-700 hover:text-blue-600 text-lg"
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
                   >
                     {" "}
-                    <Button href="/">{link.icon}</Button>
-                  </motion.button>
+                   {link.icon}
+                  </motion.p>
                 </Link>
               ))}
             </div>
