@@ -131,9 +131,9 @@ export const ProfileData = ({ userData }) => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
-        <h4 className="text-2xl font-bold text-gray-800">
+        <p className="text-xl font-bold text-gray-800">
           Profile Information
-        </h4>
+        </p>
         {!isEditing && (
           <button
             onClick={() => setIsEditing(true)}

@@ -7,7 +7,7 @@ export const NotFound = () => {
 
   return (
     <>
-    <div className="flex-grow flex items-center justify-center text-black bg-gray-50">
+    <div className="flex-grow flex items-center justify-center bg-white text-black">
       <div className="text-center p-8 max-w-md">
         <h1 className="text-9xl font-bold text-gray-200 mb-4">404</h1>
         <h2 className="text-2xl font-medium text-gray-800 mb-2">

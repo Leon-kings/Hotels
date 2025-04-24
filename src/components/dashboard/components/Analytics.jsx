@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -7,7 +9,6 @@ import {
   ShoppingCart,
   Refresh,
 } from "@mui/icons-material";
-
 export const Analytics = () => {
   const [counts, setCounts] = useState({
     users: { count: 0, loading: true, error: null },
@@ -15,7 +16,7 @@ export const Analytics = () => {
     revenue: { count: 0, loading: true, error: null },
     orders: { count: 0, loading: true, error: null },
   });
-
+const [error,setError] = useState();
   const fetchCounts = async () => {
     // Set all to loading state
     setCounts({
@@ -69,8 +70,10 @@ export const Analytics = () => {
       });
 
       setCounts(newCounts);
+      setError(' Fetching data  received!!');
     } catch (error) {
       alert("Failed to fetch counts:", error);
+      setError('Error Occur in fetching data !!');
     }
   };
 
