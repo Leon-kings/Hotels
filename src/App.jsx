@@ -66,7 +66,12 @@ export default function App() {
     <>
       <BrowserRouter>
         <Routes>
-          {/* Public routes Route */}
+          {/* Public routes Route */}{" "}
+          <Route
+            path="*"
+            element={<NotFound />}
+            errorElement={<ErrorBoundary />}
+          />
           <Route element={<Layout />}>
             <Route element={<Home />} path="/" />
             <Route element={<About />} path="/A-7483-783/34" />
@@ -77,11 +82,7 @@ export default function App() {
             <Route element={<Testimony />} path="/T-8732-452/34" />
             <Route element={<ContactSection />} path="/C-3872-2344/34" />
             <Route element={<Login />} path="/L-6382-8279/34" />
-            <Route
-              path="*"
-              element={<NotFound />}
-              errorElement={<ErrorBoundary />}
-            />
+
             {/* end of public Route */}
             {/* Protected Dashboard Route */}
             <Route
