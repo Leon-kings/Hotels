@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+ 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -86,7 +86,7 @@ export default function UserView() {
           "https://hotel-nodejs-oa32.onrender.com/37829/7892"
         );
         const usersData =
-          response.data?.data || response.data?.data?.users || [];
+          response.data?.users || response.data?.data?.users || [];
         setAllUsers(usersData);
         setTotalPages(Math.ceil(usersData.length / usersPerPage));
         updateCurrentUsers(usersData, 1);

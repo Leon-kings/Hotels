@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState, createContext, useContext } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Booking } from "./components/booking/Book";
 import { About } from "./pages/about/About";
 import { RoomsServices } from "./pages/services/RoomServices";
@@ -10,7 +11,6 @@ import Service from "./pages/service/Service";
 import Home from "./pages/home/Home";
 import { ContactSection } from "./pages/contact/Contact";
 import { Dashboard } from "./components/dashboard/index/Dashboard";
-// You'll need to create this
 import { Login } from "./pages/login/Login";
 // Dashboard routes
 import UserDashboard from "./components/dashboard/index/UserDashboard";
@@ -29,20 +29,49 @@ import NotFound from "./pages/not found/NotFound";
 import Layout from "./pages/layout/Layout";
 import ErrorBoundary from "./pages/errorElement/ErrorElement";
 
-// Protected Route Component
+// Create Auth Context
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [userEmail, setUserEmail] = useState(null);
+
+  const login = (email, token) => {
+    setUserEmail(email);
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("userEmail", email);
+  };
+
+  const logout = () => {
+    setUserEmail(null);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
+  };
+
+  return (
+    <AuthContext.Provider value={{ userEmail, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+// ProtectedRoute component remains the same but uses userEmail
 const ProtectedRoute = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { userEmail } = useAuth();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check authentication status (e.g., from localStorage, session, or context)
-    const checkAuth = () => {
-      const token = localStorage.getItem("authToken"); // Or your auth token
-      setIsAuthenticated(!!token);
+    const token = localStorage.getItem("authToken");
+    const email = localStorage.getItem("userEmail");
+    if (token && email) {
       setLoading(false);
-    };
-
-    checkAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   if (loading) {
@@ -50,11 +79,10 @@ const ProtectedRoute = ({ children }) => {
       <div className="flex justify-center items-center h-40">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
-    ); // Or a loading spinner
+    );
   }
 
-  if (!isAuthenticated) {
-    // Redirect to login if not authenticated
+  if (!userEmail && !localStorage.getItem("authToken")) {
     return <Navigate to="/L-6382-8279/34" replace />;
   }
 
@@ -63,10 +91,10 @@ const ProtectedRoute = ({ children }) => {
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public routes Route */}{" "}
+          {/* Public routes Route */}
           <Route
             path="*"
             element={<NotFound />}
@@ -114,11 +142,9 @@ export default function App() {
             <Route element={<UserViewMe />} path="/UVM-7289-2782" />
             <Route element={<UserBooking />} path="/UBV-7929-2092" />
             <Route element={<UserMessageView />} path="/UMV-7988-0023" />
-            {/* <Route element={<UserBooking />} path="/UBV-7929-2092" /> */}
           </Route>
         </Routes>
-        {/* Protected Dashboard Route Ended */}
       </BrowserRouter>
-    </>
+    </AuthProvider>
   );
 }
