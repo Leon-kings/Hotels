@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 export const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +17,72 @@ export const Login = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
   const navigate = useNavigate();
+
+  // Initialize axios headers and check auth status on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      checkAuthStatus();
+    }
+  }, []);
+
+  const checkAuthStatus = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    try {
+      const response = await axios.get(
+        "https://hotel-nodejs-oa32.onrender.com/37829/7892/verify-token",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      // If token is valid and refreshed, update it
+      if (response.data.token) {
+        localStorage.setItem("authToken", response.data.token);
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${response.data.token}`;
+      }
+
+      // Redirect based on user status
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?.status === "admin") {
+        navigate("/Dash-32793");
+      } else if (user?.status === "user") {
+        navigate("/U-23-Dash-32793");
+      }
+    } catch (error) {
+      // If token verification fails, clear auth data
+      console.log(error);
+      handleLogout();
+    }
+  };
+
+  const handleAuthSuccess = (token, user) => {
+    // Store authentication data
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Set axios default headers
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    // Redirect based on user status
+    if (user.status === "admin") {
+      navigate("/Dash-32793");
+    } else if (user.status === "user") {
+      navigate("/U-23-Dash-32793");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    delete axios.defaults.headers.common["Authorization"];
+    navigate("/L-6382-8279/34");
+  };
 
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
@@ -69,12 +136,17 @@ export const Login = () => {
     }
 
     try {
-      // Send password reset request to your backend
-      const response = await axios.post('https://hotel-nodejs-oa32.onrender.com/37829/7892/forgot-password', {
-        email: resetEmail
-      });
+      const response = await axios.post(
+        "https://hotel-nodejs-oa32.onrender.com/37829/7892/forgot-password",
+        {
+          email: resetEmail,
+        }
+      );
 
-      setResetMessage(response.data.message || "Password reset link has been sent to your email");
+      setResetMessage(
+        response.data.message ||
+          "Password reset link has been sent to your email"
+      );
       setError("");
     } catch (err) {
       if (err.response) {
@@ -93,55 +165,48 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-  
+
     if (!validateForm()) {
       setLoading(false);
       return;
     }
-  
+
     try {
       if (isLogin) {
-        // Login API call with Axios
-        const response = await axios.post('https://hotel-nodejs-oa32.onrender.com/37829/7892/login', {
-          email: formData.email,
-          password: formData.password
-        });
-  
-        const { token, user } = response.data;
-  
-        // Store authentication data
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("user", JSON.stringify(user));
-  
-        // Redirect based on user status
-        if (user.status === 'admin') {
-          navigate("/Dash-32793"); // Admin dashboard
-        } else if (user.status === 'user') {
-          navigate("/U-23-Dash-32793"); // User dashboard
-        } else {
-          throw new Error("Unauthorized account status");
-        }
-  
+        const response = await axios.post(
+          "https://hotel-nodejs-oa32.onrender.com/37829/7892/login",
+          {
+            email: formData.email,
+            password: formData.password,
+          }
+        );
+
+        handleAuthSuccess(response.data.token, response.data.user);
       } else {
-        // Registration API call with Axios
-        await axios.post('https://hotel-nodejs-oa32.onrender.com/37829/7892', {
-          fullname: formData.fullname,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password
-        });
-  
-        // After successful registration, switch to login mode
-        setIsLogin(true);
-        setFormData({
-          ...formData,
-          fullname: "",
-          phone: "",
-          email:""
-          // confirmPassword: ""
-        });
-        setError("");
-        alert("Registration successful! Please login with your credentials.");
+        const response = await axios.post(
+          "https://hotel-nodejs-oa32.onrender.com/37829/7892",
+          {
+            fullname: formData.fullname,
+            email: formData.email,
+            phone: formData.phone,
+            password: formData.password,
+          }
+        );
+
+        // For registration, we might get a token directly or need to login after
+        if (response.data.token) {
+          handleAuthSuccess(response.data.token, response.data.user);
+        } else {
+          setIsLogin(true);
+          setFormData({
+            ...formData,
+            fullname: "",
+            phone: "",
+            email: "",
+          });
+          setError("");
+          alert("Registration successful! Please login with your credentials.");
+        }
       }
     } catch (err) {
       if (err.response) {
@@ -149,9 +214,11 @@ export const Login = () => {
       } else if (err.request) {
         setError("Network error. Please try again.");
       } else {
-        setError(err.message || (isLogin ? "Login failed" : "Registration failed"));
+        setError(
+          err.message || (isLogin ? "Login failed" : "Registration failed")
+        );
       }
-      
+
       if (err.message.includes("credentials") || err.response?.status === 401) {
         alert("Invalid credentials. Please try again.");
       }
@@ -166,7 +233,11 @@ export const Login = () => {
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <h4 className="mt-6 text-3xl font-extrabold text-gray-900">
-              {showForgotPassword ? "Reset Password" : isLogin ? "Sign in to your account" : "Create a new account"}
+              {showForgotPassword
+                ? "Reset Password"
+                : isLogin
+                ? "Sign in to your account"
+                : "Create a new account"}
             </h4>
             {!showForgotPassword && (
               <p className="mt-2 text-sm text-gray-600">

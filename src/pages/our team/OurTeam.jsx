@@ -49,10 +49,10 @@ export const OurTeam = () => {
                   <img
                     className="w-full h-full object-cover"
                     src={member.image}
-                    alt={member.name}
+                    alt=''
                   />
                 </Box>
-                <Typography variant="h5" className="mb-1">
+                <Typography variant="h5" className="mb-1 text-black">
                   {member.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">

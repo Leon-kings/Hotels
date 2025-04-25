@@ -36,17 +36,32 @@ export const Navbar = () => {
   ];
 
   const socialLinks = [
-    { icon: <FaFacebook className="text-blue-500"/>, href: "https://facebook.com/" },
-    { icon: <FaTwitter className="text-blue-300"/>, href: "https://twitter.com/" },
-    { icon: <FaLinkedin className="text-gray-500"/>, href: "https://linkedIn.com/" },
-    { icon: <FaInstagram  className="text-red-500"/>, href: "https://Instagram.com/" },
-    { icon: <FaYoutube className="text-red-400"/>, href: "https://youtube.com/" },
+    {
+      icon: <FaFacebook className="text-blue-500" />,
+      href: "https://facebook.com/",
+    },
+    {
+      icon: <FaTwitter className="text-blue-300" />,
+      href: "https://twitter.com/",
+    },
+    {
+      icon: <FaLinkedin className="text-gray-500" />,
+      href: "https://linkedIn.com/",
+    },
+    {
+      icon: <FaInstagram className="text-red-500" />,
+      href: "https://Instagram.com/",
+    },
+    {
+      icon: <FaYoutube className="text-red-400" />,
+      href: "https://youtube.com/",
+    },
   ];
 
   return (
     <header className="w-full dark:text-white text-white">
       {/* Top Bar - Desktop Only */}
-      <div className="hidden lg:flex bg-white text-gray-900">
+      <div className="hidden lg:flex bg-black text-white">
         <div className="container mx-auto flex justify-between items-center py-2 px-5">
           <div className="flex space-x-6">
             <div className="flex items-center">
@@ -195,7 +210,8 @@ export const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-gray-800 overflow-hidden"
           >
-            <div className="w-full flex sm:text-center justify-items-center px-4 space-x-4">
+            <div className="w-full grid grid-cols-5 mt-3 p-4
+             mb-3 sm:text-center justify-items-center bg-black text-white px-4 space-x-4">
               {socialLinks.map((link, index) => (
                 <Link key={index} to={link.href}>
                   <motion.p
@@ -204,7 +220,7 @@ export const Navbar = () => {
                     whileTap={{ scale: 0.9 }}
                   >
                     {" "}
-                   {link.icon}
+                    {link.icon}
                   </motion.p>
                 </Link>
               ))}

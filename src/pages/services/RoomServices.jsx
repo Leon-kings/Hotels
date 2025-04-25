@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import { additionalRooms, initialRooms } from "../../assets/data/data";
 import {
   AreaChart,
@@ -12,6 +13,7 @@ import {
   ViewArray,
   ViewCarousel,
 } from "@mui/icons-material";
+import axios from "axios";
 // import { Button } from "@mui/material";
 
 const RoomCard = ({ room, delay, onViewDetail, onAddToCart }) => {
@@ -496,6 +498,8 @@ const CartModal = ({
     </motion.div>
   );
 };
+// ***********************************************************************************************************************************************************
+// payment
 
 const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
   const [paymentMethod, setPaymentMethod] = useState("credit");
@@ -504,26 +508,233 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
     name: "",
     expiry: "",
     cvv: "",
+    email: "",
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoadingEmail, setIsLoadingEmail] = useState(true);
+
+  useEffect(() => {
+    console.log('[PaymentModal] Initializing with cart items:', cartItems);
+    const fetchUserEmailFromToken = () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        console.log('[PaymentModal] Token found:', token ? 'Yes' : 'No');
+        
+        if (token) {
+          const decoded = jwtDecode(token);
+          console.log('[PaymentModal] Decoded token:', decoded);
+          
+          const userEmail = decoded.email || decoded.user?.email || decoded.userEmail || decoded.sub;
+          console.log('[PaymentModal] Extracted email:', userEmail || 'Not found');
+
+          if (userEmail) {
+            setCardDetails(prev => ({
+              ...prev,
+              email: userEmail,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('[PaymentModal] Error decoding token:', error);
+        setError("Failed to load user information");
+      } finally {
+        setIsLoadingEmail(false);
+      }
+    };
+
+    fetchUserEmailFromToken();
+  }, []);
+
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = matches?.[0] || "";
+    const parts = [];
+
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+
+    return parts.length ? parts.join(" ") : value;
+  };
+
+  const formatExpiry = (value) => {
+    const v = value.replace(/[^0-9]/g, "");
+    if (v.length >= 3) {
+      return `${v.slice(0, 2)}/${v.slice(2, 4)}`;
+    }
+    return value;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCardDetails((prev) => ({
+    setCardDetails(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleCardNumberChange = (e) => {
+    const formatted = formatCardNumber(e.target.value);
+    setCardDetails(prev => ({
+      ...prev,
+      number: formatted,
+    }));
+  };
+
+  const handleExpiryChange = (e) => {
+    const formatted = formatExpiry(e.target.value);
+    setCardDetails(prev => ({
+      ...prev,
+      expiry: formatted,
+    }));
+  };
+
+  const validateForm = () => {
+    if (!cardDetails.email) {
+      setError("Email is required");
+      return false;
+    }
+
+    if (paymentMethod === "credit") {
+      if (!cardDetails.number || cardDetails.number.replace(/\s/g, "").length < 15) {
+        setError("Please enter a valid card number");
+        return false;
+      }
+      if (!cardDetails.name) {
+        setError("Cardholder name is required");
+        return false;
+      }
+      if (!cardDetails.expiry || cardDetails.expiry.length < 5) {
+        setError("Please enter a valid expiry date (MM/YY)");
+        return false;
+      }
+      if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
+        setError("Please enter a valid CVV");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    console.log('[PaymentModal] Starting payment submission...');
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
+    try {
+      // Prepare complete order items data for database
+      const orderItems = cartItems.map(item => ({
+        productId: item.id,
+        name: item.name,
+        quantity: item.quantity || 1,
+        price: item.price,
+        roomNumber: item.roomNumber || "N/A",
+        subtotal: (item.price * (item.quantity || 1)).toFixed(2),
+        ...(item.description && { description: item.description }),
+        ...(item.category && { category: item.category }),
+      }));
+
+      console.log('[PaymentModal] Prepared order items:', orderItems);
+
+      // First save order to database
+      const orderResponse = await axios.post(
+        "https://your-api.com/orders",
+        {
+          customerEmail: cardDetails.email,
+          totalAmount: cartTotal,
+          paymentMethod,
+          items: orderItems,
+          status: "pending",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      console.log('[PaymentModal] Order saved to database:', orderResponse.data);
+
+      if (!orderResponse.data.success) {
+        throw new Error("Failed to save order to database");
+      }
+
+      const orderId = orderResponse.data.orderId;
+
+      // Then process payment
+      const paymentData = {
+        orderId,
+        amount: cartTotal,
+        currency: "USD",
+        paymentMethod,
+        customerEmail: cardDetails.email,
+        ...(paymentMethod === "credit" && {
+          card: {
+            number: cardDetails.number.replace(/\s/g, ""),
+            name: cardDetails.name,
+            expiry: cardDetails.expiry,
+            cvv: cardDetails.cvv,
+          },
+        }),
+      };
+
+      console.log('[PaymentModal] Processing payment with data:', paymentData);
+
+      const paymentResponse = await axios.post(
+        "https://your-api.com/payments",
+        paymentData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      console.log('[PaymentModal] Payment processed:', paymentResponse.data);
+
+      if (paymentResponse.data.success) {
+        // Update order status to completed
+        await axios.patch(
+          `https://your-api.com/orders/${orderId}`,
+          { status: "completed" },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        console.log('[PaymentModal] Order status updated to completed');
+        onPaymentSuccess({
+          ...paymentResponse.data,
+          orderId,
+          items: orderItems,
+        });
+      } else {
+        throw new Error(paymentResponse.data.message || "Payment processing failed");
+      }
+    } catch (error) {
+      console.error('[PaymentModal] Error during payment process:', error);
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          "An error occurred during payment processing. Please try again."
+      );
+    } finally {
       setIsProcessing(false);
-      onPaymentSuccess();
-    }, 2000);
+    }
   };
 
   return (
@@ -543,40 +754,49 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Payment Details</h2>
+            <h2 className="text-xl font-bold">Complete Payment</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700"
+              disabled={isProcessing}
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
+
           <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <div className="mb-4">
-              <h3 className="font-medium mb-2">Booking Summary</h3>
+            <h3 className="font-medium mb-3">Order Details</h3>
+            <div className="space-y-3">
               {cartItems.map((item, index) => (
-                <div key={index} className="flex justify-between text-sm mb-1">
-                  <span>
-                    {item.quantity || 1}x {item.name}
-                  </span>
-                  <span>${item.totalPrice.toFixed(2)}</span>
+                <div key={index} className="pb-3 border-b last:border-b-0">
+                  <div className="flex justify-between">
+                    <span className="font-medium">
+                      {item.quantity || 1}x {item.name}
+                    </span>
+                    <span>${(item.price * (item.quantity || 1)).toFixed(2)}</span>
+                  </div>
+                  {item.roomNumber && (
+                    <div className="text-sm text-gray-500 mt-1">
+                      Room: {item.roomNumber}
+                    </div>
+                  )}
+                  {item.description && (
+                    <div className="text-sm text-gray-500 mt-1">
+                      {item.description}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-            <div className="flex justify-between font-bold text-lg border-t pt-2">
+            <div className="flex justify-between font-bold text-lg mt-4 pt-3 border-t">
               <span>Total Amount</span>
               <span>${cartTotal.toFixed(2)}</span>
             </div>
@@ -590,10 +810,11 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
                   type="button"
                   className={`px-4 py-2 rounded border ${
                     paymentMethod === "credit"
-                      ? "border-primary bg-primary bg-opacity-10"
-                      : "border-gray-300"
-                  }`}
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  } transition-colors`}
                   onClick={() => setPaymentMethod("credit")}
+                  disabled={isProcessing}
                 >
                   Credit Card
                 </button>
@@ -601,111 +822,111 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
                   type="button"
                   className={`px-4 py-2 rounded border ${
                     paymentMethod === "paypal"
-                      ? "border-primary bg-primary bg-opacity-10"
-                      : "border-gray-300"
-                  }`}
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  } transition-colors`}
                   onClick={() => setPaymentMethod("paypal")}
+                  disabled={isProcessing}
                 >
                   PayPal
                 </button>
               </div>
             </div>
 
-            {paymentMethod === "credit" ? (
+            {paymentMethod === "credit" && (
               <>
                 <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">
-                    Card Number
-                  </label>
+                  <label className="block text-gray-700 mb-1">Card Number</label>
                   <input
                     type="text"
                     name="number"
                     value={cardDetails.number}
-                    onChange={handleInputChange}
+                    onChange={handleCardNumberChange}
                     placeholder="1234 5678 9012 3456"
-                    className="w-full px-3 py-2 border rounded"
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    maxLength={19}
                     required
+                    disabled={isProcessing}
                   />
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">
-                    Cardholder Name
-                  </label>
+                  <label className="block text-gray-700 mb-1">Cardholder Name</label>
                   <input
                     type="text"
                     name="name"
                     value={cardDetails.name}
                     onChange={handleInputChange}
                     placeholder="John Doe"
-                    className="w-full px-3 py-2 border rounded"
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
+                    disabled={isProcessing}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-gray-700 mb-2">
-                      Expiry Date
-                    </label>
+                    <label className="block text-gray-700 mb-1">Expiry Date</label>
                     <input
                       type="text"
                       name="expiry"
                       value={cardDetails.expiry}
-                      onChange={handleInputChange}
+                      onChange={handleExpiryChange}
                       placeholder="MM/YY"
-                      className="w-full px-3 py-2 border rounded"
+                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      maxLength={5}
                       required
+                      disabled={isProcessing}
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">CVV</label>
+                    <label className="block text-gray-700 mb-1">CVV</label>
                     <input
                       type="text"
                       name="cvv"
                       value={cardDetails.cvv}
                       onChange={handleInputChange}
                       placeholder="123"
-                      className="w-full px-3 py-2 border rounded"
+                      className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      maxLength={4}
                       required
+                      disabled={isProcessing}
                     />
                   </div>
                 </div>
               </>
-            ) : (
-              <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800">
-                  You will be redirected to PayPal to complete your payment
-                </p>
-              </div>
             )}
+
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-1">Email</label>
+              {isLoadingEmail ? (
+                <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+              ) : (
+                <input
+                  type="email"
+                  name="email"
+                  value={cardDetails.email}
+                  onChange={handleInputChange}
+                  placeholder="your@email.com"
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  readOnly={!!cardDetails.email}
+                />
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={isProcessing}
-              className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg mt-4 transition-colors disabled:opacity-70 flex items-center justify-center"
+              className={`w-full py-3 px-6 rounded-lg font-medium text-white ${
+                isProcessing ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+              } transition-colors flex items-center justify-center`}
             >
               {isProcessing ? (
                 <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   Processing...
                 </>
@@ -720,6 +941,7 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
   );
 };
 
+//
 const SuccessModal = ({ onClose, cartItems }) => {
   const totalRooms = cartItems.reduce(
     (sum, item) => sum + (item.quantity || 1),
