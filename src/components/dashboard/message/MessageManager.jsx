@@ -111,7 +111,7 @@ export const MessagesManager = () => {
       email: message.email || "",
       subject: message.subject || "",
       message: message.message || "",
-      status: message.status || "",
+      status: message.status || "pending",
     });
   };
 
@@ -123,7 +123,7 @@ export const MessagesManager = () => {
       }
 
       const response = await axios.put(
-        `https://hotel-nodejs-oa32.onrender.com/63729/89230/${editingId}`,
+        `https://hotel-nodejs-oa32.onrender.com/63729/892308/${editingId}`,
         editForm,
         {
           headers: {
@@ -142,6 +142,7 @@ export const MessagesManager = () => {
         )
       );
       setEditingId(null);
+      alert("Message updated successfully!");
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || err.response?.data?.error || err.message;
@@ -156,31 +157,32 @@ export const MessagesManager = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      // 1. Fetch existing data
-      const { data: existingData } = await axios.get(
-        `https://hotel-nodejs-oa32.onrender.com/63729/892308/${id}`
-      );
-
-      // 2. Update only status while keeping other fields
       const response = await axios.put(
-        `https://hotel-nodejs-oa32.onrender.com/63729/892308/${id}`,
-        { ...existingData, status: newStatus }, // Merge old data + new status
-        { headers: { "Content-Type": "application/json" } }
+        `https://hotel-nodejs-oa32.onrender.com/63729/892308/status/${id}`, // Correct endpoint!
+        { status: newStatus },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.log(response.data);
-      // 3. Optimistic UI update
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === id ? { ...msg, status: newStatus } : msg
-        )
-      );
-
-      alert("Status updated!");
+  
+      if (response.status === 200 && response.data) {
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg._id === id ? { ...msg, status: newStatus } : msg
+          )
+        );
+        alert("Status updated successfully!");
+      } else {
+        throw new Error("Failed to update status on server.");
+      }
     } catch (err) {
-      console.error("Update failed:", err.response?.data || err.message);
-      alert("Failed to update status.", err);
+      console.error("Status update failed:", err);
+      alert(`Status update failed: ${err.response?.data?.message || err.message}`);
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -212,7 +214,7 @@ export const MessagesManager = () => {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-        <h4 className="text-lg font-semibold">Messages Management</h4>
+        <h4 className="text-lg text-black font-semibold">Messages Management</h4>
         <div className="text-sm text-gray-600">
           Page {currentPage} of {totalPages} ({messages.length} messages)
         </div>
@@ -255,9 +257,7 @@ export const MessagesManager = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={message.status}
-                      onChange={(e) =>
-                        updateStatus(message._id, e.target.value)
-                      }
+                      onChange={(e) => updateStatus(message._id, e.target.value)}
                       className={`text-xs px-3 py-1 rounded-full ${
                         statusOptions.find(
                           (opt) => opt.value === message.status
@@ -277,13 +277,13 @@ export const MessagesManager = () => {
                   </td>
                   {editingId === message._id ? (
                     <>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 text-black whitespace-nowrap">
                         <input
                           type="text"
                           name="name"
                           value={editForm.name}
                           onChange={handleInputChange}
-                          className="border rounded px-3 py-2 w-full"
+                          className="border text-black rounded px-3 py-2 w-full"
                           required
                         />
                       </td>
@@ -293,7 +293,7 @@ export const MessagesManager = () => {
                           name="email"
                           value={editForm.email}
                           onChange={handleInputChange}
-                          className="border rounded px-3 py-2 w-full"
+                          className="border rounded text-black px-3 py-2 w-full"
                           required
                         />
                       </td>
@@ -303,7 +303,7 @@ export const MessagesManager = () => {
                           name="subject"
                           value={editForm.subject}
                           onChange={handleInputChange}
-                          className="border rounded px-3 py-2 w-full"
+                          className="border rounded text-black px-3 py-2 w-full"
                         />
                       </td>
                       <td className="px-6 py-4">
@@ -311,7 +311,7 @@ export const MessagesManager = () => {
                           name="message"
                           value={editForm.message}
                           onChange={handleInputChange}
-                          className="border rounded px-3 py-2 w-full"
+                          className="border text-black rounded px-3 py-2 w-full"
                           rows="2"
                         />
                       </td>

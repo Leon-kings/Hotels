@@ -16,7 +16,7 @@ export const Analytics = () => {
     revenue: { count: 0, loading: true, error: null },
     orders: { count: 0, loading: true, error: null },
   });
-const [error,setError] = useState();
+  const [error, setError] = useState();
   const fetchCounts = async () => {
     // Set all to loading state
     setCounts({
@@ -70,10 +70,10 @@ const [error,setError] = useState();
       });
 
       setCounts(newCounts);
-      setError(' Fetching data  received!!');
+      setError(" Fetching data  received!!");
     } catch (error) {
       alert("Failed to fetch counts:", error);
-      setError('Error Occur in fetching data !!');
+      setError("Error Occur in fetching data !!");
     }
   };
 
@@ -136,8 +136,8 @@ const [error,setError] = useState();
               className="bg-white rounded-lg shadow-md p-6 min-h-[140px]"
             >
               {data.loading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="animate-pulse text-gray-500">Loading...</div>
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
               ) : data.error ? (
                 <div className="text-red-500 h-full flex items-center">
