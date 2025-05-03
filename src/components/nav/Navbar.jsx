@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaFacebook,
@@ -20,6 +20,38 @@ import { Link } from "react-router-dom";
 export const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(false);
+
+  // time
+  const [time, setTime] = useState("");
+
+  // Function to get the current time in Kigali, Rwanda (GMT+2)
+  const getCurrentTime = () => {
+    const now = new Date();
+    const options = {
+      timeZone: "Africa/Kigali", // Set timezone to Kigali, Rwanda
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false, // Use 24-hour format
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(now);
+  };
+
+  // Update time every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(getCurrentTime());
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, []);
+  const ClockTime = () => {
+    return (
+      <motion.div className="text-xl font-mono text-white  rounded-lg shadow-lg">
+        {time}
+      </motion.div>
+    );
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -77,6 +109,7 @@ export const Navbar = () => {
               <span className="text-sm">+250 (72) 755-6145</span>
             </div>
           </div>
+          <ClockTime />
           <div className="flex space-x-4">
             {socialLinks.map((link, index) => (
               <Link key={index} to={link.href}>
@@ -210,8 +243,10 @@ export const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden bg-gray-800 overflow-hidden"
           >
-            <div className="w-full grid grid-cols-5 mt-3 p-4
-             mb-3 sm:text-center justify-items-center bg-black text-white px-4 space-x-4">
+            <div
+              className="w-full grid grid-cols-5 mt-3 p-4
+             mb-3 sm:text-center justify-items-center bg-black text-white px-4 space-x-4"
+            >
               {socialLinks.map((link, index) => (
                 <Link key={index} to={link.href}>
                   <motion.p

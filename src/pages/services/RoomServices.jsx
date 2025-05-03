@@ -706,7 +706,7 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
 
       if (paymentResponse.data.success) {
         // Update order status to completed
-        await axios.patch(
+        await axios.put(
           `https://your-api.com/orders/${orderId}`,
           { status: "completed" },
           {

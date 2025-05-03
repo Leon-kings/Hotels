@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+ 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
@@ -67,8 +67,6 @@ export default function AdminBookingView() {
     email: "",
     checkInDate: "",
     checkOutDate: "",
-    adult: "",
-    children: "",
     roomType: "",
     status: "",
   });
@@ -143,8 +141,6 @@ export default function AdminBookingView() {
       email: booking.email,
       checkInDate: booking.checkInDate.split("T")[0],
       checkOutDate: booking.checkOutDate.split("T")[0],
-      adult: booking.adult,
-      children: booking.children,
       roomType: booking.roomType,
       status: booking.status,
     });
@@ -152,102 +148,93 @@ export default function AdminBookingView() {
   };
 
   // Validate form
-  const validateForm = () => {
-    const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
-    }
-
-    if (!formData.checkInDate) {
-      newErrors.checkInDate = "Check-in date is required";
-    }
-
-    if (!formData.checkOutDate) {
-      newErrors.checkOutDate = "Check-out date is required";
-    } else if (
-      new Date(formData.checkOutDate) <= new Date(formData.checkInDate)
-    ) {
-      newErrors.checkOutDate = "Check-out must be after check-in";
-    }
-
-    if (!formData.roomType) {
-      newErrors.roomType = "Room type is required";
-    }
-
-    if (!formData.status) {
-      newErrors.status = "Status is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   // Update booking
   const handleUpdate = async (bookingId) => {
-    if (!validateForm()) {
+    if (!window.confirm("Are you sure you want to update this booking?")) {
       return;
     }
-
+  
+    setIsLoading(true);
+    
     try {
-      if (!window.confirm("Are you sure you want to update this booking?")) {
-        return;
+      // 1. Get current booking data
+      const currentBooking = allBookings.find(b => b._id === bookingId);
+      if (!currentBooking) {
+        throw new Error("Booking not found");
       }
-
-      setIsLoading(true);
-      const payload = {
-        ...formData,
-        checkInDate: new Date(formData.checkInDate).toISOString(),
-        checkOutDate: new Date(formData.checkOutDate).toISOString(),
-      };
-
+  
+      // 2. Define allowed fields
+      const allowedFields = ['status', 'email', 'checkOutDate', 'checkInDate', 'name','roomType'];
+      
+      // 3. Build payload with edited fields or fallback to current values
+      const payload = allowedFields.reduce((obj, key) => {
+        // Use edited value if exists and is different, otherwise use current value
+        if (formData[key] !== undefined && formData[key] !== currentBooking[key]) {
+          obj[key] = key.includes('Date') 
+            ? new Date(formData[key]).toISOString()
+            : formData[key];
+        } else if (currentBooking[key] !== undefined) {
+          obj[key] = currentBooking[key];
+        }
+        return obj;
+      }, {});
+  
+      // Add mandatory fields
+      payload.updatedAt = new Date().toISOString();
+  
+      console.log("Final update payload:", payload);
+  
+      // 4. Validate at least one editable field was changed (excluding updatedAt)
+      const changedFields = Object.keys(payload).filter(f => f !== 'updatedAt');
+      if (changedFields.length === 0) {
+        throw new Error("No fields were modified");
+      }
+  
+      // 5. Send request
       const response = await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
-        payload
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
       );
-
-      const updatedBooking =
-        response.data?.updatedBooking || response.data.data || response.data;
-
-      if (!updatedBooking || !updatedBooking._id) {
-        throw new Error("No valid booking data returned from server");
+  
+      // 6. Handle success
+      const updatedBooking = response.data?.updatedBooking || 
+                           response.data?.data || 
+                           response.data;
+  
+      if (!updatedBooking?._id) {
+        throw new Error("Invalid booking data returned");
       }
-
-      setAllBookings((prevBookings) =>
-        prevBookings.map((booking) =>
-          booking._id === bookingId
-            ? { ...booking, ...updatedBooking }
-            : booking
-        )
-      );
-
+  
+      setAllBookings(prev => prev.map(b => 
+        b._id === bookingId ? { ...b, ...updatedBooking } : b
+      ));
+  
       setEditingBooking(null);
       alert("Booking updated successfully!");
     } catch (error) {
-      console.error("Booking update error:", {
-        message: error.message,
+      console.error("Update failed:", {
+        error: error.message,
         response: error.response?.data,
+        stack: error.stack
       });
-
+  
+      const errorMessage = error.response?.data?.message || 
+                         error.response?.data?.error || 
+                         error.message;
+      
+      alert(`Update failed: ${errorMessage}`);
+      
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
-      } else {
-        const errorMessage =
-          error.response?.data?.message ||
-          "Failed to update booking. Please try again.";
-        alert(`Error: ${errorMessage}`);
       }
     } finally {
       setIsLoading(false);
     }
   };
-
+  
   // Quick status update
   const handleStatusChange = async (bookingId, newStatus) => {
     try {

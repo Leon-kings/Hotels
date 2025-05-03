@@ -44,7 +44,7 @@ export const Time = () => {
           Current Time in Kigali, Rwanda
         </p>
         <motion.div
-          className="text-6xl font-mono bg-gray-800 p-6 rounded-lg shadow-lg"
+          className="text-xl font-mono bg-gray-800 p-6 rounded-lg shadow-lg"
           initial={{ y: 0, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1, duration: 0.8 }}
