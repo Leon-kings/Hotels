@@ -252,17 +252,6 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer Copyright */}
-      <div className="footer_copyright pt-8 pb-8 bg-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="copyright text-center">
-            <div className="time">
-              <Time />{" "}
-            </div>
-          </div>
-        </div>
-      </div>
     </section>
   );
 };

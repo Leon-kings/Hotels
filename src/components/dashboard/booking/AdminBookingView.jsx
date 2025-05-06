@@ -1,9 +1,5 @@
- 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Link } from "react-router-dom";
 import {
   Cancel,
   Delete,
@@ -11,48 +7,83 @@ import {
   Search,
   SkipNext,
   SkipPrevious,
+  CheckCircle,
+  Warning,
+  Info,
 } from "@mui/icons-material";
+import { format, parseISO } from "date-fns";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const BookingSearch = ({ onSearchResults }) => {
+const BookingSearch = ({ onSearchResults, onLoading }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = async () => {
     try {
+      onLoading(true);
       const response = await axios.get(
-        `https://hotel-nodejs-oa32.onrender.com/84383/92823/search?term=${searchTerm}&status=cancelled`
+        `https://hotel-nodejs-oa32.onrender.com/84383/92823/search?term=${searchTerm}`
       );
       onSearchResults(response.data.bookings || []);
+      toast.success(`Found ${response.data.bookings?.length || 0} bookings`);
     } catch (error) {
       console.error("Search error:", error);
       onSearchResults([]);
+      toast.error("Failed to search bookings");
+    } finally {
+      onLoading(false);
     }
   };
 
   return (
-    <div className="mb-4 bg-white text-black">
-      <input
-        type="text"
-        placeholder="Search bookings..."
-        className="border p-2 rounded"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+    <div className="mb-6 flex items-center gap-2">
+      <div className="relative flex-1">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search className="text-gray-400" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search by name, email, booking ID..."
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+        />
+      </div>
       <button
         onClick={handleSearch}
-        className="ml-2 bg-blue-500 text-white p-2 rounded"
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
       >
-        <Search className="text-blue-500 size-6" />
+        <Search /> Search
       </button>
       <button
         onClick={() => {
           setSearchTerm("");
           onSearchResults(null);
+          toast.info("Search cleared");
         }}
-        className="ml-2 bg-gray-500 text-white p-2 rounded"
+        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-1"
       >
-        <Cancel className="text-red-500 size-6" />
+        <Cancel /> Clear
       </button>
     </div>
+  );
+};
+
+const StatusBadge = ({ status }) => {
+  const statusClasses = {
+    pending: "bg-yellow-100 text-yellow-800",
+    confirmed: "bg-green-100 text-green-800",
+    cancelled: "bg-red-100 text-red-800",
+    completed: "bg-blue-100 text-blue-800",
+  };
+
+  return (
+    <span
+      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClasses[status] || "bg-gray-100 text-gray-800"}`}
+    >
+      {status}
+    </span>
   );
 };
 
@@ -61,7 +92,7 @@ export default function AdminBookingView() {
   const [currentBookings, setCurrentBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [editingBooking, setEditingBooking] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -72,9 +103,12 @@ export default function AdminBookingView() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const bookingsPerPage = 10;
 
-  // Fetch all bookings
+  const roomTypes = ["standard", "deluxe", "suite", "family", "executive"];
+  const statusOptions = ["pending", "confirmed", "cancelled", "completed"];
+
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -82,21 +116,14 @@ export default function AdminBookingView() {
         const response = await axios.get(
           "https://hotel-nodejs-oa32.onrender.com/84383/92823"
         );
-
-        let bookingsData = [];
-        if (response.data?.bookings) {
-          bookingsData = response.data.bookings;
-        } else if (response.data?.data?.bookings) {
-          bookingsData = response.data.data.bookings;
-        } else {
-          console.warn("Unexpected response structure:", response.data);
-        }
-
+        const bookingsData = response.data?.bookings || response.data?.data?.bookings || [];
         setAllBookings(bookingsData);
         setTotalPages(Math.ceil(bookingsData.length / bookingsPerPage));
         updateCurrentBookings(bookingsData, 1);
+        toast.success(`Loaded ${bookingsData.length} bookings`);
       } catch (error) {
         console.error("Error fetching bookings:", error);
+        toast.error("Failed to load bookings");
       } finally {
         setIsLoading(false);
       }
@@ -105,7 +132,6 @@ export default function AdminBookingView() {
     fetchBookings();
   }, []);
 
-  // Update current bookings when page changes
   useEffect(() => {
     updateCurrentBookings(allBookings, currentPage);
   }, [currentPage, allBookings]);
@@ -116,335 +142,286 @@ export default function AdminBookingView() {
     setCurrentBookings(bookings.slice(startIndex, endIndex));
   };
 
-  // Delete booking
+  const handleSearchResults = (results) => {
+    if (results === null) {
+      updateCurrentBookings(allBookings, 1);
+      setTotalPages(Math.ceil(allBookings.length / bookingsPerPage));
+    } else {
+      setCurrentBookings(results.slice(0, bookingsPerPage));
+      setTotalPages(Math.ceil(results.length / bookingsPerPage));
+    }
+    setCurrentPage(1);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!formData.checkInDate) newErrors.checkInDate = "Check-in date is required";
+    if (!formData.checkOutDate) newErrors.checkOutDate = "Check-out date is required";
+    if (!formData.roomType) newErrors.roomType = "Room type is required";
+    if (!formData.status) newErrors.status = "Status is required";
+
+    // Validate check-out date is after check-in date
+    if (formData.checkInDate && formData.checkOutDate) {
+      const checkIn = new Date(formData.checkInDate);
+      const checkOut = new Date(formData.checkOutDate);
+      if (checkOut <= checkIn) {
+        newErrors.checkOutDate = "Check-out must be after check-in";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleDelete = async (id) => {
     try {
-      if (window.confirm("Are you sure you want to delete this booking?")) {
-        setIsLoading(true);
-        await axios.delete(
-          `https://hotel-nodejs-oa32.onrender.com/84383/92823/${id}`
-        );
-        setAllBookings(allBookings.filter((booking) => booking._id !== id));
-      }
+      if (!window.confirm("Are you sure you want to delete this booking?")) return;
+      setIsLoading(true);
+      
+      await axios.delete(
+        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${id}`
+      );
+      
+      setAllBookings(prev => prev.filter(booking => booking._id !== id));
+      toast.success("Booking deleted successfully");
     } catch (error) {
       console.error("Error deleting booking:", error);
+      toast.error(error.response?.data?.message || "Failed to delete booking");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle edit
-  const handleEdit = (booking) => {
-    setEditingBooking(booking._id);
+  const startEditing = (booking) => {
+    setEditingId(booking._id);
     setFormData({
       name: booking.name,
       email: booking.email,
-      checkInDate: booking.checkInDate.split("T")[0],
-      checkOutDate: booking.checkOutDate.split("T")[0],
+      checkInDate: format(parseISO(booking.checkInDate), "yyyy-MM-dd"),
+      checkOutDate: format(parseISO(booking.checkOutDate), "yyyy-MM-dd"),
       roomType: booking.roomType,
       status: booking.status,
     });
     setErrors({});
   };
 
-  // Validate form
-
-
-  // Update booking
   const handleUpdate = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to update this booking?")) {
-      return;
-    }
-  
-    setIsLoading(true);
-    
+    if (!validateForm()) return;
+
     try {
-      // 1. Get current booking data
-      const currentBooking = allBookings.find(b => b._id === bookingId);
-      if (!currentBooking) {
-        throw new Error("Booking not found");
-      }
-  
-      // 2. Define allowed fields
-      const allowedFields = ['status', 'email', 'checkOutDate', 'checkInDate', 'name','roomType'];
-      
-      // 3. Build payload with edited fields or fallback to current values
-      const payload = allowedFields.reduce((obj, key) => {
-        // Use edited value if exists and is different, otherwise use current value
-        if (formData[key] !== undefined && formData[key] !== currentBooking[key]) {
-          obj[key] = key.includes('Date') 
-            ? new Date(formData[key]).toISOString()
-            : formData[key];
-        } else if (currentBooking[key] !== undefined) {
-          obj[key] = currentBooking[key];
-        }
-        return obj;
-      }, {});
-  
-      // Add mandatory fields
-      payload.updatedAt = new Date().toISOString();
-  
-      console.log("Final update payload:", payload);
-  
-      // 4. Validate at least one editable field was changed (excluding updatedAt)
-      const changedFields = Object.keys(payload).filter(f => f !== 'updatedAt');
-      if (changedFields.length === 0) {
-        throw new Error("No fields were modified");
-      }
-  
-      // 5. Send request
+      if (!window.confirm("Are you sure you want to update this booking?")) return;
+      setIsLoading(true);
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        checkInDate: new Date(formData.checkInDate).toISOString(),
+        checkOutDate: new Date(formData.checkOutDate).toISOString(),
+        roomType: formData.roomType,
+        status: formData.status,
+      };
+
       const response = await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
+        payload
       );
-  
-      // 6. Handle success
-      const updatedBooking = response.data?.updatedBooking || 
-                           response.data?.data || 
-                           response.data;
-  
-      if (!updatedBooking?._id) {
-        throw new Error("Invalid booking data returned");
-      }
-  
-      setAllBookings(prev => prev.map(b => 
-        b._id === bookingId ? { ...b, ...updatedBooking } : b
+
+      const updatedBooking = response.data?.updatedBooking || response.data?.data || response.data;
+      
+      setAllBookings(prev => prev.map(booking => 
+        booking._id === bookingId ? { ...booking, ...updatedBooking } : booking
       ));
-  
-      setEditingBooking(null);
-      alert("Booking updated successfully!");
+      
+      setEditingId(null);
+      toast.success("Booking updated successfully");
     } catch (error) {
-      console.error("Update failed:", {
-        error: error.message,
-        response: error.response?.data,
-        stack: error.stack
-      });
-  
-      const errorMessage = error.response?.data?.message || 
-                         error.response?.data?.error || 
-                         error.message;
-      
-      alert(`Update failed: ${errorMessage}`);
-      
+      console.error("Booking update error:", error);
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       }
+      toast.error(error.response?.data?.message || "Failed to update booking");
     } finally {
       setIsLoading(false);
     }
   };
-  
-  // Quick status update
+
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      if (
-        !window.confirm(
-          `Are you sure you want to change the status to "${newStatus}"?`
-        )
-      ) {
-        return;
-      }
-
+      if (!window.confirm(`Change booking status to "${newStatus}"?`)) return;
       setIsLoading(true);
-      setAllBookings((prevBookings) =>
-        prevBookings.map((booking) =>
-          booking._id === bookingId
-            ? { ...booking, status: newStatus }
-            : booking
-        )
+
+      const response = await axios.patch(
+        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}/status`,
+        { status: newStatus }
       );
 
-      const response = await axios.put(
-        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
-        { status: newStatus },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      alert("Update confirmed");
-      
-      if (!response.data || response.data.error) {
-        throw new Error(
-          response.data?.error || "Server did not confirm the update"
-        );
-      }
+      setAllBookings(prev => prev.map(booking => 
+        booking._id === bookingId ? { ...booking, status: newStatus } : booking
+      ));
 
-      alert(`Status successfully updated to "${newStatus}"!`);
+      toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
-      setAllBookings((prevBookings) => [...prevBookings]);
-
-      console.error("Status update failed:", {
-        error: error.message,
-        serverResponse: error.response?.data,
-        statusCode: error.response?.status,
-      });
-
-      const errorMessage =
-        error.response?.data?.message ||
-        "Failed to update status. Please try again.";
-
-      alert(`Error: ${errorMessage}`);
+      console.error("Status update failed:", error);
+      toast.error(error.response?.data?.message || "Failed to update status");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle form input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-
+    setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
 
-  // Handle page change
+  const cancelEditing = () => {
+    setEditingId(null);
+    setErrors({});
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="container mx-auto p-4">
-      <BookingSearch
-        onSearchResults={(results) => {
-          if (results === null) {
-            updateCurrentBookings(allBookings, 1);
-            setTotalPages(Math.ceil(allBookings.length / bookingsPerPage));
-          } else {
-            setCurrentBookings(results.slice(0, bookingsPerPage));
-            setTotalPages(Math.ceil(results.length / bookingsPerPage));
-          }
-        }}
+      <ToastContainer position="top-right" autoClose={3000} />
+      
+      <BookingSearch 
+        onSearchResults={handleSearchResults} 
+        onLoading={setSearchLoading}
       />
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      {(isLoading || searchLoading) && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
         </div>
-      ) : (
-        <div className="bg-white text-black rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Check-In
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Check-Out
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Room Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentBookings.map((booking) => (
-                  <tr key={booking._id}>
-                    {editingBooking === booking._id ? (
+      )}
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Guest
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Dates
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Room
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {currentBookings.length > 0 ? (
+                currentBookings.map((booking) => (
+                  <tr key={booking._id} className="hover:bg-gray-50">
+                    {editingId === booking._id ? (
                       <>
+                        {/* Edit Mode */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.name ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.name && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.name}
-                            </p>
-                          )}
+                          <div className="space-y-2">
+                            <div>
+                              <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className={`border rounded px-3 py-2 w-full ${
+                                  errors.name ? "border-red-500" : "border-gray-300"
+                                }`}
+                                placeholder="Guest Name"
+                              />
+                              {errors.name && (
+                                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                              )}
+                            </div>
+                            <div>
+                              <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                className={`border rounded px-3 py-2 w-full ${
+                                  errors.email ? "border-red-500" : "border-gray-300"
+                                }`}
+                                placeholder="Email"
+                              />
+                              {errors.email && (
+                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.email ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.email && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.email}
-                            </p>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="date"
-                            name="checkInDate"
-                            value={formData.checkInDate}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.checkInDate ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.checkInDate && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.checkInDate}
-                            </p>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="date"
-                            name="checkOutDate"
-                            value={formData.checkOutDate}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.checkOutDate ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.checkOutDate && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.checkOutDate}
-                            </p>
-                          )}
+                          <div className="space-y-2">
+                            <div>
+                              <label className="block text-sm text-gray-500 mb-1">Check-in</label>
+                              <input
+                                type="date"
+                                name="checkInDate"
+                                value={formData.checkInDate}
+                                onChange={handleInputChange}
+                                className={`border rounded px-3 py-2 w-full ${
+                                  errors.checkInDate ? "border-red-500" : "border-gray-300"
+                                }`}
+                              />
+                              {errors.checkInDate && (
+                                <p className="text-red-500 text-xs mt-1">{errors.checkInDate}</p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm text-gray-500 mb-1">Check-out</label>
+                              <input
+                                type="date"
+                                name="checkOutDate"
+                                value={formData.checkOutDate}
+                                onChange={handleInputChange}
+                                className={`border rounded px-3 py-2 w-full ${
+                                  errors.checkOutDate ? "border-red-500" : "border-gray-300"
+                                }`}
+                              />
+                              {errors.checkOutDate && (
+                                <p className="text-red-500 text-xs mt-1">{errors.checkOutDate}</p>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select
                             name="roomType"
                             value={formData.roomType}
                             onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.roomType ? "border-red-500" : ""
+                            className={`border rounded px-3 py-2 w-full ${
+                              errors.roomType ? "border-red-500" : "border-gray-300"
                             }`}
                           >
                             <option value="">Select Room Type</option>
-                            <option value="deluxe">Deluxe</option>
-                            <option value="standard">Standard</option>
-                            <option value="suite">Suite</option>
+                            {roomTypes.map(type => (
+                              <option key={type} value={type} className="capitalize">
+                                {type}
+                              </option>
+                            ))}
                           </select>
                           {errors.roomType && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.roomType}
-                            </p>
+                            <p className="text-red-500 text-xs mt-1">{errors.roomType}</p>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -452,144 +429,191 @@ export default function AdminBookingView() {
                             name="status"
                             value={formData.status}
                             onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full ${
-                              errors.status ? "border-red-500" : ""
+                            className={`border rounded px-3 py-2 w-full ${
+                              errors.status ? "border-red-500" : "border-gray-300"
                             }`}
                           >
                             <option value="">Select Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="completed">Completed</option>
+                            {statusOptions.map(status => (
+                              <option key={status} value={status} className="capitalize">
+                                {status}
+                              </option>
+                            ))}
                           </select>
                           {errors.status && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {errors.status}
-                            </p>
+                            <p className="text-red-500 text-xs mt-1">{errors.status}</p>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                          <button
-                            onClick={() => handleUpdate(booking._id)}
-                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                          >
-                            <Edit className="text-green-200" />
-                          </button>
-                          <button
-                            onClick={() => setEditingBooking(null)}
-                            className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
-                          >
-                            <Cancel className="text-red-400" />
-                          </button>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleUpdate(booking._id)}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            >
+                              <CheckCircle className="mr-1" /> Save
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              <Cancel className="mr-1" /> Cancel
+                            </button>
+                          </div>
                         </td>
                       </>
                     ) : (
                       <>
+                        {/* View Mode */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.name}
+                          <div className="text-sm font-medium text-gray-900">
+                            {booking.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {booking.email}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {booking.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(booking.checkInDate).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(booking.checkOutDate).toLocaleDateString()}
+                          <div className="text-sm text-gray-900">
+                            {format(parseISO(booking.checkInDate), "MMM d, yyyy")}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            to {format(parseISO(booking.checkOutDate), "MMM d, yyyy")}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap capitalize">
                           {booking.roomType}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <select
-                            value={booking.status}
-                            onChange={(e) =>
-                              handleStatusChange(booking._id, e.target.value)
-                            }
-                            className="border rounded px-2 py-1"
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="completed">Completed</option>
-                          </select>
+                          <StatusBadge status={booking.status} />
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                          <button
-                            onClick={() => handleEdit(booking)}
-                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                          >
-                            <Edit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(booking._id)}
-                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                          >
-                            <Delete />
-                          </button>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => startEditing(booking)}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              <Edit className="mr-1" /> Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(booking._id)}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            >
+                              <Delete className="mr-1" /> Delete
+                            </button>
+                          </div>
                         </td>
                       </>
                     )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                    No bookings found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          {allBookings.length === 0 && !isLoading && (
-            <div className="p-4 text-center text-gray-500">No bookings found</div>
-          )}
-
-          {totalPages > 1 && (
-            <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
-                Showing {(currentPage - 1) * bookingsPerPage + 1} to{" "}
-                {Math.min(currentPage * bookingsPerPage, allBookings.length)} of{" "}
-                {allBookings.length} bookings
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{(currentPage - 1) * bookingsPerPage + 1}</span> to{" "}
+                  <span className="font-medium">
+                    {Math.min(currentPage * bookingsPerPage, allBookings.length)}
+                  </span>{" "}
+                  of <span className="font-medium">{allBookings.length}</span> bookings
+                </p>
               </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === 1
-                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-blue-500 text-white hover:bg-blue-600"
-                  }`}
-                >
-                  <SkipPrevious />
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === page
-                          ? "bg-blue-600 text-white"
-                          : "bg-blue-500 text-white hover:bg-blue-600"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === totalPages
-                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-blue-500 text-white hover:bg-blue-600"
-                  }`}
-                >
-                  <SkipNext />
-                </button>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">First</span>
+                    «
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">Previous</span>
+                    ‹
+                  </button>
+                  
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                          currentPage === pageNum
+                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">Next</span>
+                    ›
+                  </button>
+                  <button
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">Last</span>
+                    »
+                  </button>
+                </nav>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

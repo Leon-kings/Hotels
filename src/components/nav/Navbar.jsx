@@ -47,7 +47,7 @@ export const Navbar = () => {
   }, []);
   const ClockTime = () => {
     return (
-      <motion.div className="text-xl font-mono text-white  rounded-lg shadow-lg">
+      <motion.div className="text-xl font-sm text-white  rounded-lg shadow-lg">
         {time}
       </motion.div>
     );
@@ -109,7 +109,9 @@ export const Navbar = () => {
               <span className="text-sm">+250 (72) 755-6145</span>
             </div>
           </div>
-          <ClockTime />
+          <label className="px-0 lg:block xl:block sm:hidden md:hidden">
+            <ClockTime />
+          </label>
           <div className="flex space-x-4">
             {socialLinks.map((link, index) => (
               <Link key={index} to={link.href}>
@@ -147,6 +149,9 @@ export const Navbar = () => {
           </div>
 
           <div className="w-full lg:w-3/4">
+            <div className="time lg:hidden xl:hidden sm:block md:block">
+              <ClockTime />
+            </div>
             <div className="flex justify-between items-center h-24 px-4 lg:px-0">
               {/* Logo - Mobile */}
               <div className="lg:hidden">
@@ -171,7 +176,7 @@ export const Navbar = () => {
               </motion.button>
 
               {/* Desktop Navigation */}
-              <nav className="hidden lg:flex items-center space-x-8">
+              <nav className="w-full hidden lg:flex items-center space-x-8">
                 <div className="flex space-x-8">
                   {navLinks.map((link, index) => (
                     <motion.div key={index} whileHover={{ scale: 1.05 }}>
