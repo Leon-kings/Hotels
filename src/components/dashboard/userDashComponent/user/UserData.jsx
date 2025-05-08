@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -25,7 +26,7 @@ const UserSearch = ({ onSearchResults }) => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `https://hotel-nodejs-oa32.onrender.com/37829/7892/search?term=${searchTerm}`
+        `https://hotel-nodejs-oa32.onrender.com/37829/7892/term=${searchTerm}`
       );
       onSearchResults(response.data.users || []);
     } catch (error) {
@@ -79,6 +80,16 @@ export default function UserData() {
   const [loggedInUserEmail, setLoggedInUserEmail] = useState("");
   const usersPerPage = 10;
 
+  // Default placeholder user data
+  const placeholderUser = {
+    _id: "placeholder123",
+    fullname: "Guest User",
+    email: "guest@example.com",
+    phone: "N/A",
+    role: "user",
+    status: "active"
+  };
+
   // Get logged-in user's email from localStorage or session
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail') || sessionStorage.getItem('userEmail');
@@ -87,26 +98,34 @@ export default function UserData() {
     }
   }, []);
 
-  // Fetch all users
+  // Fetch all users or use placeholder if not logged in
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          "https://hotel-nodejs-oa32.onrender.com/37829/7892"
-        );
-        const usersData =
-          response.data?.data || response.data?.data?.users || [];
-        
-        // Filter users to only show the logged-in user if email is available
-        const filteredUsers = loggedInUserEmail 
-          ? usersData.filter(user => user.email === loggedInUserEmail)
-          : usersData;
-        
-        setAllUsers(filteredUsers);
-        setTotalPages(Math.ceil(filteredUsers.length / usersPerPage));
-        updateCurrentUsers(filteredUsers, 1);
+        if (loggedInUserEmail) {
+          const response = await axios.get(
+            "https://hotel-nodejs-oa32.onrender.com/37829/7892"
+          );
+          const usersData = response.data?.data || response.data?.data?.users || [];
+          
+          // Filter users to only show the logged-in user
+          const filteredUsers = usersData.filter(user => user.email === loggedInUserEmail);
+          
+          setAllUsers(filteredUsers);
+          setTotalPages(Math.ceil(filteredUsers.length / usersPerPage));
+          updateCurrentUsers(filteredUsers, 1);
+        } else {
+          // Use placeholder data when not logged in
+          setAllUsers([placeholderUser]);
+          setTotalPages(1);
+          updateCurrentUsers([placeholderUser], 1);
+        }
       } catch (error) {
         console.error("Error fetching users:", error);
+        // Fallback to placeholder data if there's an error
+        setAllUsers([placeholderUser]);
+        setTotalPages(1);
+        updateCurrentUsers([placeholderUser], 1);
       }
     };
 
@@ -124,13 +143,17 @@ export default function UserData() {
     setCurrentUsers(users.slice(startIndex, endIndex));
   };
 
-  // Delete user
+  // Delete user - disabled for placeholder user
   const handleDelete = async (id) => {
+    if (id === placeholderUser._id) {
+      alert("Cannot delete the placeholder user");
+      return;
+    }
+
     try {
       if (window.confirm("Are you sure you want to delete this user?")) {
         console.log('Attempting to delete user with ID:', id);
         
-        // Add authentication headers if needed
         const config = {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -172,10 +195,10 @@ export default function UserData() {
   const startEditing = (user) => {
     setEditingId(user._id);
     setFormData({
-      name: user.name,
-      email: user.email,
+      name: user.fullname || user.name || "",
+      email: user.email || "",
       phone: user.phone || "",
-      role: user.role,
+      role: user.role || "user",
       status: user.status || "active",
     });
     setErrors({});
@@ -210,6 +233,25 @@ export default function UserData() {
         return;
       }
 
+      if (userId === placeholderUser._id) {
+        // For placeholder user, just update local state
+        setAllUsers(prevUsers => 
+          prevUsers.map(user => 
+            user._id === userId ? {
+              ...user,
+              fullname: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              role: formData.role,
+              status: formData.status
+            } : user
+          )
+        );
+        setEditingId(null);
+        alert("Changes saved locally (not persisted to server)");
+        return;
+      }
+
       const response = await axios.put(
         `https://hotel-nodejs-oa32.onrender.com/37829/7892/${userId}`,
         formData
@@ -233,8 +275,13 @@ export default function UserData() {
     }
   };
 
-  // Quick status update
+  // Quick status update - disabled for placeholder user
   const handleStatusChange = async (userId, newStatus) => {
+    if (userId === placeholderUser._id) {
+      alert("Cannot change status of placeholder user");
+      return;
+    }
+
     try {
       if (!window.confirm(`Change user status to "${newStatus}"?`)) {
         return;
@@ -283,17 +330,19 @@ export default function UserData() {
 
   return (
     <div className="container mx-auto p-4">
-      <UserSearch
-        onSearchResults={(results) => {
-          if (results === null) {
-            updateCurrentUsers(allUsers, 1);
-            setTotalPages(Math.ceil(allUsers.length / usersPerPage));
-          } else {
-            setCurrentUsers(results.slice(0, usersPerPage));
-            setTotalPages(Math.ceil(results.length / usersPerPage));
-          }
-        }}
-      />
+      {loggedInUserEmail && (
+        <UserSearch
+          onSearchResults={(results) => {
+            if (results === null) {
+              updateCurrentUsers(allUsers, 1);
+              setTotalPages(Math.ceil(allUsers.length / usersPerPage));
+            } else {
+              setCurrentUsers(results.slice(0, usersPerPage));
+              setTotalPages(Math.ceil(results.length / usersPerPage));
+            }
+          }}
+        />
+      )}
 
       <div className="bg-white text-black rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
@@ -318,211 +367,219 @@ export default function UserData() {
               </tr>
             </thead>
             <tbody className="bg-white divide-gray-200">
-              {currentUsers.map((user) => (
-                <tr key={user._id}>
-                  {editingId === user._id ? (
-                    <>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <PersonIcon className="h-5 w-5 text-gray-400" />
+              {currentUsers.length > 0 ? (
+                currentUsers.map((user) => (
+                  <tr key={user._id}>
+                    {editingId === user._id ? (
+                      <>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <PersonIcon className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                              type="text"
+                              name="name"
+                              value={formData.name}
+                              onChange={handleInputChange}
+                              className={`border rounded px-2 py-1 w-full pl-10 ${
+                                errors.name ? "border-red-500" : ""
+                              }`}
+                            />
                           </div>
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full pl-10 ${
-                              errors.name ? "border-red-500" : ""
-                            }`}
-                          />
-                        </div>
-                        {errors.name && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.name}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <EmailIcon className="h-5 w-5 text-gray-400" />
+                          {errors.name && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.name}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <EmailIcon className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              className={`border rounded px-2 py-1 w-full pl-10 ${
+                                errors.email ? "border-red-500" : ""
+                              }`}
+                            />
                           </div>
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full pl-10 ${
-                              errors.email ? "border-red-500" : ""
-                            }`}
-                          />
-                        </div>
-                        {errors.email && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.email}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <PhoneIcon className="h-5 w-5 text-gray-400" />
+                          {errors.email && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.email}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <PhoneIcon className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                              type="tel"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleInputChange}
+                              className={`border rounded px-2 py-1 w-full pl-10 ${
+                                errors.phone ? "border-red-500" : ""
+                              }`}
+                            />
                           </div>
-                          <input
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
+                          {errors.phone && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.phone}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              {formData.role === "admin" ? (
+                                <AdminIcon className="h-5 w-5 text-gray-400" />
+                              ) : (
+                                <UserIcon className="h-5 w-5 text-gray-400" />
+                              )}
+                            </div>
+                            <select
+                              name="role"
+                              value={formData.role}
+                              onChange={handleInputChange}
+                              className={`border rounded px-2 py-1 w-full pl-10 appearance-none ${
+                                errors.role ? "border-red-500" : ""
+                              }`}
+                              disabled={user._id === placeholderUser._id}
+                            >
+                              <option value="user">User</option>
+                              <option value="admin">Admin</option>
+                            </select>
+                          </div>
+                          {errors.role && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.role}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <select
+                            name="status"
+                            value={formData.status}
                             onChange={handleInputChange}
-                            className={`border rounded px-2 py-1 w-full pl-10 ${
-                              errors.phone ? "border-red-500" : ""
+                            className={`border rounded px-2 py-1 w-full ${
+                              errors.status ? "border-red-500" : ""
                             }`}
-                          />
-                        </div>
-                        {errors.phone && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.phone}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            {formData.role === "admin" ? (
-                              <AdminIcon className="h-5 w-5 text-gray-400" />
+                            disabled={user._id === placeholderUser._id}
+                          >
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                          </select>
+                          {errors.status && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.status}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
+                          <button
+                            onClick={() => handleUpdate(user._id)}
+                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                          >
+                            <CheckIcon className="text-blue-500 size-6" />
+                          </button>
+                          <button
+                            onClick={cancelEditing}
+                            className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+                          >
+                            <CloseIcon className="text-red-500" />
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <PersonIcon className="h-5 w-5 text-gray-400 mr-2" />
+                            {user.fullname || user.name}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <EmailIcon className="h-5 w-5 text-gray-400 mr-2" />
+                            {user.email}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
+                            {user.phone || "N/A"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            {user.role === "admin" ? (
+                              <>
+                                <AdminIcon className="h-5 w-5 text-purple-400 mr-2" />
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                  Admin
+                                </span>
+                              </>
                             ) : (
-                              <UserIcon className="h-5 w-5 text-gray-400" />
+                              <>
+                                <UserIcon className="h-5 w-5 text-blue-400 mr-2" />
+                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                  User
+                                </span>
+                              </>
                             )}
                           </div>
-                          <select
-                            name="role"
-                            value={formData.role}
-                            onSubmit={handleStatusChange}
-                            className={`border rounded px-2 py-1 w-full pl-10 appearance-none ${
-                              errors.role ? "border-red-500" : ""
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              user.status === "active"
+                                ? "bg-green-100 text-green-800"
+                                : user.status === "inactive"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
                             }`}
                           >
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                        </div>
-                        {errors.role && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.role}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <select
-                          name="status"
-                          value={formData.status}
-                          onChange={handleInputChange}
-                          className={`border rounded px-2 py-1 w-full ${
-                            errors.status ? "border-red-500" : ""
-                          }`}
-                        >
-                          <option value="active">Active</option>
-                          <option value="inactive">Inactive</option>
-                          <option value="suspended">Suspended</option>
-                        </select>
-                        {errors.status && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.status}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 space-x-2">
-                        <button
-                          onClick={() => handleUpdate(user._id)}
-                          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                        >
-                          <CheckIcon className="text-blue-500 size-6" />
-                        </button>
-                        <button
-                          onClick={cancelEditing}
-                          className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
-                        >
-                          <CloseIcon className="text-red-500" />
-                        </button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <PersonIcon className="h-5 w-5 text-gray-400 mr-2" />
-                          {user.fullname}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <EmailIcon className="h-5 w-5 text-gray-400 mr-2" />
-                          {user.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
-                          {user.phone || "N/A"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          {user.role === "admin" ? (
-                            <>
-                              <AdminIcon className="h-5 w-5 text-purple-400 mr-2" />
-                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                Admin
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <UserIcon className="h-5 w-5 text-blue-400 mr-2" />
-                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                User
-                              </span>
-                            </>
+                            {user.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <button
+                            onClick={() => startEditing(user)}
+                            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                          >
+                            <Edit className="text-green-500 size-6" />
+                          </button>
+                          {user._id !== placeholderUser._id && (
+                            <button
+                              onClick={() => handleDelete(user._id)}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                            >
+                              <Delete className="text-red-400 size-6" />
+                            </button>
                           )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            user.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : user.status === "inactive"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button
-                          onClick={() => startEditing(user)}
-                          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                        >
-                          <Edit className="text-green-500 size-6" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                        >
-                          <Delete className="text-red-400 size-6" />
-                        </button>
-                      </td>
-                    </>
-                  )}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center">
+                    No user information available
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-
-        {allUsers.length === 0 && (
-          <div className="p-4 text-center text-gray-500">No users found</div>
-        )}
 
         {totalPages > 1 && (
           <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">

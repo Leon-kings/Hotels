@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -17,24 +19,39 @@ import "react-toastify/dist/ReactToastify.css";
 
 const BookingSearch = ({ onSearchResults, onLoading }) => {
   const [searchTerm, setSearchTerm] = useState("");
-
   const handleSearch = async () => {
     try {
+      if (!searchTerm) {
+        toast.error("Please enter a booking ID");
+        return;
+      }
+
       onLoading(true);
       const response = await axios.get(
-        `https://hotel-nodejs-oa32.onrender.com/84383/92823/search?term=${searchTerm}`
+        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${searchTerm}`
       );
-      onSearchResults(response.data.bookings || []);
-      toast.success(`Found ${response.data.bookings?.length || 0} bookings`);
+
+      // Check if data exists in expected format
+      if (!response.data?.bookings) {
+        throw new Error("Unexpected API response format");
+      }
+
+      onSearchResults(response.data.bookings);
+      toast.success("Fetched successfully !!");
+      // ... success toast
     } catch (error) {
-      console.error("Search error:", error);
+      // Enhanced error logging
+      console.error("Full error:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      toast.error(error.response?.data?.message || "Failed to search bookings");
       onSearchResults([]);
-      toast.error("Failed to search bookings");
     } finally {
       onLoading(false);
     }
   };
-
   return (
     <div className="mb-6 flex items-center gap-2">
       <div className="relative flex-1">
@@ -43,11 +60,11 @@ const BookingSearch = ({ onSearchResults, onLoading }) => {
         </div>
         <input
           type="text"
-          placeholder="Search by name, email, booking ID..."
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Search by booking ID..."
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
         />
       </div>
       <button
@@ -80,7 +97,9 @@ const StatusBadge = ({ status }) => {
 
   return (
     <span
-      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClasses[status] || "bg-gray-100 text-gray-800"}`}
+      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+        statusClasses[status] || "bg-gray-100 text-gray-800"
+      }`}
     >
       {status}
     </span>
@@ -116,7 +135,8 @@ export default function AdminBookingView() {
         const response = await axios.get(
           "https://hotel-nodejs-oa32.onrender.com/84383/92823"
         );
-        const bookingsData = response.data?.bookings || response.data?.data?.bookings || [];
+        const bookingsData =
+          response.data?.bookings || response.data?.data?.bookings || [];
         setAllBookings(bookingsData);
         setTotalPages(Math.ceil(bookingsData.length / bookingsPerPage));
         updateCurrentBookings(bookingsData, 1);
@@ -161,8 +181,10 @@ export default function AdminBookingView() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
-    if (!formData.checkInDate) newErrors.checkInDate = "Check-in date is required";
-    if (!formData.checkOutDate) newErrors.checkOutDate = "Check-out date is required";
+    if (!formData.checkInDate)
+      newErrors.checkInDate = "Check-in date is required";
+    if (!formData.checkOutDate)
+      newErrors.checkOutDate = "Check-out date is required";
     if (!formData.roomType) newErrors.roomType = "Room type is required";
     if (!formData.status) newErrors.status = "Status is required";
 
@@ -181,14 +203,15 @@ export default function AdminBookingView() {
 
   const handleDelete = async (id) => {
     try {
-      if (!window.confirm("Are you sure you want to delete this booking?")) return;
+      if (!window.confirm("Are you sure you want to delete this booking?"))
+        return;
       setIsLoading(true);
-      
+
       await axios.delete(
         `https://hotel-nodejs-oa32.onrender.com/84383/92823/${id}`
       );
-      
-      setAllBookings(prev => prev.filter(booking => booking._id !== id));
+
+      setAllBookings((prev) => prev.filter((booking) => booking._id !== id));
       toast.success("Booking deleted successfully");
     } catch (error) {
       console.error("Error deleting booking:", error);
@@ -215,7 +238,8 @@ export default function AdminBookingView() {
     if (!validateForm()) return;
 
     try {
-      if (!window.confirm("Are you sure you want to update this booking?")) return;
+      if (!window.confirm("Are you sure you want to update this booking?"))
+        return;
       setIsLoading(true);
 
       const payload = {
@@ -232,12 +256,17 @@ export default function AdminBookingView() {
         payload
       );
 
-      const updatedBooking = response.data?.updatedBooking || response.data?.data || response.data;
-      
-      setAllBookings(prev => prev.map(booking => 
-        booking._id === bookingId ? { ...booking, ...updatedBooking } : booking
-      ));
-      
+      const updatedBooking =
+        response.data?.updatedBooking || response.data?.data || response.data;
+
+      setAllBookings((prev) =>
+        prev.map((booking) =>
+          booking._id === bookingId
+            ? { ...booking, ...updatedBooking }
+            : booking
+        )
+      );
+
       setEditingId(null);
       toast.success("Booking updated successfully");
     } catch (error) {
@@ -256,14 +285,18 @@ export default function AdminBookingView() {
       if (!window.confirm(`Change booking status to "${newStatus}"?`)) return;
       setIsLoading(true);
 
-      const response = await axios.patch(
-        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}/status`,
+      const response = await axios.put(
+        `https://hotel-nodejs-oa32.onrender.com/84383/92823/${bookingId}`,
         { status: newStatus }
       );
 
-      setAllBookings(prev => prev.map(booking => 
-        booking._id === bookingId ? { ...booking, status: newStatus } : booking
-      ));
+      setAllBookings((prev) =>
+        prev.map((booking) =>
+          booking._id === bookingId
+            ? { ...booking, status: newStatus }
+            : booking
+        )
+      );
 
       toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
@@ -276,9 +309,9 @@ export default function AdminBookingView() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
@@ -295,9 +328,9 @@ export default function AdminBookingView() {
   return (
     <div className="container mx-auto p-4">
       <ToastContainer position="top-right" autoClose={3000} />
-      
-      <BookingSearch 
-        onSearchResults={handleSearchResults} 
+
+      <BookingSearch
+        onSearchResults={handleSearchResults}
         onLoading={setSearchLoading}
       />
 
@@ -312,6 +345,9 @@ export default function AdminBookingView() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Guest
                 </th>
@@ -337,6 +373,14 @@ export default function AdminBookingView() {
                       <>
                         {/* Edit Mode */}
                         <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {booking._id}
+                          </div>
+                          <div className="text-sm font-medium text-gray-500">
+                            {booking.name}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-2">
                             <div>
                               <input
@@ -344,13 +388,17 @@ export default function AdminBookingView() {
                                 name="name"
                                 value={formData.name}
                                 onChange={handleInputChange}
-                                className={`border rounded px-3 py-2 w-full ${
-                                  errors.name ? "border-red-500" : "border-gray-300"
+                                className={`border rounded px-3 text-black py-2 w-full ${
+                                  errors.name
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                 }`}
                                 placeholder="Guest Name"
                               />
                               {errors.name && (
-                                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.name}
+                                </p>
                               )}
                             </div>
                             <div>
@@ -359,13 +407,17 @@ export default function AdminBookingView() {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                className={`border rounded px-3 py-2 w-full ${
-                                  errors.email ? "border-red-500" : "border-gray-300"
+                                className={`border rounded px-3 py-2 text-black w-full ${
+                                  errors.email
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                 }`}
                                 placeholder="Email"
                               />
                               {errors.email && (
-                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.email}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -373,33 +425,45 @@ export default function AdminBookingView() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-2">
                             <div>
-                              <label className="block text-sm text-gray-500 mb-1">Check-in</label>
+                              <label className="block text-sm text-gray-500 mb-1">
+                                Check-in
+                              </label>
                               <input
                                 type="date"
                                 name="checkInDate"
                                 value={formData.checkInDate}
                                 onChange={handleInputChange}
-                                className={`border rounded px-3 py-2 w-full ${
-                                  errors.checkInDate ? "border-red-500" : "border-gray-300"
+                                className={`border rounded text-black px-3 py-2 w-full ${
+                                  errors.checkInDate
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                 }`}
                               />
                               {errors.checkInDate && (
-                                <p className="text-red-500 text-xs mt-1">{errors.checkInDate}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.checkInDate}
+                                </p>
                               )}
                             </div>
                             <div>
-                              <label className="block text-sm text-gray-500 mb-1">Check-out</label>
+                              <label className="block text-sm text-gray-500 mb-1">
+                                Check-out
+                              </label>
                               <input
                                 type="date"
                                 name="checkOutDate"
                                 value={formData.checkOutDate}
                                 onChange={handleInputChange}
-                                className={`border rounded px-3 py-2 w-full ${
-                                  errors.checkOutDate ? "border-red-500" : "border-gray-300"
+                                className={`border rounded px-3 text-black py-2 w-full ${
+                                  errors.checkOutDate
+                                    ? "border-red-500"
+                                    : "border-gray-300"
                                 }`}
                               />
                               {errors.checkOutDate && (
-                                <p className="text-red-500 text-xs mt-1">{errors.checkOutDate}</p>
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.checkOutDate}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -409,39 +473,55 @@ export default function AdminBookingView() {
                             name="roomType"
                             value={formData.roomType}
                             onChange={handleInputChange}
-                            className={`border rounded px-3 py-2 w-full ${
-                              errors.roomType ? "border-red-500" : "border-gray-300"
+                            className={`border rounded px-3 text-black py-2 w-full ${
+                              errors.roomType
+                                ? "border-red-500"
+                                : "border-gray-300"
                             }`}
                           >
                             <option value="">Select Room Type</option>
-                            {roomTypes.map(type => (
-                              <option key={type} value={type} className="capitalize">
+                            {roomTypes.map((type) => (
+                              <option
+                                key={type}
+                                value={type}
+                                className="capitalize text-black"
+                              >
                                 {type}
                               </option>
                             ))}
                           </select>
                           {errors.roomType && (
-                            <p className="text-red-500 text-xs mt-1">{errors.roomType}</p>
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.roomType}
+                            </p>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <select
                             name="status"
                             value={formData.status}
-                            onChange={handleInputChange}
-                            className={`border rounded px-3 py-2 w-full ${
-                              errors.status ? "border-red-500" : "border-gray-300"
+                            onChange={handleStatusChange}
+                            className={`border rounded px-3 text-black py-2 w-full ${
+                              errors.status
+                                ? "border-red-500"
+                                : "border-gray-300"
                             }`}
                           >
                             <option value="">Select Status</option>
-                            {statusOptions.map(status => (
-                              <option key={status} value={status} className="capitalize">
+                            {statusOptions.map((status) => (
+                              <option
+                                key={status}
+                                value={status}
+                                className="capitalize text-black"
+                              >
                                 {status}
                               </option>
                             ))}
                           </select>
                           {errors.status && (
-                            <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.status}
+                            </p>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -466,21 +546,33 @@ export default function AdminBookingView() {
                         {/* View Mode */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
+                            {booking._id}
+                          </div>
+                          <div className="text-sm font-medium text-gray-400">
                             {booking.name}
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
                             {booking.email}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">
-                            {format(parseISO(booking.checkInDate), "MMM d, yyyy")}
+                            {format(
+                              parseISO(booking.checkInDate),
+                              "MMM d, yyyy"
+                            )}
                           </div>
                           <div className="text-sm text-gray-500">
-                            to {format(parseISO(booking.checkOutDate), "MMM d, yyyy")}
+                            to{" "}
+                            {format(
+                              parseISO(booking.checkOutDate),
+                              "MMM d, yyyy"
+                            )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap capitalize">
+                        <td className="px-6 py-4 text-gray-900 whitespace-nowrap capitalize">
                           {booking.roomType}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -508,7 +600,10 @@ export default function AdminBookingView() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan="5"
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     No bookings found
                   </td>
                 </tr>
@@ -539,32 +634,41 @@ export default function AdminBookingView() {
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{(currentPage - 1) * bookingsPerPage + 1}</span> to{" "}
+                  Showing{" "}
                   <span className="font-medium">
-                    {Math.min(currentPage * bookingsPerPage, allBookings.length)}
+                    {(currentPage - 1) * bookingsPerPage + 1}
                   </span>{" "}
-                  of <span className="font-medium">{allBookings.length}</span> bookings
+                  to{" "}
+                  <span className="font-medium">
+                    {Math.min(
+                      currentPage * bookingsPerPage,
+                      allBookings.length
+                    )}
+                  </span>{" "}
+                  of <span className="font-medium">{allBookings.length}</span>{" "}
+                  bookings
                 </p>
               </div>
               <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <nav
+                  className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                  aria-label="Pagination"
+                >
                   <button
                     onClick={() => handlePageChange(1)}
                     disabled={currentPage === 1}
                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span className="sr-only">First</span>
-                    «
+                    <span className="sr-only">First</span>«
                   </button>
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span className="sr-only">Previous</span>
-                    ‹
+                    <span className="sr-only">Previous</span>‹
                   </button>
-                  
+
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
                     if (totalPages <= 5) {
@@ -576,7 +680,7 @@ export default function AdminBookingView() {
                     } else {
                       pageNum = currentPage - 2 + i;
                     }
-                    
+
                     return (
                       <button
                         key={pageNum}
@@ -591,22 +695,20 @@ export default function AdminBookingView() {
                       </button>
                     );
                   })}
-                  
+
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span className="sr-only">Next</span>
-                    ›
+                    <span className="sr-only">Next</span>›
                   </button>
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span className="sr-only">Last</span>
-                    »
+                    <span className="sr-only">Last</span>»
                   </button>
                 </nav>
               </div>
