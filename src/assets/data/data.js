@@ -3,8 +3,8 @@ import cursol1 from "../images/img/Blog-6-scaled.webp";
 import cursol2 from "../images/img/RESIDENT-EDINBURGH-JUNIOR-SUITE-CASTLE-VIEW-PROMINENT-1400x928.jpg";
 import cursol3 from "../images/img/hero-bg.jpg";
 import cursol4 from "../images/img/cta-bg.jpg";
-import cursol5 from '../images/img/65045f093c166fdddb4a94a5_x-65045f0266217.webp'
-import cursol6 from '../images/img/1407953244000-177513283.webp'
+import cursol5 from "../images/img/65045f093c166fdddb4a94a5_x-65045f0266217.webp";
+import cursol6 from "../images/img/1407953244000-177513283.webp";
 // cursol-images
 import service from "../images/img/club_one-bedroom_executive-suite.jpg";
 // services-images
@@ -34,8 +34,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
-      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   {
@@ -43,8 +53,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
-      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   {
@@ -52,8 +72,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary", href: "/R-8763-327/34" },
-      { text: "Book A Room", variant: "outlined", color: "inherit", href: "/C-3872-2344/34" },
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   //
@@ -62,8 +92,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34" },
-      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   {
@@ -71,8 +111,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34"},
-      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   {
@@ -80,8 +130,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34"},
-      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
   {
@@ -89,8 +149,18 @@ export const carouselItems = [
     title: "Discover A Brand Luxurious Hotel",
     subtitle: "Luxury Living Rooms",
     buttons: [
-      { text: "Our Rooms", variant: "contained", color: "primary" , href: "/R-8763-327/34"},
-      { text: "Book A Room", variant: "outlined", color: "inherit" ,href: "/C-3872-2344/34"},
+      {
+        text: "Our Rooms",
+        variant: "contained",
+        color: "primary",
+        href: "/R-8763-327/34",
+      },
+      {
+        text: "Book A Room",
+        variant: "outlined",
+        color: "inherit",
+        href: "/C-3872-2344/34",
+      },
     ],
   },
 ];
@@ -208,6 +278,7 @@ export const teamMembers = [
     name: "Aline Jane",
     position: "Head Chief",
     image: team1,
+    bio: "Am Aline Jane, I have an experience of 4 years working in kitchen as Head Chief , 2 years as Chief and 3 years as Chief Trainner .",
     delay: 0.1,
   },
   {
@@ -215,6 +286,7 @@ export const teamMembers = [
     name: "Jane Jackson",
     position: "Manager",
     image: team2,
+    bio: "Am Jane Jackson, I have an experience of 4 years working E Bank as General Manager , 2 years as restaurant's Manager .",
     delay: 0.3,
   },
   {
@@ -222,6 +294,7 @@ export const teamMembers = [
     name: "AX Carler",
     position: "Marketting Officer",
     image: team3,
+    bio: "Am AX Carler, I have an experience of 4 years working as Marketting  Officer in MRM , 2 years as Marketting Manager and 3 years as Field Marketting Agent .",
     delay: 0.5,
   },
   {
@@ -229,6 +302,7 @@ export const teamMembers = [
     name: "Horely Potter",
     position: "Chief",
     image: team4,
+    bio: "Am Horely Potter, I have an experience of 2 years working in kitchen as Head Chief , 2 years as Chief and 1 years as Chief Trainner",
     delay: 0.7,
   },
 ];

@@ -15,6 +15,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const Booking = () => {
   const [formData, setFormData] = useState({
@@ -81,42 +83,67 @@ export const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    
+    setIsSubmitting(true);
     try {
-      // Simulate API call
-      try {
-        const results = await axios.post(
-          "https://hotel-nodejs-oa32.onrender.com/84383/92823",
-          formData
-        );
-        if (results) {
-          alert("Check for confirmation email .");
-        } else {
-          alert("Server error !!");
-        }
-      } catch (error) {
-        alert("Submission error:", error);
-      } finally {
-        setIsSubmitting(false);
-      }
-
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({
-          checkInDate: "",
-          checkOutDate: "",
-          adults: "",
-          name: "",
-          email: "",
-          children: "",
-          roomType: "",
+      const results = await axios.post(
+        "https://hotel-nodejs-oa32.onrender.com/84383/92823",
+        formData
+      );
+      
+      if (results) {
+        toast.success("Check for confirmation email.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
-        setSubmitSuccess(false);
-      }, 3000);
+        setSubmitSuccess(true);
+      } else {
+        toast.error("Server error!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
     } catch (error) {
+      toast.error("Submission error. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
       console.error("Submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
+
+    // Reset form after successful submission
+    setTimeout(() => {
+      setFormData({
+        checkInDate: "",
+        checkOutDate: "",
+        adults: "",
+        name: "",
+        email: "",
+        children: "",
+        roomType: "",
+      });
+      setSubmitSuccess(false);
+    }, 3000);
   };
 
   const containerVariants = {
@@ -146,6 +173,7 @@ export const Booking = () => {
 
   return (
     <>
+      <ToastContainer />
       <div className="w-full mt-0 mb-2 rounded-2xl">
         <Box
           component="section"

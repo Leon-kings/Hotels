@@ -54,7 +54,7 @@ export const OurTeam = () => {
               transition={{ duration: 0.5, delay: member.delay }}
             >
               <div className="text-center rounded-lg overflow-hidden">
-                <div 
+                <div
                   className="rounded-full overflow-hidden mx-auto my-6 w-40 h-40 cursor-pointer"
                   onClick={() => openModal(member)}
                 >
@@ -67,23 +67,15 @@ export const OurTeam = () => {
                 <h3 className="mb-1 text-black text-xl font-bold">
                   {member.name}
                 </h3>
-                <p className="text-gray-600">
-                  {member.position}
-                </p>
+                <p className="text-gray-600">{member.position}</p>
                 <div className="flex justify-center mt-4 space-x-2">
-                  <button
-                    className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600"
-                  >
+                  <button className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600">
                     <Facebook fontSize="small" />
                   </button>
-                  <button
-                    className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600"
-                  >
+                  <button className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600">
                     <Twitter fontSize="small" />
                   </button>
-                  <button
-                    className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600"
-                  >
+                  <button className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600">
                     <Instagram fontSize="small" />
                   </button>
                 </div>
@@ -99,39 +91,34 @@ export const OurTeam = () => {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-bold">{selectedMember.name}</h3>
-                <button 
+                <h3 className="text-2xl text-black font-bold">
+                  {selectedMember.name}
+                </h3>
+                <button
                   onClick={closeModal}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-red-500 dark:text-red-500"
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="w-full md:w-1/3">
                   <img
                     src={selectedMember.image}
-                    alt={selectedMember.name}
+                    alt=""
                     className="w-full h-auto rounded-lg"
                   />
                 </div>
-                
-                <div className="w-full md:w-2/3">
-                  <p className="text-lg font-semibold mb-2">{selectedMember.position}</p>
-                  {selectedMember.bio && <p className="mb-4">{selectedMember.bio}</p>}
-                  
-                  <div className="mt-4">
-                    <h4 className="font-bold mb-2">Details:</h4>
-                    <ul className="space-y-2">
-                      {selectedMember.details && Object.entries(selectedMember.details).map(([key, value]) => (
-                        <li key={key}>
-                          <span className="font-semibold">{key}:</span> {value}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
+
+                <div className="w-full md:w-2/3 text-black">
+                  <p className="text-lg text-black font-semibold mb-2">
+                    {selectedMember.position}
+                  </p>
+                  {selectedMember.bio && (
+                    <p className="mb-4">{selectedMember.bio}</p>
+                  )}
+
                   <div className="flex space-x-2 mt-6">
                     <button className="p-2 bg-blue-100 rounded-full hover:bg-blue-200 text-blue-600">
                       <Facebook fontSize="small" />

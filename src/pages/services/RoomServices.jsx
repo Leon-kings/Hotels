@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { additionalRooms, initialRooms } from "../../assets/data/data";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   AreaChart,
   Bathroom,
@@ -502,7 +504,12 @@ const CartModal = ({
 // ***********************************************************************************************************************************************************
 // payment
 
-const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
+export const PaymentModal = ({
+  cartTotal,
+  cartItems,
+  onClose,
+  onPaymentSuccess,
+}) => {
   const [paymentMethod, setPaymentMethod] = useState("credit");
   const [cardDetails, setCardDetails] = useState({
     number: "",
@@ -521,7 +528,7 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
       try {
         const token = localStorage.getItem("authToken");
         console.log("[PaymentModal] Token found:", token ? "Yes" : "No");
-        alert("[PaymentModal] Token found:", token ? "Yes" : "No");
+
         if (token) {
           const decoded = jwtDecode(token);
           console.log("[PaymentModal] Decoded token:", decoded);
@@ -535,7 +542,7 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
             "[PaymentModal] Extracted email:",
             userEmail || "Not found"
           );
-          alert("[PaymentModal] Extracted email:", userEmail || "Not found");
+
           if (userEmail) {
             setCardDetails((prev) => ({
               ...prev,
@@ -546,6 +553,16 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
       } catch (error) {
         console.error("[PaymentModal] Error decoding token:", error);
         setError("Failed to load user information");
+        toast.error("Failed to load user information", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       } finally {
         setIsLoadingEmail(false);
       }
@@ -602,6 +619,16 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
   const validateForm = () => {
     if (!cardDetails.email) {
       setError("Email is required");
+      toast.error("Email is required", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
       return false;
     }
 
@@ -611,18 +638,58 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
         cardDetails.number.replace(/\s/g, "").length < 15
       ) {
         setError("Please enter a valid card number");
+        toast.error("Please enter a valid card number", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         return false;
       }
       if (!cardDetails.name) {
         setError("Cardholder name is required");
+        toast.error("Cardholder name is required", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         return false;
       }
       if (!cardDetails.expiry || cardDetails.expiry.length < 5) {
         setError("Please enter a valid expiry date (MM/YY)");
+        toast.error("Please enter a valid expiry date (MM/YY)", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         return false;
       }
       if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
         setError("Please enter a valid CVV");
+        toast.error("Please enter a valid CVV", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         return false;
       }
     }
@@ -678,7 +745,18 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
         "[PaymentModal] Order saved to database:",
         orderResponse.data
       );
-      alert("[PaymentModal] Order saved to database !!!");
+
+      toast.success("Order saved to database!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
       if (!orderResponse.data.success) {
         throw new Error("Failed to save order to database");
       }
@@ -715,7 +793,16 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
         }
       );
 
-      alert("[PaymentModal] Payment processed");
+      toast.success("Payment processed successfully!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
 
       if (paymentResponse.data.success) {
         // Update order status to completed
@@ -730,7 +817,17 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
           }
         );
 
-        alert("[PaymentModal] Order status updated to completed");
+        toast.success("Order status updated to completed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+
         onPaymentSuccess({
           ...paymentResponse.data,
           orderId,
@@ -742,11 +839,26 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
         );
       }
     } catch (error) {
-      alert("[PaymentModal] Error during payment process:", error);
+      console.error("[PaymentModal] Error during payment process:", error);
       setError(
         error.response?.data?.message ||
           error.message ||
           "An error occurred during payment processing. Please try again."
+      );
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An error occurred during payment processing. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
       );
     } finally {
       setIsProcessing(false);
@@ -754,228 +866,233 @@ const PaymentModal = ({ cartTotal, cartItems, onClose, onPaymentSuccess }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
+    <>
+      <ToastContainer />
       <motion.div
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 50, opacity: 0 }}
-        className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        onClick={onClose}
       >
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">Complete Payment</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-              disabled={isProcessing}
-            >
-              <Close className="text-red-400" />
-            </button>
-          </div>
-
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
-              {error}
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 50, opacity: 0 }}
+          className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">Complete Payment</h2>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700"
+                disabled={isProcessing}
+              >
+                <Close className="text-red-400" />
+              </button>
             </div>
-          )}
 
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-medium mb-3">Order Details</h3>
-            <div className="space-y-3">
-              {cartItems.map((item, index) => (
-                <div key={index} className="pb-3 border-b last:border-b-0">
-                  <div className="flex justify-between">
-                    <span className="font-medium">
-                      {item.quantity || 1}x {item.name}
-                    </span>
-                    <span>
-                      ${(item.price * (item.quantity || 1)).toFixed(2)}
-                    </span>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="font-medium mb-3">Order Details</h3>
+              <div className="space-y-3">
+                {cartItems.map((item, index) => (
+                  <div key={index} className="pb-3 border-b last:border-b-0">
+                    <div className="flex justify-between">
+                      <span className="font-medium">
+                        {item.quantity || 1}x {item.name}
+                      </span>
+                      <span>
+                        ${(item.price * (item.quantity || 1)).toFixed(2)}
+                      </span>
+                    </div>
+                    {item.roomNumber && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        Room: {item.roomNumber}
+                      </div>
+                    )}
+                    {item.description && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        {item.description}
+                      </div>
+                    )}
                   </div>
-                  {item.roomNumber && (
-                    <div className="text-sm text-gray-500 mt-1">
-                      Room: {item.roomNumber}
-                    </div>
-                  )}
-                  {item.description && (
-                    <div className="text-sm text-gray-500 mt-1">
-                      {item.description}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between font-bold text-lg mt-4 pt-3 border-t">
-              <span>Total Amount</span>
-              <span>${cartTotal.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2">Payment Method</label>
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  className={`px-4 py-2 rounded border ${
-                    paymentMethod === "credit"
-                      ? "border-blue-500  text-white"
-                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                  } transition-colors`}
-                  onClick={() => setPaymentMethod("credit")}
-                  disabled={isProcessing}
-                >
-                  Credit Card
-                </button>
-                <button
-                  type="button"
-                  className={`px-4 py-2 rounded border ${
-                    paymentMethod === "paypal"
-                      ? "border-blue-500  text-white"
-                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                  } transition-colors`}
-                  onClick={() => setPaymentMethod("paypal")}
-                  disabled={isProcessing}
-                >
-                  PayPal
-                </button>
+                ))}
+              </div>
+              <div className="flex justify-between font-bold text-lg mt-4 pt-3 border-t">
+                <span>Total Amount</span>
+                <span>${cartTotal.toFixed(2)}</span>
               </div>
             </div>
 
-            {paymentMethod === "credit" && (
-              <>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-1">
-                    Card Number
-                  </label>
-                  <input
-                    type="text"
-                    name="number"
-                    value={cardDetails.number}
-                    onChange={handleCardNumberChange}
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    maxLength={19}
-                    required
+            <form onSubmit={handleSubmit} autoComplete="on">
+              <div className="mb-6">
+                <label className="block text-gray-700 mb-2">
+                  Payment Method
+                </label>
+                <div className="flex space-x-4">
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded border ${
+                      paymentMethod === "credit"
+                        ? "border-blue-500 bg-blue-500 text-white"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    } transition-colors`}
+                    onClick={() => setPaymentMethod("credit")}
                     disabled={isProcessing}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-1">
-                    Cardholder Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={cardDetails.name}
-                    onChange={handleInputChange}
-                    placeholder="John Doe"
-                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  >
+                    Credit Card
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-4 py-2 rounded border ${
+                      paymentMethod === "paypal"
+                        ? "border-blue-500 bg-blue-500 text-white"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    } transition-colors`}
+                    onClick={() => setPaymentMethod("paypal")}
                     disabled={isProcessing}
-                  />
+                  >
+                    PayPal
+                  </button>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
+              {paymentMethod === "credit" && (
+                <>
+                  <div className="mb-4">
                     <label className="block text-gray-700 mb-1">
-                      Expiry Date
+                      Card Number
                     </label>
                     <input
                       type="text"
-                      name="expiry"
-                      value={cardDetails.expiry}
-                      onChange={handleExpiryChange}
-                      placeholder="MM/YY"
+                      name="number"
+                      value={cardDetails.number}
+                      onChange={handleCardNumberChange}
+                      placeholder="1234 5678 9012 3456"
                       className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      maxLength={5}
+                      maxLength={19}
                       required
                       disabled={isProcessing}
                     />
                   </div>
-                  <div>
-                    <label className="block text-gray-700 mb-1">CVV</label>
+
+                  <div className="mb-4">
+                    <label className="block text-gray-700 mb-1">
+                      Cardholder Name
+                    </label>
                     <input
                       type="text"
-                      name="cvv"
-                      value={cardDetails.cvv}
+                      name="name"
+                      value={cardDetails.name}
                       onChange={handleInputChange}
-                      placeholder="123"
+                      placeholder="John Doe"
                       className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      maxLength={4}
                       required
                       disabled={isProcessing}
                     />
                   </div>
-                </div>
-              </>
-            )}
 
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-1">Email</label>
-              {isLoadingEmail ? (
-                <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
-              ) : (
-                <input
-                  type="email"
-                  name="email"
-                  value={cardDetails.email}
-                  onChange={handleInputChange}
-                  placeholder="your@email.com"
-                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  readOnly={!!cardDetails.email}
-                />
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isProcessing}
-              className={`w-full py-3 px-6 rounded-lg font-medium text-white ${
-                isProcessing ? "bg-blue-400" : "bg-blue-600 hover:bg-white"
-              } transition-colors flex items-center justify-center`}
-            >
-              {isProcessing ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label className="block text-gray-700 mb-1">
+                        Expiry Date
+                      </label>
+                      <input
+                        type="text"
+                        name="expiry"
+                        value={cardDetails.expiry}
+                        onChange={handleExpiryChange}
+                        placeholder="MM/YY"
+                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        maxLength={5}
+                        required
+                        disabled={isProcessing}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 mb-1">CVV</label>
+                      <input
+                        type="text"
+                        name="cvv"
+                        value={cardDetails.cvv}
+                        onChange={handleInputChange}
+                        placeholder="123"
+                        className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        maxLength={4}
+                        required
+                        disabled={isProcessing}
+                      />
+                    </div>
+                  </div>
                 </>
-              ) : (
-                `Pay $${cartTotal.toFixed(2)}`
               )}
-            </button>
-          </form>
-        </div>
+
+              <div className="mb-6">
+                <label className="block text-gray-700 mb-1">Email</label>
+                {isLoadingEmail ? (
+                  <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+                ) : (
+                  <input
+                    type="email"
+                    name="email"
+                    value={cardDetails.email}
+                    onChange={handleInputChange}
+                    placeholder="your@email.com"
+                    className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                    readOnly={!!cardDetails.email}
+                  />
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isProcessing}
+                className={`w-full py-3 px-6 rounded-lg font-medium text-white ${
+                  isProcessing ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+                } transition-colors flex items-center justify-center`}
+              >
+                {isProcessing ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  `Pay $${cartTotal.toFixed(2)}`
+                )}
+              </button>
+            </form>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   );
 };
 

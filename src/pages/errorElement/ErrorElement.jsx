@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouteError } from 'react-router-dom';
+import NotFound from '../not found/NotFound';
 
 export default function ErrorBoundary() {
   const error = useRouteError();
@@ -9,7 +10,7 @@ export default function ErrorBoundary() {
   }
 
   return (
-    <div>
+    <div className='bg-white text-black'>
       <h1>Something went wrong</h1>
       <p>{error.message}</p>
     </div>

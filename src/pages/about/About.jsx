@@ -68,13 +68,15 @@ export const About = () => {
                 {showMore && (
                   <div className="space-y-4">
                     <p className="text-gray-600">
-                      Our hotel offers world-class amenities including a spa, fitness center, 
-                      and multiple dining options. Located in the heart of Kigali, we provide 
-                      easy access to the city's top attractions.
+                      Our hotel offers world-class amenities including a spa,
+                      fitness center, and multiple dining options. Located in
+                      the heart of Kigali, we provide easy access to the city's
+                      top attractions.
                     </p>
                     <p className="text-gray-600">
-                      With over 10 years of experience in hospitality, our dedicated staff 
-                      ensures every guest receives exceptional service throughout their stay.
+                      With over 10 years of experience in hospitality, our
+                      dedicated staff ensures every guest receives exceptional
+                      service throughout their stay.
                     </p>
                   </div>
                 )}
@@ -122,7 +124,7 @@ export const About = () => {
                             <div className="text-blue-600 mb-4 flex justify-center">
                               {stat.icon}
                             </div>
-                            <h4 className="text-2xl font-bold mb-2">
+                            <h4 className="text-2xl text-blue-400 font-bold mb-2">
                               {stat.count.toLocaleString()}
                             </h4>
                             <p className="text-gray-600">{stat.label}</p>
@@ -140,7 +142,7 @@ export const About = () => {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeIn}
-                className="mt-8"
+                className="mt-8 p-4"
               >
                 <button
                   onClick={toggleShowMore}
@@ -157,7 +159,11 @@ export const About = () => {
                 {images.map((img, index) => (
                   <div
                     key={index}
-                    className={`flex ${img.justify === "flex-start" ? "justify-start" : "justify-end"}`}
+                    className={`flex ${
+                      img.justify === "flex-start"
+                        ? "justify-start"
+                        : "justify-end"
+                    }`}
                   >
                     <motion.div
                       custom={img.delay}
@@ -165,7 +171,9 @@ export const About = () => {
                       whileInView="visible"
                       viewport={{ once: true }}
                       variants={zoomIn}
-                      className={`w-full ${img.width === "80%" ? "w-4/5" : "w-full"} ${img.mt ? `mt-${img.mt}` : ""}`}
+                      className={`w-full ${
+                        img.width === "80%" ? "w-4/5" : "w-full"
+                      } ${img.mt ? `mt-${img.mt}` : ""}`}
                     >
                       <img
                         src={img.src}
