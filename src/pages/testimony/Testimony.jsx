@@ -1,11 +1,11 @@
-
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { testimonials } from "../../assets/data/data";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Cancel } from "@mui/icons-material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Cancel, Refresh } from "@mui/icons-material";
+import axios from "axios";
 
 export const Testimony = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,6 +13,7 @@ export const Testimony = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -49,31 +50,42 @@ export const Testimony = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log("Testimonial submitted:", formData);
-    
-    // Show success toast
-    toast.success('Thank you for your testimonial! We\'ll review it soon.', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-    
-    // Reset form and hide it
-    setFormData({
-      name: "",
-      email: "",
-      profession: "",
-      text: "",
-    });
-    setShowForm(false);
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(
+        "https://hotel-nodejs-oa32.onrender.com/76823/2387",
+        formData
+      );
+      if (response) {
+        toast.success("Thank you for your testimonial! We'll review it soon.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        profession: "",
+        text: "",
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Submission failed", {
+        position: "top-center",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const variants = {
@@ -124,13 +136,12 @@ export const Testimony = () => {
                 transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
                 className="absolute inset-0 flex items-center justify-center px-4"
               >
-                <div 
+                <div
                   className="testimonial-item bg-white rounded-lg p-8 shadow-xl relative max-w-2xl mx-auto cursor-pointer hover:shadow-2xl transition duration-300"
                   onClick={() => openModal(testimonials[currentIndex])}
                 >
                   <p className="text-gray-700 mb-6">
                     {testimonials[currentIndex].text.slice(0, 200)}...
-                    
                   </p>
                   <div className="flex items-center">
                     <img
@@ -165,14 +176,12 @@ export const Testimony = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-
-
         </div>
 
         {/* Testimonial Modal */}
         {showModal && selectedTestimonial && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <motion.div 
+            <motion.div
               className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -230,7 +239,7 @@ export const Testimony = () => {
         {/* Testimonial Form */}
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <motion.div 
+            <motion.div
               className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -238,7 +247,9 @@ export const Testimony = () => {
               transition={{ duration: 0.2 }}
             >
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Share Your Experience</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Share Your Experience
+                </h3>
                 <button
                   onClick={() => setShowForm(false)}
                   className="text-gray-500 hover:text-gray-700"
@@ -259,10 +270,13 @@ export const Testimony = () => {
                   </svg>
                 </button>
               </div>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Your Name
                   </label>
                   <input
@@ -275,9 +289,12 @@ export const Testimony = () => {
                     className="mt-1 block w-full border text-black border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Email Address
                   </label>
                   <input
@@ -290,9 +307,12 @@ export const Testimony = () => {
                     className="mt-1 block w-full text-black border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="profession" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="profession"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Profession/Title
                   </label>
                   <input
@@ -304,9 +324,12 @@ export const Testimony = () => {
                     className="mt-1 block w-full text-black border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="text" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="text"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Your Testimonial
                   </label>
                   <textarea
@@ -319,14 +342,14 @@ export const Testimony = () => {
                     className="mt-1 block w-full text-black border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   ></textarea>
                 </div>
-                
+
                 <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
                     className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
-                    <Refr className="text-red-400 size-6"/>
+                    <Refresh className="text-red-400 size-6" />
                   </button>
                   <button
                     type="submit"

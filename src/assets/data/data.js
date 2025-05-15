@@ -24,6 +24,7 @@ import service3 from "../images/img/Pick-out-a-theme.jpg";
 import service4 from "../images/img/yoga-hotel-monaco-joe-longo-940x540.jpg";
 import service5 from "../images/img/942db23a-16c1-441f-a948-baf37c1f3f8f_1078b037.webp";
 import service6 from "../images/img/Screenshot-2024-08-02-at-12.32.24.png";
+
 // room
 import room1 from "../images/img/room.jpg";
 import froom from "../images/img/Open-concept-living-room-TWP0380-CV1hghhEaBBAkX_uv8K9cw-3313dfd39e2b42f5b37f43b8dfa14e08.jpg";
@@ -212,7 +213,7 @@ export const additionalRooms = [
     baths: 1,
     description:
       "Deluxe Room: A step up from the standard room, a deluxe room offers more space, upgraded furnishings, and additional amenities. Deluxe rooms often feature better views, larger beds, and more luxurious bathroom fixtures.",
-    image: service,
+    image: service5,
   },
   {
     id: 5,
@@ -222,7 +223,7 @@ export const additionalRooms = [
     baths: 1,
     description:
       " a Presidential Suite is the most luxurious and expansive suite, often featuring multiple rooms, private amenities, and designed to accommodate high-profile guests. ",
-    image: cursol,
+    image: service1,
   },
   {
     id: 6,
