@@ -1,7 +1,8 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable react-refresh/only-export-components */
+
 import React, { useEffect, useState, createContext, useContext } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Booking } from "./components/booking/Book";
 import { About } from "./pages/about/About";
 import { RoomsServices } from "./pages/services/RoomServices";
@@ -12,7 +13,6 @@ import Home from "./pages/home/Home";
 import { ContactSection } from "./pages/contact/Contact";
 import { Dashboard } from "./components/dashboard/index/Dashboard";
 import { Login } from "./pages/login/Login";
-// Dashboard routes
 import UserDashboard from "./components/dashboard/index/UserDashboard";
 import { AdminReportGenerator } from "./components/dashboard/components/report/AdminReportGenerator";
 import { BookingPannel } from "./components/dashboard/components/pannel/BookingPannel";
@@ -29,122 +29,319 @@ import NotFound from "./pages/not found/NotFound";
 import Layout from "./pages/layout/Layout";
 import ErrorBoundary from "./pages/errorElement/ErrorElement";
 
-// Create Auth Context
+// Auth Context
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [userEmail, setUserEmail] = useState(null);
+  const [authState, setAuthState] = useState({
+    userEmail: null,
+    isLoading: true,
+    isAuthenticated: false,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const email = localStorage.getItem("userEmail");
+
+    if (token && email) {
+      setAuthState({
+        userEmail: email,
+        isLoading: false,
+        isAuthenticated: true,
+      });
+    } else {
+      setAuthState((prev) => ({
+        ...prev,
+        isLoading: false,
+      }));
+    }
+  }, []);
 
   const login = (email, token) => {
-    setUserEmail(email);
     localStorage.setItem("authToken", token);
     localStorage.setItem("userEmail", email);
+    setAuthState({
+      userEmail: email,
+      isLoading: false,
+      isAuthenticated: true,
+    });
   };
 
   const logout = () => {
-    setUserEmail(null);
     localStorage.removeItem("authToken");
     localStorage.removeItem("userEmail");
+    setAuthState({
+      userEmail: null,
+      isLoading: false,
+      isAuthenticated: false,
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ userEmail, login, logout }}>
+    <AuthContext.Provider value={{ ...authState, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }
 
-// ProtectedRoute component remains the same but uses userEmail
-const ProtectedRoute = ({ children }) => {
-  const { userEmail } = useAuth();
-  const [loading, setLoading] = useState(true);
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const email = localStorage.getItem("userEmail");
-    if (token && email) {
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, []);
+const PublicRoute = ({ children }) => {
+  const { isLoading } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
-  if (!userEmail && !localStorage.getItem("authToken")) {
+  return children;
+};
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/L-6382-8279/34" replace />;
   }
 
   return children;
 };
 
+const RestrictedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+const AppContent = () => {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes that are always accessible */}
+        <Route element={<Layout />}>
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Home />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/L-6382-8279/34"
+            element={
+              <RestrictedRoute>
+                <Login />
+              </RestrictedRoute>
+            }
+          />
+        </Route>
+        {/* Protected routes */}
+        <Route element={<Layout />}>
+          <Route
+            path="/A-7483-783/34"
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/B-7839-283/34"
+            element={
+              <ProtectedRoute>
+                <Booking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/S-6832-342/34"
+            element={
+              <ProtectedRoute>
+                <Service />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/R-8763-327/34"
+            element={
+              <ProtectedRoute>
+                <RoomsServices />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/O-2973-342/34"
+            element={
+              <ProtectedRoute>
+                <OurTeam />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/T-8732-452/34"
+            element={
+              <ProtectedRoute>
+                <Testimony />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/C-3872-2344/34"
+            element={
+              <ProtectedRoute>
+                <ContactSection />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Dashboard routes */}
+          <Route
+            path="/Dash-32793"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/U-23-Dash-32793"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/AB-7832-342"
+            element={
+              <ProtectedRoute>
+                <BookingPannel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/MS-3562-922"
+            element={
+              <ProtectedRoute>
+                <MessagePannel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/UV-2390-389"
+            element={
+              <ProtectedRoute>
+                <UserPannel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ARG-3832-382"
+            element={
+              <ProtectedRoute>
+                <AdminReportGenerator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/C-6784-873"
+            element={
+              <ProtectedRoute>
+                <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/PF-5638-893"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/SG-6788-327"
+            element={
+              <ProtectedRoute>
+                <SettingsPannel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/GD-2761-823"
+            element={
+              <ProtectedRoute>
+                <GraphicalData />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/UVM-7289-2782"
+            element={
+              <ProtectedRoute>
+                <UserViewMe />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/UBV-7929-2092"
+            element={
+              <ProtectedRoute>
+                <UserBooking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/UMV-7988-0023"
+            element={
+              <ProtectedRoute>
+                <UserMessageView />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        {/* Catch-all route */}
+        <Route
+          path="*"
+          element={<NotFound />}
+          errorElement={<ErrorBoundary />}
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes Route */}
-          <Route
-            path="*"
-            element={<NotFound />}
-            errorElement={<ErrorBoundary />}
-          />
-          <Route element={<Layout />}>
-            <Route element={<Home />} path="/" />
-            <Route element={<About />} path="/A-7483-783/34" />
-            <Route element={<Booking />} path="/B-7839-283/34" />
-            <Route element={<Service />} path="/S-6832-342/34" />
-            <Route element={<RoomsServices />} path="/R-8763-327/34" />
-            <Route element={<OurTeam />} path="/O-2973-342/34" />
-            <Route element={<Testimony />} path="/T-8732-452/34" />
-            <Route element={<ContactSection />} path="/C-3872-2344/34" />
-            <Route element={<Login />} path="/L-6382-8279/34" />
-
-            {/* end of public Route */}
-            {/* Protected Dashboard Route */}
-            <Route
-              path="/Dash-32793"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/U-23-Dash-32793"
-              element={
-                <ProtectedRoute>
-                  <UserDashboard />
-                </ProtectedRoute>
-              }
-            />
-            {/* Dashboard Routes */}
-            <Route element={<BookingPannel />} path="/AB-7832-342" />
-            <Route element={<MessagePannel />} path="/MS-3562-922" />
-            <Route element={<UserPannel />} path="/UV-2390-389" />
-            <Route element={<AdminReportGenerator />} path="/ARG-3832-382" />
-            <Route element={<Calendar />} path="/C-6784-873" />
-            <Route element={<Profile />} path="/PF-5638-893" />
-            <Route element={<SettingsPannel />} path="/SG-6788-327" />
-            <Route element={<GraphicalData />} path="/GD-2761-823" />
-            {/* userDashboard */}
-            <Route element={<UserViewMe />} path="/UVM-7289-2782" />
-            <Route element={<UserBooking />} path="/UBV-7929-2092" />
-            <Route element={<UserMessageView />} path="/UMV-7988-0023" />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AppContent />
     </AuthProvider>
   );
 }
