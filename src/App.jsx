@@ -28,7 +28,7 @@ import { UserMessageView } from "./components/dashboard/userDashComponent/messag
 import NotFound from "./pages/not found/NotFound";
 import Layout from "./pages/layout/Layout";
 import ErrorBoundary from "./pages/errorElement/ErrorElement";
-
+import user from './assets/images/logo/276-2763872_hospitality-hotel-icon.png'
 // Create Auth Context
 const AuthContext = createContext();
 
@@ -131,7 +131,7 @@ export default function App() {
       <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
         <div className="flex flex-col items-center">
           <div className="animate-pulse">
-            <div className="h-20 w-20 rounded-full bg-blue-100 mb-4"></div>
+            <img className="h-20 w-20 rounded-full bg-blue-100 mb-4" src={user}/>
           </div>
           <div className="animate-pulse flex space-x-2">
             <div className="h-3 w-3 bg-blue-500 rounded-full"></div>
