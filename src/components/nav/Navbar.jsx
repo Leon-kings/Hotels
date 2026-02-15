@@ -3777,79 +3777,155 @@ export const Navbar = () => {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const ClockTime = () => {
-    // Format date for display
-    const formatDate = (dateString) => {
-      if (!dateString) return "";
-      const date = new Date();
-      return date.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      });
+  
+const ClockTime = () => {
+  const [time, setTime] = useState({
+    time: "",
+    date: "",
+    latitude: "N/A",
+    longitude: "N/A",
+    location: "",
+  });
+
+  // Format date
+  const formatDate = (dateObj) => {
+    return dateObj.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // Format time
+  const formatTime = (dateObj) => {
+    return dateObj.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  // Live clock
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      setTime((prev) => ({
+        ...prev,
+        time: formatTime(now),
+        date: now,
+      }));
     };
 
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center bg-gradient-to-r from-blue-600 to-purple-600 
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Get user location
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setTime((prev) => ({
+          ...prev,
+          latitude: position.coords.latitude.toFixed(4),
+          longitude: position.coords.longitude.toFixed(4),
+        }));
+      },
+      (error) => {
+        console.log("Location error:", error.message);
+      }
+    );
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="
+        flex items-center
         px-2 xsm:px-3 sm:px-4 
         py-1 xsm:py-1.5 sm:py-2 
         rounded-full shadow-lg
         max-w-[120px] xsm:max-w-[160px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px] xl:max-w-[320px]
-        overflow-hidden"
-      >
-        <FaClock
-          className="text-white 
-        text-[10px] xsm:text-xs sm:text-sm 
-        flex-shrink-0"
-        />
+        overflow-hidden
+        md:ml-auto
+      "
+    >
+      <FaClock
+        className="
+          text-white 
+          text-[10px] xsm:text-xs sm:text-sm 
+          flex-shrink-0
+        "
+      />
 
-        <div className="flex flex-col items-start ml-1 xsm:ml-2">
-          <span
-            className="font-semibold text-white leading-tight
-          text-[10px] xsm:text-xs sm:text-sm"
+      <div className="flex flex-col items-start ml-1 xsm:ml-2">
+        <span
+          className="
+            font-semibold text-white leading-tight
+            text-[10px] xsm:text-xs sm:text-sm
+          "
+        >
+          {time.time || "--:--"}
+        </span>
+
+        <span
+          className="
+            text-white opacity-90 leading-tight
+            text-[8px] xsm:text-[9px] sm:text-[10px]
+          "
+        >
+          {time.date ? formatDate(time.date) : "---"}
+        </span>
+      </div>
+
+      {time.latitude !== "N/A" && (
+        <>
+          <div
+            className="
+              w-px h-4 xsm:h-5 sm:h-6 
+              bg-white opacity-30 
+              mx-1 xsm:mx-2 
+              flex-shrink-0
+            "
+          ></div>
+
+          <div
+            className="
+              flex items-center space-x-0.5 xsm:space-x-1 
+              min-w-0 flex-1
+            "
           >
-            {time.time || "--:--"}
-          </span>
-          <span
-            className="text-white opacity-90 leading-tight
-          text-[8px] xsm:text-[9px] sm:text-[10px]"
-          >
-            {time.date ? formatDate(time.date) : "---"}
-          </span>
-        </div>
+            <FaMapMarkerAlt
+              className="
+                text-white 
+                text-[8px] xsm:text-[10px] sm:text-xs 
+                flex-shrink-0
+              "
+            />
 
-        {time.latitude !== "N/A" && (
-          <>
-            <div
-              className="w-px h-4 xsm:h-5 sm:h-6 bg-white opacity-30 
-            mx-1 xsm:mx-2 
-            flex-shrink-0"
-            ></div>
-
-            <div
-              className="flex items-center space-x-0.5 xsm:space-x-1 
-            min-w-0 flex-1"
+            <span
+              className="
+                text-white opacity-90 truncate
+                text-[8px] xsm:text-[9px] sm:text-[10px]
+              "
             >
-              <FaMapMarkerAlt
-                className="text-white 
-              text-[8px] xsm:text-[10px] sm:text-xs 
-              flex-shrink-0"
-              />
-              <span
-                className="text-white opacity-90 truncate
-              text-[8px] xsm:text-[9px] sm:text-[10px]"
-              >
-                {time.location || `${time.latitude}, ${time.longitude}`}
-              </span>
-            </div>
-          </>
-        )}
-      </motion.div>
-    );
-  };
+              {time.location ||
+                `${time.latitude}, ${time.longitude}`}
+            </span>
+          </div>
+        </>
+      )}
+    </motion.div>
+  );
+};
+
 
   const handleAuthSuccess = (token, userData) => {
     localStorage.setItem("authToken", token);
