@@ -331,7 +331,7 @@ export const Footer = () => {
   return (
     <section
       id="footer"
-      className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white relative overflow-hidden"
+      className="w-full bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white relative overflow-hidden"
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">

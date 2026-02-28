@@ -1420,13 +1420,13 @@ export const OurTeam = () => {
     : enhancedTeamMembers.filter(member => member.category === activeFilter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl"
+            className="absolute bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-full blur-3xl"
             style={{
               width: Math.random() * 200 + 50,
               height: Math.random() * 200 + 50,
@@ -1649,7 +1649,7 @@ export const OurTeam = () => {
 
         {/* Join Team CTA - Responsive */}
         <motion.div 
-          className="mt-12 sm:mt-16 md:mt-20 text-center p-4 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-t from-blue-500/10 to-purple-500/10 rounded-2xl sm:rounded-3xl backdrop-blur-sm border border-white/10 mx-2 sm:mx-4"
+          className="mt-12 sm:mt-16 md:mt-20 text-center p-4 sm:p-6 md:p-8 lg:p-12 bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-2xl sm:rounded-3xl backdrop-blur-sm border border-white/10 mx-2 sm:mx-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
