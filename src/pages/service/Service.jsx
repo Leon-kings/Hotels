@@ -1102,7 +1102,7 @@ export default function Service() {
                 <div className="relative overflow-hidden h-64">
                   <motion.img
                     src={service.icon}
-                    alt={service.title}
+                    alt=''
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     whileHover={{ scale: 1.1 }}
                   />
@@ -1187,7 +1187,7 @@ export default function Service() {
             transition={{ delay: 0.6 }}
             className="mt-16 text-center"
           >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
+            <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-2xl p-8 md:p-12">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
                 Ready for an Unforgettable Experience?
               </h2>

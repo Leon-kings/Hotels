@@ -4,20 +4,20 @@ import { Footer } from "../../components/footer/Footer";
 import NotFound from "../not found/NotFound";
 import React from "react";
 
-export default function Layout() {
+export const Universal = () => {
   const location = useLocation();
   const is404 = location.state?.is404;
 
   return (
-    <div className="app-container">
+    <div className="w-full min-h-screen">
       {/* Header/Sidebar */}
       <Navbar />
 
       {/* Main Content */}
-      <main>{is404 ? <NotFound /> : <Outlet />}</main>
+      <main className="pt-[144px] lg:pt-[168px]">{is404 ? <NotFound /> : <Outlet />}</main>
 
       {/* Footer */}
       <Footer />
     </div>
   );
-}
+};

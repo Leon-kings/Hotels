@@ -1024,13 +1024,13 @@ import axios from 'axios';
 
 export const ContactSection = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white py-12 sm:py-16 md:py-20 px-3 sm:px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-12 sm:py-16 md:py-20 px-3 sm:px-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl"
+            className="absolute bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-full blur-3xl"
             style={{
               width: Math.random() * 400 + 100,
               height: Math.random() * 400 + 100,

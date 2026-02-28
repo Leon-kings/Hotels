@@ -644,9 +644,9 @@ export const Booking = () => {
 
               <motion.div
                 variants={itemVariants}
-                className="bg-gradient-to-t from-[#566bc0] to-[#5d6db0] text-white rounded-2xl shadow-xl p-6 md:p-8"
+                className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-2xl shadow-xl p-6 md:p-8"
               >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="text-black">
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-grow space-y-6">
                       {/* Date inputs */}

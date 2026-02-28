@@ -1491,13 +1491,13 @@ export const LuxuryHotel = () => {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white relative overflow-hidden">
+    <div className="w-full min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white relative overflow-hidden">
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(30)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full"
+            className="absolute bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white rounded-full"
             style={{
               width: Math.random() * 15 + 5,
               height: Math.random() * 15 + 5,
