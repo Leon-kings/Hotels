@@ -3999,11 +3999,7 @@ export const UserManagement = () => {
                           }`}>
                             Contact
                           </th>
-                          <th className={`hidden lg:table-cell px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${
-                            theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                          }`}>
-                            Department
-                          </th>
+                   
                           <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${
                             theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                           }`}>

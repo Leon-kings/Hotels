@@ -45,7 +45,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../App";
 
-
 export const Navbar = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -296,8 +295,6 @@ export const Navbar = () => {
         md:ml-auto
       "
       >
-
-
         <div className="flex flex-col items-start ml-1 xsm:ml-2">
           <span
             className="
@@ -541,6 +538,10 @@ export const Navbar = () => {
       href: "/R-8763-327/34",
     },
     {
+      name: "FAQ",
+      href: "/faq/data",
+    },
+    {
       name: "Contact",
       href: "#",
       onClick: () => setShowContactModal(true),
@@ -613,419 +614,406 @@ export const Navbar = () => {
 
   return (
     <>
-   <header className="w-full fixed top-0 left-0 right-0 z-50">
-  <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-black to-gray-900 opacity-95" />
+      <header className="w-full fixed top-0 left-0 right-0 z-50">
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-black to-gray-900 opacity-95" />
 
-  {/* Top Bar */}
-  <motion.div className="hidden lg:flex bg-gradient-to-r from-gray-900 to-black text-white border-b border-gray-800 relative">
-    <div className="container mx-auto flex justify-between items-center py-2 px-5">
-      <div className="flex space-x-6">
-        {[
-          { icon: FaEnvelope, text: "info@example.com" },
-          { icon: FaPhone, text: "+250 (78) 794-4577" },
-          { icon: FaWhatsapp, text: "+250 (72) 755-6145" },
-        ].map((item, i) => (
-          <div key={i} className="flex items-center">
-            <item.icon className="text-blue-400 mr-2 text-sm" />
-            <span className="text-sm hover:text-blue-400 transition">
-              {item.text}
-            </span>
-          </div>
-        ))}
-      </div>
+        {/* Top Bar */}
+        <motion.div className="hidden lg:flex bg-gradient-to-r from-gray-900 to-black text-white border-b border-gray-800 relative">
+          <div className="container mx-auto flex justify-between items-center py-2 px-5">
+            <div className="flex space-x-6">
+              {[
+                { icon: FaEnvelope, text: "info@example.com" },
+                { icon: FaPhone, text: "+250 (78) 794-4577" },
+                { icon: FaWhatsapp, text: "+250 (72) 755-6145" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center">
+                  <item.icon className="text-blue-400 mr-2 text-sm" />
+                  <span className="text-sm hover:text-blue-400 transition">
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-      <ClockTime />
-
-      <div className="flex space-x-3">
-        {socialLinks.map((link, i) => (
-          <Link key={i} to={link.href}>
-            <div
-              className={`${link.color} text-lg transition`}
-            >{link.icon}</div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  </motion.div>
-
-  {/* Main Nav */}
-  <motion.div
-    className={`relative transition-all ${scrolled ? "bg-gray-900 shadow-2xl" : "bg-transparent"}`}
-  >
-    <div className="flex items-center">
-      {/* Logo */}
-      <div className="hidden lg:flex w-1/4 h-24 items-center justify-center">
-        <Link to="/">
-          <img src={logo} alt="Logo" className="w-16 rounded-xl" />
-        </Link>
-      </div>
-
-      <div className="w-full lg:w-3/4">
-        <div className="flex justify-between items-center h-24 px-4 lg:px-0">
-          {/* Mobile Logo */}
-          <Link to="/" className="lg:hidden">
-            <img src={logo} alt="Logo" className="w-12 rounded-xl" />
-          </Link>
-
-          {/* Mobile Time & Auth */}
-          <div className="flex items-center space-x-3 lg:hidden">
             <ClockTime />
 
-            {isAuthenticated ? (
-              <div className="relative">
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 rounded-full"
-                >
-                  <FaUserCircle className="text-white" />
-                  <span className="text-white text-sm font-medium">
-                    {user?.fullname?.split(" ")[0]}
-                  </span>
-                </button>
-
-                <AnimatePresence>
-                  {userMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-44 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
-                    >
-                      <div className="p-3 border-b border-gray-700">
-                        <p className="text-white text-sm font-medium truncate">
-                          {user?.fullname}
-                        </p>
-                        <p className="text-gray-400 text-xs truncate">
-                          {user?.email}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          navigate(
-                            user?.status === "admin"
-                              ? "/Dash-32793"
-                              : "/U-23-Dash-32793",
-                          );
-                          setUserMenuOpen(false);
-                        }}
-                        className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-blue-600 to-violet-700 text-white transition flex items-center text-sm"
-                      >
-                        <MdDashboard className="mr-2" />
-                      
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-red-400 to-red-700 text-white transition flex items-center text-sm"
-                      >
-                        <FaSignOutAlt className="mr-2" />
-                       
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowLoginModal(true)}
-                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
-                >
-                  <FaSignInAlt className="mr-1" />
-              
-                </button>
-                <button
-                  onClick={() => setShowRegisterModal(true)}
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
-                >
-                  <FaUserPlus className="mr-1" />
-               
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden bg-gradient-to-b from-blue-400 to-violet-400 text-white p-2 rounded-lg transition"
-          >
-            {mobileMenuOpen ? (
-              <FaTimes className="text-2xl" />
-            ) : (
-              <FaBars className="text-2xl" />
-            )}
-          </button>
-
-          {/* Desktop Nav - Left side links */}
-          <nav className="hidden lg:flex items-center space-x-4 flex-1">
-            {navLinks.map((link, i) => (
-              <div key={i} className="relative group">
-                {link.name === "Pages" ? (
-                  <div>
-                    <button
-                      onClick={() => setPagesMenuOpen(!pagesMenuOpen)}
-                      className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
-                    >
-                      {link.name}{" "}
-                      <FaArrowRight
-                        className={`ml-2 transition ${pagesMenuOpen ? "rotate-90" : ""}`}
-                      />
-                    </button>
-
-                    <AnimatePresence>
-                      {pagesMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
-                        >
-                          {pageLinks.map((page, j) => (
-                            <Link key={j} to={page.href}>
-                              <button
-                                onClick={() => setPagesMenuOpen(false)}
-                                className="w-full px-4 py-2.5 text-left hover:bg-gray-700 text-white transition flex items-center text-sm"
-                              >
-                                {page.name}
-                              </button>
-                            </Link>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+            <div className="flex space-x-3">
+              {socialLinks.map((link, i) => (
+                <Link key={i} to={link.href}>
+                  <div className={`${link.color} text-lg transition`}>
+                    {link.icon}
                   </div>
-                ) : link.onClick ? (
-                  <button
-                    onClick={link.onClick}
-                    className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
-                  >
-                    {link.name}
-                  </button>
-                ) : (
-                  <Link to={link.href}>
-                    <button className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition">
-                      {link.name}
-                    </button>
-                  </Link>
-                )}
-                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition" />
-              </div>
-            ))}
-          </nav>
-
-          {/* Desktop Auth - Right side with space */}
-          <div className="hidden lg:flex items-center space-x-4 pr-6 ml-auto">
-            {isAuthenticated ? (
-              <>
-                {/* Dashboard Button */}
-                <button
-                  onClick={handleDashboardClick}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all"
-                >
-                  <MdDashboard className="text-xl" />
-                  
-                </button>
-
-                {/* User Menu */}
-                <div className="relative">
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-xl text-white hover:shadow-lg transition-all"
-                  >
-                    <FaUserCircle className="text-xl" />
-                    <span>{user?.fullname?.split(" ")[0]}</span>
-                  </button>
-
-                  <AnimatePresence>
-                    {userMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
-                      >
-                        <div className="p-4 border-b border-gray-700">
-                          <p className="text-white font-medium truncate">
-                            {user?.fullname}
-                          </p>
-                          <p className="text-gray-400 text-sm truncate">
-                            {user?.email}
-                          </p>
-                        </div>
-                        <button
-                          onClick={handleDashboardClick}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
-                        >
-                          <MdDashboard className="mr-2" />
-                         
-                        </button>
-                        <button
-                          onClick={handleLogout}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
-                        >
-                          <FaSignOutAlt className="mr-2" />
-                       
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setShowLoginModal(true)}
-                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
-                >
-                  <FaSignInAlt className="mr-2" />
-                
-                </button>
-                <button
-                  onClick={() => setShowRegisterModal(true)}
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
-                >
-                  <FaUserPlus className="mr-2" />
-                 
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  </motion.div>
-
-  {/* Mobile Menu */}
-  <AnimatePresence>
-    {mobileMenuOpen && (
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.2 }}
-        className="lg:hidden bg-gray-900 border-t border-gray-800 shadow-xl"
-        style={{ position: "relative", zIndex: 40 }}
-      >
-        <div className="py-4 px-4 space-y-2">
-          {/* Main Navigation Links */}
-          {navLinks.map((link, index) => (
-            <div key={index}>
-              {link.onClick ? (
-                <button
-                  onClick={() => {
-                    link.onClick();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 rounded-lg font-medium flex items-center bg-gradient-to-b from-blue-400 to-violet-400 text-white transition-all"
-                >
-                  <span>{link.name}</span>
-                </button>
-              ) : (
-                <Link
-                  to={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <button className="w-full text-left px-4 py-3 rounded-lg font-medium flex items-center bg-gradient-to-b from-blue-400 to-violet-400 text-white transition-all cursor-pointer">
-                    <span>{link.name}</span>
-                  </button>
-                </Link>
-              )}
-            </div>
-          ))}
-
-          {/* Quick Links Section */}
-          <div className="mt-6 pt-4 border-t border-gray-800">
-            <h3 className="text-blue-400 font-semibold px-4 mb-3">
-              Quick Links
-            </h3>
-            <div className="space-y-2">
-              {pageLinks.map((page, index) => (
-                <Link
-                  key={index}
-                  to={page.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <button className="w-full my-2 px-4 py-3 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition-all flex items-center cursor-pointer">
-                    {page.name}
-                  </button>
                 </Link>
               ))}
             </div>
           </div>
+        </motion.div>
 
-          {/* Mobile Auth Buttons */}
-          <div className="mt-6 pt-4 border-t border-gray-800">
-            {isAuthenticated ? (
-              <div className="space-y-2 px-4">
-                <button
-                  onClick={() => {
-                    handleDashboardClick();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
-                >
-                  <MdDashboard className="mr-2" />
-                 
-                </button>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
-                >
-                  <FaSignOutAlt className="mr-2" />
-                  
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 px-4">
-                <button
-                  onClick={() => {
-                    setShowLoginModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
-                >
-                  <FaSignInAlt className="mr-2" />
-                
-                </button>
-                <button
-                  onClick={() => {
-                    setShowRegisterModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
-                >
-                  <FaUserPlus className="mr-2" />
-                  
-                </button>
-              </div>
-            )}
-          </div>
+        {/* Main Nav */}
+        <motion.div
+          className={`relative transition-all ${scrolled ? "bg-gray-900 shadow-2xl" : "bg-transparent"}`}
+        >
+          <div className="flex items-center">
+            {/* Logo */}
+            <div className="hidden lg:flex w-1/4 h-24 items-center justify-center">
+              <Link to="/">
+                <img src={logo} alt="Logo" className="w-16 rounded-xl" />
+              </Link>
+            </div>
 
-          {/* Contact Info for Mobile */}
-          <div className="mt-6 pt-4 border-t border-gray-800">
-            <div className="flex flex-col items-center space-y-3 px-4">
-              <div className="flex items-center text-gray-400">
-                <FaPhone className="text-blue-400 mr-3" />
-                <span className="text-sm">+250 (78) 794-4577</span>
-              </div>
-              <div className="flex items-center text-gray-400">
-                <FaEnvelope className="text-blue-400 mr-3" />
-                <span className="text-sm">info@example.com</span>
-              </div>
-              <div className="flex items-center text-gray-400">
-                <FaWhatsapp className="text-blue-400 mr-3" />
-                <span className="text-sm">+250 (72) 755-6145</span>
+            <div className="w-full lg:w-3/4">
+              <div className="flex justify-between items-center h-24 px-4 lg:px-0">
+                {/* Mobile Logo */}
+                <Link to="/" className="lg:hidden">
+                  <img src={logo} alt="Logo" className="w-12 rounded-xl" />
+                </Link>
+
+                {/* Mobile Time & Auth */}
+                <div className="flex items-center space-x-3 lg:hidden">
+                  <ClockTime />
+
+                  {isAuthenticated ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 rounded-full"
+                      >
+                        <FaUserCircle className="text-white" />
+                        <span className="text-white text-sm font-medium">
+                          {user?.fullname?.split(" ")[0]}
+                        </span>
+                      </button>
+
+                      <AnimatePresence>
+                        {userMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute right-0 mt-2 w-44 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
+                          >
+                            <div className="p-3 border-b border-gray-700">
+                              <p className="text-white text-sm font-medium truncate">
+                                {user?.fullname}
+                              </p>
+                              <p className="text-gray-400 text-xs truncate">
+                                {user?.email}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                navigate(
+                                  user?.status === "admin"
+                                    ? "/Dash-32793"
+                                    : "/U-23-Dash-32793",
+                                );
+                                setUserMenuOpen(false);
+                              }}
+                              className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-blue-600 to-violet-700 text-white transition flex items-center text-sm"
+                            >
+                              <MdDashboard className="mr-2" />
+                            </button>
+                            <button
+                              onClick={handleLogout}
+                              className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-red-400 to-red-700 text-white transition flex items-center text-sm"
+                            >
+                              <FaSignOutAlt className="mr-2" />
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setShowLoginModal(true)}
+                        className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
+                      >
+                        <FaSignInAlt className="mr-1" />
+                      </button>
+                      <button
+                        onClick={() => setShowRegisterModal(true)}
+                        className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
+                      >
+                        <FaUserPlus className="mr-1" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="lg:hidden bg-gradient-to-b from-blue-400 to-violet-400 text-white p-2 rounded-lg transition"
+                >
+                  {mobileMenuOpen ? (
+                    <FaTimes className="text-2xl" />
+                  ) : (
+                    <FaBars className="text-2xl" />
+                  )}
+                </button>
+
+                {/* Desktop Nav - Left side links */}
+                <nav className="hidden lg:flex items-center space-x-4 flex-1">
+                  {navLinks.map((link, i) => (
+                    <div key={i} className="relative group">
+                      {link.name === "Pages" ? (
+                        <div>
+                          <button
+                            onClick={() => setPagesMenuOpen(!pagesMenuOpen)}
+                            className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
+                          >
+                            {link.name}{" "}
+                            <FaArrowRight
+                              className={`ml-2 transition ${pagesMenuOpen ? "rotate-90" : ""}`}
+                            />
+                          </button>
+
+                          <AnimatePresence>
+                            {pagesMenuOpen && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
+                              >
+                                {pageLinks.map((page, j) => (
+                                  <Link key={j} to={page.href}>
+                                    <button
+                                      onClick={() => setPagesMenuOpen(false)}
+                                      className="w-full px-4 py-2.5 text-left hover:bg-gray-700 text-white transition flex items-center text-sm"
+                                    >
+                                      {page.name}
+                                    </button>
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ) : link.onClick ? (
+                        <button
+                          onClick={link.onClick}
+                          className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
+                        >
+                          {link.name}
+                        </button>
+                      ) : (
+                        <Link to={link.href}>
+                          <button className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition">
+                            {link.name}
+                          </button>
+                        </Link>
+                      )}
+                      <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition" />
+                    </div>
+                  ))}
+                </nav>
+
+                {/* Desktop Auth - Right side with space */}
+                <div className="hidden lg:flex items-center space-x-4 pr-6 ml-auto">
+                  {isAuthenticated ? (
+                    <>
+                      {/* Dashboard Button */}
+                      <button
+                        onClick={handleDashboardClick}
+                        className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all"
+                      >
+                        <MdDashboard className="text-xl" />
+                      </button>
+
+                      {/* User Menu */}
+                      <div className="relative">
+                        <button
+                          onClick={() => setUserMenuOpen(!userMenuOpen)}
+                          className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-xl text-white hover:shadow-lg transition-all"
+                        >
+                          <FaUserCircle className="text-xl" />
+                          <span>{user?.fullname?.split(" ")[0]}</span>
+                        </button>
+
+                        <AnimatePresence>
+                          {userMenuOpen && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
+                            >
+                              <div className="p-4 border-b border-gray-700">
+                                <p className="text-white font-medium truncate">
+                                  {user?.fullname}
+                                </p>
+                                <p className="text-gray-400 text-sm truncate">
+                                  {user?.email}
+                                </p>
+                              </div>
+                              <button
+                                onClick={handleDashboardClick}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
+                              >
+                                <MdDashboard className="mr-2" />
+                              </button>
+                              <button
+                                onClick={handleLogout}
+                                className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
+                              >
+                                <FaSignOutAlt className="mr-2" />
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setShowLoginModal(true)}
+                        className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
+                      >
+                        <FaSignInAlt className="mr-2" />
+                      </button>
+                      <button
+                        onClick={() => setShowRegisterModal(true)}
+                        className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
+                      >
+                        <FaUserPlus className="mr-2" />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</header>
+        </motion.div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden bg-gray-900 border-t border-gray-800 shadow-xl"
+              style={{ position: "relative", zIndex: 40 }}
+            >
+              <div className="py-4 px-4 space-y-2">
+                {/* Main Navigation Links */}
+                {navLinks.map((link, index) => (
+                  <div key={index}>
+                    {link.onClick ? (
+                      <button
+                        onClick={() => {
+                          link.onClick();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-3 rounded-lg font-medium flex items-center bg-gradient-to-b from-blue-400 to-violet-400 text-white transition-all"
+                      >
+                        <span>{link.name}</span>
+                      </button>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <button className="w-full text-left px-4 py-3 rounded-lg font-medium flex items-center bg-gradient-to-b from-blue-400 to-violet-400 text-white transition-all cursor-pointer">
+                          <span>{link.name}</span>
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                ))}
+
+                {/* Quick Links Section */}
+                <div className="mt-6 pt-4 border-t border-gray-800">
+                  <h3 className="text-blue-400 font-semibold px-4 mb-3">
+                    Quick Links
+                  </h3>
+                  <div className="space-y-2">
+                    {pageLinks.map((page, index) => (
+                      <Link
+                        key={index}
+                        to={page.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <button className="w-full my-2 px-4 py-3 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition-all flex items-center cursor-pointer">
+                          {page.name}
+                        </button>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mobile Auth Buttons */}
+                <div className="mt-6 pt-4 border-t border-gray-800">
+                  {isAuthenticated ? (
+                    <div className="space-y-2 px-4">
+                      <button
+                        onClick={() => {
+                          handleDashboardClick();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
+                      >
+                        <MdDashboard className="mr-2" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
+                      >
+                        <FaSignOutAlt className="mr-2" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 px-4">
+                      <button
+                        onClick={() => {
+                          setShowLoginModal(true);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
+                      >
+                        <FaSignInAlt className="mr-2" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowRegisterModal(true);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
+                      >
+                        <FaUserPlus className="mr-2" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Contact Info for Mobile */}
+                <div className="mt-6 pt-4 border-t border-gray-800">
+                  <div className="flex flex-col items-center space-y-3 px-4">
+                    <div className="flex items-center text-gray-400">
+                      <FaPhone className="text-blue-400 mr-3" />
+                      <span className="text-sm">+250 (78) 794-4577</span>
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                      <FaEnvelope className="text-blue-400 mr-3" />
+                      <span className="text-sm">info@example.com</span>
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                      <FaWhatsapp className="text-blue-400 mr-3" />
+                      <span className="text-sm">+250 (72) 755-6145</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
       {/* Login Modal */}
       <AnimatePresence>

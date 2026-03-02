@@ -12,10 +12,10 @@ import {
   ShoppingCart,
   Message,
 } from "@mui/icons-material";
-import { Analytics } from "../../components/Analytics";
-import LineGraph from "../../components/charts/LineGraph";
-import { BookingChart } from "../../components/charts/BookingChart";
-import { PieChartData } from "../../components/charts/PieChart";
+// import { Analytics } from "../../components/Analytics";
+// import LineGraph from "../../components/charts/LineGraph";
+// import { BookingChart } from "../../components/charts/BookingChart";
+// import { PieChartData } from "../../components/charts/PieChart";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -200,10 +200,10 @@ export const ULayout = () => {
           >
             <Menu className="size-6" />
           </button>
-          <Analytics />
+          {/* <Analytics />
           <LineGraph />
           <BookingChart />
-          <PieChartData />
+          <PieChartData /> */}
         </div>
       </main>
     </div>
