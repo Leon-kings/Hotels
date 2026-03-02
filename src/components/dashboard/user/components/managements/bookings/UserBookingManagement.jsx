@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 // ==================== ICONS ====================
 const SuccessIcon = () => (
@@ -106,6 +107,18 @@ const CloseIcon = () => (
 const AddIcon = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
   </svg>
 );
 
@@ -363,13 +376,13 @@ export const ViewBookingModal = ({ isOpen, onClose, booking }) => {
 };
 
 // Add/Edit Booking Modal
-export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'add' }) => {
+export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode = 'add', userEmail }) => {
   const [formData, setFormData] = useState({
     checkInDate: "",
     checkOutDate: "",
     adults: "",
     name: "",
-    email: "",
+    email: userEmail || "",
     children: "",
     roomType: "",
     specialRequests: "",
@@ -385,13 +398,6 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
     { value: "presidential", label: "Presidential Suite" },
   ];
 
-  const statusOptions = [
-    { value: "pending", label: "Pending" },
-    { value: "confirmed", label: "Confirmed" },
-    { value: "cancelled", label: "Cancelled" },
-    { value: "completed", label: "Completed" },
-  ];
-
   useEffect(() => {
     if (initialData && mode === 'edit') {
       setFormData({
@@ -399,7 +405,7 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
         checkOutDate: initialData.checkOutDate?.split('T')[0] || "",
         adults: initialData.adults || "",
         name: initialData.name || "",
-        email: initialData.email || "",
+        email: initialData.email || userEmail || "",
         children: initialData.children || "",
         roomType: initialData.roomType || "",
         specialRequests: initialData.specialRequests || "",
@@ -411,7 +417,7 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
         checkOutDate: "",
         adults: "",
         name: "",
-        email: "",
+        email: userEmail || "",
         children: "",
         roomType: "",
         specialRequests: "",
@@ -419,7 +425,7 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
       });
     }
     setErrors({});
-  }, [initialData, mode, isOpen]);
+  }, [initialData, mode, isOpen, userEmail]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -545,9 +551,10 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      readOnly={mode === 'add'}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         errors.email ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      } ${mode === 'add' ? 'bg-gray-100' : ''}`}
                       placeholder="john@example.com"
                     />
                     {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
@@ -635,7 +642,7 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
                   </div>
                 </div>
 
-                {/* Room Type and Status */}
+                {/* Room Type */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -658,26 +665,6 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
                     </select>
                     {errors.roomType && <p className="mt-1 text-sm text-red-500">{errors.roomType}</p>}
                   </div>
-
-                  {mode === 'edit' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Status
-                      </label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        {statusOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
                 </div>
 
                 {/* Special Requests */}
@@ -723,13 +710,15 @@ export const BookingFormModal = ({ isOpen, onClose, onSubmit, initialData, mode 
   );
 };
 
-// ==================== MAIN BOOKING MANAGEMENT COMPONENT ====================
-export const BookingManagements = () => {
+// ==================== MAIN USER BOOKING MANAGEMENT COMPONENT ====================
+export const UserBookingManagement = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userData, setUserData] = useState(null);
   
   // Modal states
   const [successModal, setSuccessModal] = useState({ isOpen: false, title: '', message: '' });
@@ -740,7 +729,19 @@ export const BookingManagements = () => {
   
   const API_URL = 'https://hotel-nodejs-oa32.onrender.com/84383/92823';
 
-  const fetchAllBookings = async () => {
+  // Get email from cookies on component mount
+  useEffect(() => {
+    const email = Cookies.get('userEmail');
+    if (email) {
+      setUserEmail(email);
+      fetchUserBookings(email);
+    } else {
+      setError('No user email found in cookies. Please log in.');
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchUserBookings = async (email) => {
     try {
       setLoading(true);
       const response = await axios.get(API_URL);
@@ -751,34 +752,53 @@ export const BookingManagements = () => {
                          (Array.isArray(response.data) ? response.data : []) ||
                          [];
       
+      // Filter bookings by email (case-insensitive)
+      const userBookings = allBookings.filter(booking => 
+        booking.email && booking.email.toLowerCase() === email.toLowerCase()
+      );
+      
       // Sort bookings by date (newest first)
-      const sortedBookings = [...allBookings].sort((a, b) => {
+      const sortedBookings = [...userBookings].sort((a, b) => {
         const dateA = a.createdAt ? new Date(a.createdAt) : new Date(a.checkInDate);
         const dateB = b.createdAt ? new Date(b.createdAt) : new Date(b.checkInDate);
         return dateB - dateA;
       });
       
       setBookings(sortedBookings);
+      
+      // Set user data from the first booking (if any)
+      if (sortedBookings.length > 0) {
+        setUserData({
+          name: sortedBookings[0].name,
+          email: sortedBookings[0].email,
+          phone: sortedBookings[0].phone,
+          totalBookings: sortedBookings.length
+        });
+      } else {
+        // If no bookings, try to get user data from another endpoint or set basic info
+        setUserData({
+          email: email,
+          name: email.split('@')[0],
+          totalBookings: 0
+        });
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Error fetching bookings:', err);
-      setError(err.response?.data?.message || 'Failed to load bookings');
+      setError(err.response?.data?.message || 'Failed to load your bookings');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchAllBookings();
-  }, []);
 
   // Filter bookings based on status and search term
   const filteredBookings = bookings.filter(booking => {
     const matchesFilter = filter === 'all' || booking.status === filter;
     const matchesSearch = 
       booking.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking._id?.toLowerCase().includes(searchTerm.toLowerCase());
+      booking._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.roomType?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -798,26 +818,26 @@ export const BookingManagements = () => {
   const handleDelete = (booking) => {
     setConfirmModal({
       isOpen: true,
-      title: "Delete Booking",
-      message: `Are you sure you want to delete booking for ${booking.name || 'this guest'}? This action cannot be undone.`,
+      title: "Cancel Booking",
+      message: `Are you sure you want to cancel your booking for ${booking.name || 'this stay'}? This action cannot be undone.`,
       onConfirm: async () => {
         try {
-          // Simulate delete API call
+          // Simulate cancel API call
           await new Promise(resolve => setTimeout(resolve, 1000));
           
-          // Remove from local state
+          // Remove from local state or update status
           setBookings(prev => prev.filter(b => b._id !== booking._id));
           
           setSuccessModal({
             isOpen: true,
-            title: "Booking Deleted",
-            message: `Booking for ${booking.name || 'guest'} has been successfully deleted.`
+            title: "Booking Cancelled",
+            message: `Your booking has been successfully cancelled.`
           });
         } catch (error) {
           setFailModal({
             isOpen: true,
-            title: "Delete Failed",
-            message: "Unable to delete the booking. Please try again.",
+            title: "Cancellation Failed",
+            message: "Unable to cancel the booking. Please try again.",
             error: error.message
           });
         }
@@ -831,21 +851,31 @@ export const BookingManagements = () => {
       
       if (formModal.mode === 'add') {
         // Create new booking
-        const response = await axios.post(API_URL, formData);
+        const response = await axios.post(API_URL, {
+          ...formData,
+          status: 'pending'
+        });
         
         if (response.data && response.data.success) {
           // Add to local state
           const newBooking = {
             ...formData,
             _id: response.data.bookingId || Date.now().toString(),
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            status: 'pending'
           };
           setBookings(prev => [newBooking, ...prev]);
+          
+          // Update user data
+          setUserData(prev => ({
+            ...prev,
+            totalBookings: (prev?.totalBookings || 0) + 1
+          }));
           
           setSuccessModal({
             isOpen: true,
             title: "Booking Created",
-            message: `Booking for ${formData.name} has been successfully created.`
+            message: `Your booking has been successfully created. We'll confirm it shortly!`
           });
           setFormModal({ isOpen: false, mode: 'add', booking: null });
         } else {
@@ -866,7 +896,7 @@ export const BookingManagements = () => {
         setSuccessModal({
           isOpen: true,
           title: "Booking Updated",
-          message: `Booking for ${formData.name} has been successfully updated.`
+          message: `Your booking has been successfully updated.`
         });
         setFormModal({ isOpen: false, mode: 'edit', booking: null });
       }
@@ -874,46 +904,12 @@ export const BookingManagements = () => {
       setFailModal({
         isOpen: true,
         title: formModal.mode === 'add' ? "Creation Failed" : "Update Failed",
-        message: `Unable to ${formModal.mode === 'add' ? 'create' : 'update'} the booking. Please try again.`,
+        message: `Unable to ${formModal.mode === 'add' ? 'create' : 'update'} your booking. Please try again.`,
         error: error.message
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleUpdateStatus = (booking, newStatus) => {
-    setConfirmModal({
-      isOpen: true,
-      title: "Update Status",
-      message: `Are you sure you want to change status to "${newStatus}" for ${booking.name || 'this guest'}?`,
-      onConfirm: async () => {
-        try {
-          // Simulate status update
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Update local state
-          setBookings(prev => 
-            prev.map(b => 
-              b._id === booking._id ? { ...b, status: newStatus } : b
-            )
-          );
-          
-          setSuccessModal({
-            isOpen: true,
-            title: "Status Updated",
-            message: `Booking status has been updated to ${newStatus}.`
-          });
-        } catch (error) {
-          setFailModal({
-            isOpen: true,
-            title: "Update Failed",
-            message: "Unable to update status. Please try again.",
-            error: error.message
-          });
-        }
-      }
-    });
   };
 
   // Format date to readable string
@@ -933,13 +929,43 @@ export const BookingManagements = () => {
     }
   };
 
+  // Calculate nights
+  const calculateNights = (checkIn, checkOut) => {
+    return Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+  };
+
   // Loading state
   if (loading && bookings.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-8">
         <div className="flex flex-col items-center justify-center h-64">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mb-4"></div>
-          <p className="text-gray-600">Loading bookings...</p>
+          <p className="text-gray-600">Loading your bookings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state (no email)
+  if (error && !userEmail) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Authentication Required</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/login'}
+            className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold"
+          >
+            Go to Login
+          </motion.button>
         </div>
       </div>
     );
@@ -948,23 +974,95 @@ export const BookingManagements = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-gray-100 to-gray-50 text-black py-8">
+        {/* Header Section with User Info */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">Booking Management</h1>
-                <p className="text-gray-300">Manage all your hotel bookings in one place</p>
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <UserIcon />
+                </div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-2">My Bookings</h1>
+                  {userData && (
+                    <div className="space-y-1">
+                      <p className="text-blue-100">Welcome back, {userData.name || 'Guest'}!</p>
+                      <p className="text-sm text-blue-200">{userData.email}</p>
+                    </div>
+                  )}
+                </div>
               </div>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleAdd}
-                className="mt-4 md:mt-0 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
+                className="mt-4 md:mt-0 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
               >
                 <AddIcon />
-                <span>Add New Booking</span>
+                <span>Book New Stay</span>
               </motion.button>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="container mx-auto px-4 -mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total Bookings</p>
+                  <p className="text-2xl font-bold text-gray-900">{bookings.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <CalendarIcon />
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Upcoming Stays</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {bookings.filter(b => new Date(b.checkInDate) > new Date() && b.status !== 'cancelled').length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Pending</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {bookings.filter(b => b.status === 'pending').length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Completed</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {bookings.filter(b => b.status === 'completed').length}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -974,12 +1072,12 @@ export const BookingManagements = () => {
           {/* Filters and Search */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 overflow-x-auto pb-2 md:pb-0">
                 {['all', 'pending', 'confirmed', 'cancelled', 'completed'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setFilter(status)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
+                    className={`px-4 py-2 rounded-lg text-sm font-medium capitalize whitespace-nowrap transition-colors ${
                       filter === status
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -992,7 +1090,7 @@ export const BookingManagements = () => {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by name, email, or ID..."
+                  placeholder="Search by name or booking ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full md:w-80 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -1001,12 +1099,120 @@ export const BookingManagements = () => {
             </div>
           </div>
 
-          {/* Bookings Table */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+          {/* Bookings Grid for Mobile / Table for Desktop */}
+          <div className="lg:hidden space-y-4">
+            {filteredBookings.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CalendarIcon />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
+                <p className="text-gray-600 mb-6">You haven't made any bookings yet.</p>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleAdd}
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold"
+                >
+                  <AddIcon />
+                  <span className="ml-2">Book Your First Stay</span>
+                </motion.button>
+              </div>
+            ) : (
+              filteredBookings.map((booking, index) => (
+                <motion.div
+                  key={booking._id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white rounded-xl shadow-lg p-6"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
+                        <span className="text-white font-bold text-lg">
+                          {booking.name?.charAt(0).toUpperCase() || 'G'}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{booking.name || 'Guest'}</h3>
+                        <p className="text-xs text-gray-500">ID: {booking._id?.slice(-8) || 'N/A'}</p>
+                      </div>
+                    </div>
+                    <select
+                      value={booking.status || 'pending'}
+                      onChange={(e) => {}}
+                      disabled
+                      className={`text-xs font-semibold rounded-full px-3 py-1 border-0 ${getStatusColor(booking.status)}`}
+                    >
+                      <option value={booking.status}>{booking.status}</option>
+                    </select>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-xs text-gray-500">Check-in</p>
+                      <p className="text-sm font-medium text-gray-900">{formatDate(booking.checkInDate)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Check-out</p>
+                      <p className="text-sm font-medium text-gray-900">{formatDate(booking.checkOutDate)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Room Type</p>
+                      <p className="text-sm font-medium text-gray-900 capitalize">{booking.roomType || 'standard'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Nights</p>
+                      <p className="text-sm font-medium text-gray-900">{calculateNights(booking.checkInDate, booking.checkOutDate)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end space-x-2 pt-4 border-t">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleView(booking)}
+                      className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                      title="View Details"
+                    >
+                      <ViewIcon />
+                    </motion.button>
+                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleEdit(booking)}
+                          className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors"
+                          title="Edit Booking"
+                        >
+                          <EditIcon />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handleDelete(booking)}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                          title="Cancel Booking"
+                        >
+                          <DeleteIcon />
+                        </motion.button>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden lg:block bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Booking ID</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Guest</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dates</th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Room Type</th>
@@ -1018,7 +1224,7 @@ export const BookingManagements = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredBookings.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
                         No bookings found
                       </td>
                     </tr>
@@ -1031,6 +1237,9 @@ export const BookingManagements = () => {
                         transition={{ delay: index * 0.05 }}
                         className="hover:bg-gray-50 transition-colors group"
                       >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">
+                          {booking._id?.slice(-8) || 'N/A'}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-md">
@@ -1040,20 +1249,17 @@ export const BookingManagements = () => {
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-semibold text-gray-900">
-                                {booking.name || 'Anonymous Guest'}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {booking.email || 'No email'}
+                                {booking.name || 'Guest'}
                               </div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900 font-medium">
-                            {formatDate(booking.checkInDate)} - {formatDate(booking.checkOutDate)}
+                            {formatDate(booking.checkInDate)}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {Math.ceil((new Date(booking.checkOutDate) - new Date(booking.checkInDate)) / (1000 * 60 * 60 * 24))} nights
+                            to {formatDate(booking.checkOutDate)} ({calculateNights(booking.checkInDate, booking.checkOutDate)} nights)
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -1065,16 +1271,9 @@ export const BookingManagements = () => {
                           {booking.adults || 0} Adults, {booking.children || 0} Children
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <select
-                            value={booking.status || 'pending'}
-                            onChange={(e) => handleUpdateStatus(booking, e.target.value)}
-                            className={`text-xs font-semibold rounded-full px-3 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-offset-2 ${getStatusColor(booking.status)}`}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="completed">Completed</option>
-                          </select>
+                          <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(booking.status)}`}>
+                            {booking.status || 'pending'}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
@@ -1087,24 +1286,28 @@ export const BookingManagements = () => {
                             >
                               <ViewIcon />
                             </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleEdit(booking)}
-                              className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors"
-                              title="Edit Booking"
-                            >
-                              <EditIcon />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => handleDelete(booking)}
-                              className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                              title="Delete Booking"
-                            >
-                              <DeleteIcon />
-                            </motion.button>
+                            {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                              <>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => handleEdit(booking)}
+                                  className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors"
+                                  title="Edit Booking"
+                                >
+                                  <EditIcon />
+                                </motion.button>
+                                <motion.button
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  onClick={() => handleDelete(booking)}
+                                  className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                  title="Cancel Booking"
+                                >
+                                  <DeleteIcon />
+                                </motion.button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </motion.tr>
@@ -1120,7 +1323,7 @@ export const BookingManagements = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={fetchAllBookings}
+                  onClick={() => fetchUserBookings(userEmail)}
                   className="px-4 py-2 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center space-x-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1148,6 +1351,8 @@ export const BookingManagements = () => {
         onConfirm={confirmModal.onConfirm}
         title={confirmModal.title}
         message={confirmModal.message}
+        confirmText="Yes, Cancel"
+        cancelText="No, Keep"
       />
 
       <FailModal
@@ -1170,6 +1375,7 @@ export const BookingManagements = () => {
         onSubmit={handleSubmitBooking}
         initialData={formModal.booking}
         mode={formModal.mode}
+        userEmail={userEmail}
       />
     </>
   );
