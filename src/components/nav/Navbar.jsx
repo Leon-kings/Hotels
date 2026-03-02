@@ -7,51 +7,49 @@ import {
   FaLinkedin,
   FaInstagram,
   FaYoutube,
-  FaEnvelope,
-  FaPhone,
-  FaArrowRight,
-  FaBars,
   FaWhatsapp,
-  FaClock,
-  FaConciergeBell,
-  FaHotel,
-  FaUserTie,
-  FaQuoteRight,
-  FaCalendarCheck,
-  FaRegGem,
-  FaStar,
-  FaMapMarkerAlt,
-  FaUser,
-  FaSignInAlt,
-  FaUserPlus,
-  FaSignOutAlt,
-  FaTachometerAlt,
-  FaUserCircle,
-  FaCog,
-  FaBell,
-  FaSearch,
-  FaTimes,
-  FaEye,
-  FaEyeSlash,
-  FaKey,
-  FaLock,
-  FaEnvelope as FaEnvelopeIcon,
-  FaUserAlt,
 } from "react-icons/fa";
-import { MdLocalHotel, MdDashboard } from "react-icons/md";
-import { Button, CircularProgress, Snackbar, Alert } from "@mui/material";
+import {
+  MdDashboard,
+  MdHotel,
+  MdRoomService,
+  MdPerson,
+  MdLock,
+  MdVisibility,
+  MdVisibilityOff,
+  MdClose,
+  MdMenu,
+  MdArrowForward,
+  MdLogin,
+  MdPersonAdd,
+  MdKey,
+  MdHome,
+  MdInfo,
+  MdHelp,
+  MdContactMail,
+  MdEmail,
+  MdPhone,
+  MdLocationOn,
+  MdAccessTime,
+  MdLogout,
+  MdEvent,
+  MdStar,
+} from "react-icons/md";
+import { CircularProgress } from "@mui/material";
 import logo from "../../assets/images/logo/hotel-icon-black-logo-symbol-your-web-site-design-app-vector-illustration-isolated-white-background-240118715.webp";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../App";
+import { ArrowDownward } from "@mui/icons-material";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const { userEmail, userStatus, login, logout } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pagesMenuOpen, setPagesMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  // const [time, setTime] = useState("");
   const [time, setTime] = useState({
     time: "",
     date: "",
@@ -60,26 +58,17 @@ export const Navbar = () => {
     location: "",
   });
 
-  // Auth States
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  // Modal States
   const [loading, setLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [alertMessage, setAlertMessage] = useState({
-    type: "",
-    message: "",
-    show: false,
-  });
-  const [resetMessage, setResetMessage] = useState("");
-
-  // Success/Fail Modals
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailModal, setShowFailModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
 
   // Form States
   const [loginData, setLoginData] = useState({
@@ -102,17 +91,21 @@ export const Navbar = () => {
     subject: "",
     message: "",
   });
-
   const [contactErrors, setContactErrors] = useState({});
   const [contactSubmitting, setContactSubmitting] = useState(false);
-  const [contactSuccess, setContactSuccess] = useState(false);
-  const { login, logout } = useAuth();
+
+  // Get user name from email (you might want to store fullname in context)
+  const getUserName = () => {
+    if (userEmail) {
+      return userEmail.split("@")[0]; // This is a fallback
+    }
+    return "User";
+  };
 
   useEffect(() => {
     const updateTimeAndLocation = () => {
       const now = new Date();
 
-      // Get date in readable format
       const dateOptions = {
         timeZone: "Africa/Kigali",
         weekday: "long",
@@ -121,7 +114,6 @@ export const Navbar = () => {
         day: "numeric",
       };
 
-      // Get time
       const timeOptions = {
         timeZone: "Africa/Kigali",
         hour: "2-digit",
@@ -139,7 +131,6 @@ export const Navbar = () => {
         timeOptions,
       ).format(now);
 
-      // Get location from browser
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -154,7 +145,6 @@ export const Navbar = () => {
             }));
           },
           (error) => {
-            // Fallback if location permission denied or error
             setTime({
               time: formattedTime,
               date: formattedDate,
@@ -162,11 +152,9 @@ export const Navbar = () => {
               longitude: "N/A",
               location: "Location access denied",
             });
-            console.log("Geolocation error:", error.message);
           },
         );
       } else {
-        // Fallback if geolocation not supported
         setTime({
           time: formattedTime,
           date: formattedDate,
@@ -178,29 +166,16 @@ export const Navbar = () => {
     };
 
     updateTimeAndLocation();
-    const interval = setInterval(updateTimeAndLocation, 60000); // Update every minute
+    const interval = setInterval(updateTimeAndLocation, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  // Check auth
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    const savedUser = localStorage.getItem("user");
-    if (token && savedUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(savedUser));
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
-  }, []);
-
-  // Scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close modals on escape
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape") {
@@ -217,15 +192,6 @@ export const Navbar = () => {
   }, []);
 
   const ClockTime = () => {
-    const [time, setTime] = useState({
-      time: "",
-      date: "",
-      latitude: "N/A",
-      longitude: "N/A",
-      location: "",
-    });
-
-    // Format date
     const formatDate = (dateObj) => {
       return dateObj.toLocaleDateString("en-US", {
         weekday: "short",
@@ -234,7 +200,6 @@ export const Navbar = () => {
       });
     };
 
-    // Format time
     const formatTime = (dateObj) => {
       return dateObj.toLocaleTimeString("en-US", {
         hour: "2-digit",
@@ -243,109 +208,27 @@ export const Navbar = () => {
       });
     };
 
-    // Live clock
-    useEffect(() => {
-      const updateClock = () => {
-        const now = new Date();
-        setTime((prev) => ({
-          ...prev,
-          time: formatTime(now),
-          date: now,
-        }));
-      };
-
-      updateClock();
-      const interval = setInterval(updateClock, 1000);
-
-      return () => clearInterval(interval);
-    }, []);
-
-    // Get user location
-    useEffect(() => {
-      if (!navigator.geolocation) {
-        console.log("Geolocation not supported");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setTime((prev) => ({
-            ...prev,
-            latitude: position.coords.latitude.toFixed(4),
-            longitude: position.coords.longitude.toFixed(4),
-          }));
-        },
-        (error) => {
-          console.log("Location error:", error.message);
-        },
-      );
-    }, []);
-
     return (
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="
-        flex items-center
-        px-2 xsm:px-3 sm:px-4 
-        py-1 xsm:py-1.5 sm:py-2 
-        rounded-full shadow-lg
-        max-w-[120px] xsm:max-w-[160px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px] xl:max-w-[320px]
-        overflow-hidden
-        md:ml-auto
-      "
+        className="flex items-center px-2 xsm:px-3 sm:px-4 py-1 xsm:py-1.5 sm:py-2 rounded-full shadow-lg max-w-[120px] xsm:max-w-[160px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[280px] xl:max-w-[320px] overflow-hidden md:ml-auto"
       >
         <div className="flex flex-col items-start ml-1 xsm:ml-2">
-          <span
-            className="
-            font-semibold text-white leading-tight
-            text-[10px] xsm:text-xs sm:text-sm
-          "
-          >
+          <span className="font-semibold text-white leading-tight text-[10px] xsm:text-xs sm:text-sm">
             {time.time || "--:--"}
           </span>
-
-          <span
-            className="
-            text-white opacity-90 leading-tight
-            text-[8px] xsm:text-[9px] sm:text-[10px]
-          "
-          >
-            {time.date ? formatDate(time.date) : "---"}
+          <span className="text-white opacity-90 leading-tight text-[8px] xsm:text-[9px] sm:text-[10px]">
+            {time.date ? formatDate(new Date()) : "---"}
           </span>
         </div>
 
         {time.latitude !== "N/A" && (
           <>
-            <div
-              className="
-              w-px h-4 xsm:h-5 sm:h-6 
-              bg-white opacity-30 
-              mx-1 xsm:mx-2 
-              flex-shrink-0
-            "
-            ></div>
-
-            <div
-              className="
-              flex items-center space-x-0.5 xsm:space-x-1 
-              min-w-0 flex-1
-            "
-            >
-              <FaMapMarkerAlt
-                className="
-                text-white 
-                text-[8px] xsm:text-[10px] sm:text-xs 
-                flex-shrink-0
-              "
-              />
-
-              <span
-                className="
-                text-white opacity-90 truncate
-                text-[8px] xsm:text-[9px] sm:text-[10px]
-              "
-              >
+            <div className="w-px h-4 xsm:h-5 sm:h-6 bg-white opacity-30 mx-1 xsm:mx-2 flex-shrink-0"></div>
+            <div className="flex items-center space-x-0.5 xsm:space-x-1 min-w-0 flex-1">
+              <MdLocationOn className="text-white text-[8px] xsm:text-[10px] sm:text-xs flex-shrink-0" />
+              <span className="text-white opacity-90 truncate text-[8px] xsm:text-[9px] sm:text-[10px]">
                 {time.location || `${time.latitude}, ${time.longitude}`}
               </span>
             </div>
@@ -353,23 +236,6 @@ export const Navbar = () => {
         )}
       </motion.div>
     );
-  };
-
-  const handleAuthSuccess = (token, userData) => {
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("user", JSON.stringify(userData));
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setIsAuthenticated(true);
-    setUser(userData);
-    setShowLoginModal(false);
-    setShowRegisterModal(false);
-    setModalMessage(`Welcome ${userData.fullname || userData.name}!`);
-    setShowSuccessModal(true);
-    setTimeout(() => {
-      navigate(
-        userData.status === "admin" ? "/Dash-32793" : "/U-23-Dash-32793",
-      );
-    }, 2000);
   };
 
   const handleLogin = async (e) => {
@@ -382,24 +248,20 @@ export const Navbar = () => {
       );
 
       if (res.data.token && res.data.user) {
-        login(res.data.user, res.data.token, navigate); // AuthProvider login
+        // AuthProvider handles navigation
+        login(res.data.user, res.data.token, navigate);
+        setShowLoginModal(false);
         setModalMessage(`Welcome ${res.data.user.fullname}!`);
         setShowSuccessModal(true);
+        setTimeout(() => setShowSuccessModal(false), 2000);
       }
     } catch (err) {
       setModalMessage(err.response?.data?.message || "Login failed");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
     } finally {
       setLoading(false);
     }
-  };
-
-  // LOGOUT
-  const handleLogout = () => {
-    logout(navigate); // AuthProvider handles clearing state, cookies, localStorage, axios header
-
-    setModalMessage("Logged out successfully");
-    setShowSuccessModal(true);
   };
 
   const handleRegister = async (e) => {
@@ -407,11 +269,13 @@ export const Navbar = () => {
     if (registerData.password !== registerData.confirmPassword) {
       setModalMessage("Passwords do not match");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
       return;
     }
     if (registerData.password.length < 6) {
       setModalMessage("Password must be at least 6 characters");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
       return;
     }
 
@@ -421,19 +285,18 @@ export const Navbar = () => {
         "https://hotel-nodejs-oa32.onrender.com/37829/7892",
         registerData,
       );
-      if (res.data.token) {
-        handleAuthSuccess(res.data.token, res.data.user);
-      } else {
-        setShowRegisterModal(false);
-        setModalMessage("Registration successful! Please login.");
-        setShowSuccessModal(true);
-        setTimeout(() => {
-          setShowLoginModal(true);
-        }, 2000);
-      }
+
+      setShowRegisterModal(false);
+      setModalMessage("Registration successful! Please login.");
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        setShowLoginModal(true);
+      }, 2000);
     } catch (err) {
       setModalMessage(err.response?.data?.message || "Registration failed");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
     } finally {
       setLoading(false);
     }
@@ -444,6 +307,7 @@ export const Navbar = () => {
     if (!forgotPasswordData.email) {
       setModalMessage("Please enter your email");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
       return;
     }
 
@@ -460,12 +324,14 @@ export const Navbar = () => {
         setShowForgotPassword(false);
         setForgotPasswordData({ email: "" });
         setResetMessage("");
+        setShowSuccessModal(false);
       }, 2000);
     } catch (err) {
       setModalMessage(
         err.response?.data?.message || "Failed to send reset link",
       );
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
     } finally {
       setLoading(false);
     }
@@ -474,7 +340,6 @@ export const Navbar = () => {
   const handleContactSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate
     const errors = {};
     if (!contactData.name.trim()) errors.name = "Name required";
     if (!contactData.email.trim()) errors.email = "Email required";
@@ -494,7 +359,6 @@ export const Navbar = () => {
         "https://hotel-nodejs-oa32.onrender.com/83920/92303",
         contactData,
       );
-      setContactSuccess(true);
       setContactData({
         name: "",
         email: "",
@@ -506,45 +370,47 @@ export const Navbar = () => {
       setShowSuccessModal(true);
       setTimeout(() => {
         setShowContactModal(false);
-        setContactSuccess(false);
+        setShowSuccessModal(false);
       }, 2000);
     } catch (error) {
       setModalMessage("Failed to send message");
       setShowFailModal(true);
+      setTimeout(() => setShowFailModal(false), 2000);
     } finally {
       setContactSubmitting(false);
     }
   };
 
   const handleDashboardClick = () => {
-    if (isAuthenticated && user) {
-      navigate(user?.status === "admin" ? "/Dash-32793" : "/U-23-Dash-32793");
+    if (userEmail) {
+      navigate(userStatus === "admin" ? "/Dash-32793" : "/U-23-Dash-32793");
       setUserMenuOpen(false);
     }
   };
 
   const navLinks = [
-    { name: "Home", href: "/" },
+    { name: "Home", href: "/", icon: <MdHome className="mr-2" /> },
     {
       name: "About",
       href: "/A-7483-783/34",
+      icon: <MdInfo className="mr-2" />,
     },
     {
       name: "Services",
       href: "/S-6832-342/34",
+      icon: <MdRoomService className="mr-2" />,
     },
     {
       name: "Rooms",
       href: "/R-8763-327/34",
+      icon: <MdHotel className="mr-2" />,
     },
-    {
-      name: "FAQ",
-      href: "/faq/data",
-    },
+    { name: "FAQ", href: "/faq/data", icon: <MdHelp className="mr-2" /> },
     {
       name: "Contact",
       href: "#",
       onClick: () => setShowContactModal(true),
+      icon: <MdContactMail className="mr-2" />,
     },
   ];
 
@@ -552,17 +418,12 @@ export const Navbar = () => {
     {
       name: "Booking",
       href: "/B-7839-283/34",
-      icon: <FaCalendarCheck className="mr-2" />,
-    },
-    {
-      name: "Our Team",
-      href: "/O-2973-342/34",
-      icon: <FaUserTie className="mr-2" />,
+      icon: <MdEvent className="mr-2" />,
     },
     {
       name: "Testimonial",
       href: "/T-8732-452/34",
-      icon: <FaQuoteRight className="mr-2" />,
+      icon: <MdStar className="mr-2" />,
     },
   ];
 
@@ -594,7 +455,6 @@ export const Navbar = () => {
     },
   ];
 
-  // Modal variants
   const modalVariants = {
     hidden: { opacity: 0, scale: 0.8, y: 50 },
     visible: {
@@ -622,8 +482,8 @@ export const Navbar = () => {
           <div className="container mx-auto flex justify-between items-center py-2 px-5">
             <div className="flex space-x-6">
               {[
-                { icon: FaEnvelope, text: "info@example.com" },
-                { icon: FaPhone, text: "+250 (78) 794-4577" },
+                { icon: MdEmail, text: "info@example.com" },
+                { icon: MdPhone, text: "+250 (78) 794-4577" },
                 { icon: FaWhatsapp, text: "+250 (72) 755-6145" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center">
@@ -639,11 +499,18 @@ export const Navbar = () => {
 
             <div className="flex space-x-3">
               {socialLinks.map((link, i) => (
-                <Link key={i} to={link.href}>
-                  <div className={`${link.color} text-lg transition`}>
+                <a
+                  key={i}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div
+                    className={`${link.color} text-lg transition cursor-pointer hover:scale-110`}
+                  >
                     {link.icon}
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -672,15 +539,17 @@ export const Navbar = () => {
                 <div className="flex items-center space-x-3 lg:hidden">
                   <ClockTime />
 
-                  {isAuthenticated ? (
+                  {userEmail ? (
                     <div className="relative">
                       <button
                         onClick={() => setUserMenuOpen(!userMenuOpen)}
                         className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 rounded-full"
                       >
-                        <FaUserCircle className="text-white" />
-                        <span className="text-white text-sm font-medium">
-                          {user?.fullname?.split(" ")[0]}
+                        <MdPerson className="text-white" />
+                        <span>
+                          {getUserName()?.length > 6
+                            ? getUserName().slice(0, 6) + "..."
+                            : getUserName() || "N/A"}
                         </span>
                       </button>
 
@@ -694,30 +563,23 @@ export const Navbar = () => {
                           >
                             <div className="p-3 border-b border-gray-700">
                               <p className="text-white text-sm font-medium truncate">
-                                {user?.fullname}
+                                {getUserName()}
                               </p>
                               <p className="text-gray-400 text-xs truncate">
-                                {user?.email}
+                                {userEmail}
                               </p>
                             </div>
                             <button
-                              onClick={() => {
-                                navigate(
-                                  user?.status === "admin"
-                                    ? "/Dash-32793"
-                                    : "/U-23-Dash-32793",
-                                );
-                                setUserMenuOpen(false);
-                              }}
+                              onClick={handleDashboardClick}
                               className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-blue-600 to-violet-700 text-white transition flex items-center text-sm"
                             >
                               <MdDashboard className="mr-2" />
                             </button>
                             <button
-                              onClick={handleLogout}
+                              onClick={() => logout(navigate)}
                               className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-red-400 to-red-700 text-white transition flex items-center text-sm"
                             >
-                              <FaSignOutAlt className="mr-2" />
+                              <MdLogout className="mr-2" />
                             </button>
                           </motion.div>
                         )}
@@ -729,13 +591,13 @@ export const Navbar = () => {
                         onClick={() => setShowLoginModal(true)}
                         className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
                       >
-                        <FaSignInAlt className="mr-1" />
+                        <MdLogin className="mr-1" />
                       </button>
                       <button
                         onClick={() => setShowRegisterModal(true)}
                         className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center"
                       >
-                        <FaUserPlus className="mr-1" />
+                        <MdPersonAdd className="mr-1" />
                       </button>
                     </div>
                   )}
@@ -747,51 +609,17 @@ export const Navbar = () => {
                   className="lg:hidden bg-gradient-to-b from-blue-400 to-violet-400 text-white p-2 rounded-lg transition"
                 >
                   {mobileMenuOpen ? (
-                    <FaTimes className="text-2xl" />
+                    <MdClose className="text-2xl" />
                   ) : (
-                    <FaBars className="text-2xl" />
+                    <MdMenu className="text-2xl" />
                   )}
                 </button>
 
-                {/* Desktop Nav - Left side links */}
+                {/* Desktop Nav */}
                 <nav className="hidden lg:flex items-center space-x-4 flex-1">
                   {navLinks.map((link, i) => (
                     <div key={i} className="relative group">
-                      {link.name === "Pages" ? (
-                        <div>
-                          <button
-                            onClick={() => setPagesMenuOpen(!pagesMenuOpen)}
-                            className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
-                          >
-                            {link.name}{" "}
-                            <FaArrowRight
-                              className={`ml-2 transition ${pagesMenuOpen ? "rotate-90" : ""}`}
-                            />
-                          </button>
-
-                          <AnimatePresence>
-                            {pagesMenuOpen && (
-                              <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-xl shadow-2xl z-50 border border-gray-700"
-                              >
-                                {pageLinks.map((page, j) => (
-                                  <Link key={j} to={page.href}>
-                                    <button
-                                      onClick={() => setPagesMenuOpen(false)}
-                                      className="w-full px-4 py-2.5 text-left hover:bg-gray-700 text-white transition flex items-center text-sm"
-                                    >
-                                      {page.name}
-                                    </button>
-                                  </Link>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      ) : link.onClick ? (
+                      {link.onClick ? (
                         <button
                           onClick={link.onClick}
                           className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
@@ -808,13 +636,44 @@ export const Navbar = () => {
                       <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 scale-x-0 group-hover:scale-x-100 transition" />
                     </div>
                   ))}
+
+                  {/* Pages Dropdown */}
+                  <div className="relative group">
+                    <button
+                      onClick={() => setPagesMenuOpen(!pagesMenuOpen)}
+                      className="flex items-center px-3 py-2 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-lg transition"
+                    >
+                      <ArrowDownward className="text-white ml-1" />
+                    </button>
+
+                    <AnimatePresence>
+                      {pagesMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute left-0 mt-4 rounded-2xl w-48 bg-gradient-to-b from-blue-400 to-violet-400 text-white rounded-xl shadow-2xl z-50 border "
+                        >
+                          {pageLinks.map((page, j) => (
+                            <Link key={j} to={page.href}>
+                              <button
+                                onClick={() => setPagesMenuOpen(false)}
+                                className="w-full px-4 py-2.5 text-left bg-gradient-to-b from-blue-400 to-violet-400 text-white transition flex items-center text-sm"
+                              >
+                                {page.name}
+                              </button>
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </nav>
 
-                {/* Desktop Auth - Right side with space */}
+                {/* Desktop Auth */}
                 <div className="hidden lg:flex items-center space-x-4 pr-6 ml-auto">
-                  {isAuthenticated ? (
+                  {userEmail ? (
                     <>
-                      {/* Dashboard Button */}
                       <button
                         onClick={handleDashboardClick}
                         className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-xl font-medium hover:shadow-lg transition-all"
@@ -822,14 +681,17 @@ export const Navbar = () => {
                         <MdDashboard className="text-xl" />
                       </button>
 
-                      {/* User Menu */}
                       <div className="relative">
                         <button
                           onClick={() => setUserMenuOpen(!userMenuOpen)}
                           className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-xl text-white hover:shadow-lg transition-all"
                         >
-                          <FaUserCircle className="text-xl" />
-                          <span>{user?.fullname?.split(" ")[0]}</span>
+                          <MdPerson className="text-xl" />
+                          <span>
+                            {getUserName()?.length > 6
+                              ? getUserName().slice(0, 6) + "..."
+                              : getUserName() || "N/A"}
+                          </span>
                         </button>
 
                         <AnimatePresence>
@@ -842,23 +704,27 @@ export const Navbar = () => {
                             >
                               <div className="p-4 border-b border-gray-700">
                                 <p className="text-white font-medium truncate">
-                                  {user?.fullname}
+                                  {getUserName()}
                                 </p>
                                 <p className="text-gray-400 text-sm truncate">
-                                  {user?.email}
+                                  {userEmail}
+                                </p>
+                                <p className="text-gray-500 text-xs mt-1">
+                                  Role: {userStatus || "user"}
                                 </p>
                               </div>
                               <button
                                 onClick={handleDashboardClick}
-                                className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
+                                className="w-full px-4 py-3 text-left bg-gradient-to-r from-green-500 to-emerald-600 text-white transition flex items-center"
                               >
-                                <MdDashboard className="mr-2" />
+                                <MdDashboard className="mr-2" /> Dashboard
                               </button>
                               <button
-                                onClick={handleLogout}
-                                className="w-full px-4 py-3 text-left hover:bg-gray-700 transition flex items-center"
+                                onClick={() => logout(navigate)}
+                                className="w-full px-4 py-3 text-left bg-gradient-to-r from-red-500 to-red-600 text-white transition flex items-center"
                               >
-                                <FaSignOutAlt className="mr-2" />
+                                <MdLogout className="mr-2" />
+                                LogOut
                               </button>
                             </motion.div>
                           )}
@@ -871,13 +737,13 @@ export const Navbar = () => {
                         onClick={() => setShowLoginModal(true)}
                         className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
                       >
-                        <FaSignInAlt className="mr-2" />
+                        <MdLogin className="mr-2" />
                       </button>
                       <button
                         onClick={() => setShowRegisterModal(true)}
                         className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-2 rounded-xl font-medium hover:shadow-lg transition-all flex items-center"
                       >
-                        <FaUserPlus className="mr-2" />
+                        <MdPersonAdd className="mr-2" />
                       </button>
                     </>
                   )}
@@ -947,7 +813,7 @@ export const Navbar = () => {
 
                 {/* Mobile Auth Buttons */}
                 <div className="mt-6 pt-4 border-t border-gray-800">
-                  {isAuthenticated ? (
+                  {userEmail ? (
                     <div className="space-y-2 px-4">
                       <button
                         onClick={() => {
@@ -960,12 +826,12 @@ export const Navbar = () => {
                       </button>
                       <button
                         onClick={() => {
-                          handleLogout();
+                          logout(navigate);
                           setMobileMenuOpen(false);
                         }}
                         className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
                       >
-                        <FaSignOutAlt className="mr-2" />
+                        <MdLogout className="mr-2" />
                       </button>
                     </div>
                   ) : (
@@ -977,7 +843,7 @@ export const Navbar = () => {
                         }}
                         className="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
                       >
-                        <FaSignInAlt className="mr-2" />
+                        <MdLogin className="mr-2" />
                       </button>
                       <button
                         onClick={() => {
@@ -986,7 +852,7 @@ export const Navbar = () => {
                         }}
                         className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center"
                       >
-                        <FaUserPlus className="mr-2" />
+                        <MdPersonAdd className="mr-2" />
                       </button>
                     </div>
                   )}
@@ -996,11 +862,11 @@ export const Navbar = () => {
                 <div className="mt-6 pt-4 border-t border-gray-800">
                   <div className="flex flex-col items-center space-y-3 px-4">
                     <div className="flex items-center text-gray-400">
-                      <FaPhone className="text-blue-400 mr-3" />
+                      <MdPhone className="text-blue-400 mr-3" />
                       <span className="text-sm">+250 (78) 794-4577</span>
                     </div>
                     <div className="flex items-center text-gray-400">
-                      <FaEnvelope className="text-blue-400 mr-3" />
+                      <MdEmail className="text-blue-400 mr-3" />
                       <span className="text-sm">info@example.com</span>
                     </div>
                     <div className="flex items-center text-gray-400">
@@ -1039,12 +905,12 @@ export const Navbar = () => {
                   onClick={() => setShowLoginModal(false)}
                   className="absolute top-4 right-4 bg-gradient-to-b from-red-500 to-red-700 p-2 rounded-full"
                 >
-                  <FaTimes />
+                  <MdClose />
                 </button>
 
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-                    <FaUserCircle className="text-4xl text-white" />
+                    <MdPerson className="text-4xl text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-white">
                     Welcome Back
@@ -1058,7 +924,7 @@ export const Navbar = () => {
                         Email
                       </label>
                       <div className="relative">
-                        <FaEnvelopeIcon className="absolute left-3 top-3 text-gray-400" />
+                        <MdEmail className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="email"
                           value={loginData.email}
@@ -1080,7 +946,7 @@ export const Navbar = () => {
                         Password
                       </label>
                       <div className="relative">
-                        <FaLock className="absolute left-3 top-3 text-gray-400" />
+                        <MdLock className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type={showPassword ? "text" : "password"}
                           value={loginData.password}
@@ -1095,11 +961,14 @@ export const Navbar = () => {
                           required
                         />
                         <div
-                          type="button"
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-3 text-gray-400"
                         >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          {showPassword ? (
+                            <MdVisibilityOff />
+                          ) : (
+                            <MdVisibility />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1140,7 +1009,7 @@ export const Navbar = () => {
                         <CircularProgress size={20} color="inherit" />
                       ) : (
                         <>
-                          <FaSignInAlt className="mr-2" /> Sign In
+                          <MdLogin className="mr-2" /> Sign In
                         </>
                       )}
                     </button>
@@ -1153,7 +1022,7 @@ export const Navbar = () => {
                           setShowLoginModal(false);
                           setShowRegisterModal(true);
                         }}
-                        className="bg-gradient-to-b from-indigo-400 to-violet-400 text-whitefont-semibold"
+                        className="text-blue-400 hover:text-blue-300 font-semibold"
                       >
                         Register
                       </button>
@@ -1190,12 +1059,12 @@ export const Navbar = () => {
                   onClick={() => setShowRegisterModal(false)}
                   className="absolute top-4 right-4 bg-gradient-to-b from-red-500 to-red-700 p-2 rounded-full"
                 >
-                  <FaTimes />
+                  <MdClose />
                 </button>
 
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-                    <FaUserPlus className="text-4xl text-white" />
+                    <MdPersonAdd className="text-4xl text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-white">
                     Create Account
@@ -1209,7 +1078,7 @@ export const Navbar = () => {
                         Full Name
                       </label>
                       <div className="relative">
-                        <FaUserAlt className="absolute left-3 top-3 text-gray-400" />
+                        <MdPerson className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="text"
                           value={registerData.fullname}
@@ -1231,7 +1100,7 @@ export const Navbar = () => {
                         Email
                       </label>
                       <div className="relative">
-                        <FaEnvelopeIcon className="absolute left-3 top-3 text-gray-400" />
+                        <MdEmail className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="email"
                           value={registerData.email}
@@ -1253,7 +1122,7 @@ export const Navbar = () => {
                         Phone
                       </label>
                       <div className="relative">
-                        <FaPhone className="absolute left-3 top-3 text-gray-400" />
+                        <MdPhone className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="tel"
                           value={registerData.phone}
@@ -1275,7 +1144,7 @@ export const Navbar = () => {
                         Password
                       </label>
                       <div className="relative">
-                        <FaLock className="absolute left-3 top-3 text-gray-400" />
+                        <MdLock className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type={showPassword ? "text" : "password"}
                           value={registerData.password}
@@ -1289,13 +1158,16 @@ export const Navbar = () => {
                           placeholder="Min. 6 characters"
                           required
                         />
-                        <button
-                          type="button"
+                        <div
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-3 text-gray-400"
                         >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
+                          {showPassword ? (
+                            <MdVisibilityOff />
+                          ) : (
+                            <MdVisibility />
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -1304,7 +1176,7 @@ export const Navbar = () => {
                         Confirm Password
                       </label>
                       <div className="relative">
-                        <FaKey className="absolute left-3 top-3 text-gray-400" />
+                        <MdKey className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="password"
                           value={registerData.confirmPassword}
@@ -1330,20 +1202,20 @@ export const Navbar = () => {
                         <CircularProgress size={20} color="inherit" />
                       ) : (
                         <>
-                          <FaUserPlus className="mr-2" /> Register
+                          <MdPersonAdd className="mr-2" /> Register
                         </>
                       )}
                     </button>
 
                     <p className="text-center text-gray-400 text-sm">
-                      If you have account?{" "}
+                      Already have an account?{" "}
                       <button
                         type="button"
                         onClick={() => {
                           setShowRegisterModal(false);
                           setShowLoginModal(true);
                         }}
-                        className="bg-gradient-to-b from-blue-400 to-violet-400 text-white font-semibold"
+                        className="text-blue-400 hover:text-blue-300 font-semibold"
                       >
                         Login
                       </button>
@@ -1380,12 +1252,12 @@ export const Navbar = () => {
                   onClick={() => setShowForgotPassword(false)}
                   className="absolute top-4 right-4 bg-gradient-to-b from-red-500 to-red-700 p-2 rounded-full"
                 >
-                  <FaTimes />
+                  <MdClose />
                 </button>
 
                 <div className="text-center mb-6">
                   <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-full flex items-center justify-center">
-                    <FaKey className="text-4xl text-white" />
+                    <MdKey className="text-4xl text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-white">
                     Forgot Password?
@@ -1407,7 +1279,7 @@ export const Navbar = () => {
                         Email
                       </label>
                       <div className="relative">
-                        <FaEnvelopeIcon className="absolute left-3 top-3 text-gray-400" />
+                        <MdEmail className="absolute left-3 top-3 text-gray-400" />
                         <input
                           type="email"
                           value={forgotPasswordData.email}
@@ -1434,14 +1306,14 @@ export const Navbar = () => {
                     </button>
 
                     <p className="text-center text-gray-400 text-sm">
-                      If you remember?{" "}
+                      Remember your password?{" "}
                       <button
                         type="button"
                         onClick={() => {
                           setShowForgotPassword(false);
                           setShowLoginModal(true);
                         }}
-                        className="bg-gradient-to-b from-blue-400 to-violet-400 text-white font-semibold"
+                        className="text-blue-400 hover:text-blue-300 font-semibold"
                       >
                         Login
                       </button>
@@ -1477,185 +1349,151 @@ export const Navbar = () => {
                 <button
                   onClick={() => {
                     setShowContactModal(false);
-                    setContactSuccess(false);
                     setContactErrors({});
                   }}
                   className="absolute top-4 right-4 bg-gradient-to-b from-red-500 to-red-700 p-2 rounded-full z-10"
                 >
-                  <FaTimes />
+                  <MdClose />
                 </button>
 
-                {contactSuccess ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-8"
-                  >
-                    <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg
-                        className="w-10 h-10 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">Contact Us</h2>
+                  <p className="text-gray-400 text-sm">
+                    We'd love to hear from you
+                  </p>
+                </div>
+
+                <form onSubmit={handleContactSubmit} className="text-white">
+                  <div className="space-y-4">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Full Name *"
+                        value={contactData.name}
+                        onChange={(e) =>
+                          setContactData({
+                            ...contactData,
+                            name: e.target.value,
+                          })
+                        }
+                        className={`w-full bg-gray-800 border ${contactErrors.name ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
+                      />
+                      {contactErrors.name && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {contactErrors.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <input
+                          type="email"
+                          placeholder="Email *"
+                          value={contactData.email}
+                          onChange={(e) =>
+                            setContactData({
+                              ...contactData,
+                              email: e.target.value,
+                            })
+                          }
+                          className={`w-full bg-gray-800 border ${contactErrors.email ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
                         />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">
-                      Message Sent!
-                    </h3>
-                    <p className="text-gray-400">We'll get back to you soon.</p>
-                  </motion.div>
-                ) : (
-                  <>
-                    <div className="text-center mb-6">
-                      <h2 className="text-2xl font-bold text-white">
-                        Contact Us
-                      </h2>
-                      <p className="text-gray-400 text-sm">
-                        We'd love to hear from you
-                      </p>
-                    </div>
-
-                    <form onSubmit={handleContactSubmit} className="text-white">
-                      <div className="space-y-4">
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Full Name *"
-                            value={contactData.name}
-                            onChange={(e) =>
-                              setContactData({
-                                ...contactData,
-                                name: e.target.value,
-                              })
-                            }
-                            className={`w-full bg-gray-800 border ${contactErrors.name ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
-                          />
-                          {contactErrors.name && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {contactErrors.name}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <input
-                              type="email"
-                              placeholder="Email *"
-                              value={contactData.email}
-                              onChange={(e) =>
-                                setContactData({
-                                  ...contactData,
-                                  email: e.target.value,
-                                })
-                              }
-                              className={`w-full bg-gray-800 border ${contactErrors.email ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
-                            />
-                            {contactErrors.email && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {contactErrors.email}
-                              </p>
-                            )}
-                          </div>
-                          <div>
-                            <input
-                              type="tel"
-                              placeholder="Phone"
-                              value={contactData.phone}
-                              onChange={(e) =>
-                                setContactData({
-                                  ...contactData,
-                                  phone: e.target.value,
-                                })
-                              }
-                              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-blue-500"
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Subject *"
-                            value={contactData.subject}
-                            onChange={(e) =>
-                              setContactData({
-                                ...contactData,
-                                subject: e.target.value,
-                              })
-                            }
-                            className={`w-full bg-gray-800 border ${contactErrors.subject ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
-                          />
-                          {contactErrors.subject && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {contactErrors.subject}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <textarea
-                            rows="4"
-                            placeholder="Message *"
-                            value={contactData.message}
-                            onChange={(e) =>
-                              setContactData({
-                                ...contactData,
-                                message: e.target.value,
-                              })
-                            }
-                            className={`w-full bg-gray-800 border ${contactErrors.message ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
-                          />
-                          {contactErrors.message && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {contactErrors.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <button
-                          type="submit"
-                          disabled={contactSubmitting}
-                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center"
-                        >
-                          {contactSubmitting ? (
-                            <CircularProgress size={20} color="inherit" />
-                          ) : (
-                            "Send Message"
-                          )}
-                        </button>
+                        {contactErrors.email && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {contactErrors.email}
+                          </p>
+                        )}
                       </div>
-                    </form>
-
-                    <div className="mt-6 pt-4 border-t border-gray-800">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div className="flex items-center text-gray-400">
-                          <FaPhone className="mr-2 text-blue-400" /> +250 787
-                          944 577
-                        </div>
-                        <div className="flex items-center text-gray-400">
-                          <FaEnvelope className="mr-2 text-blue-400" />{" "}
-                          info@hotel.com
-                        </div>
-                        <div className="flex items-center text-gray-400">
-                          <FaMapMarkerAlt className="mr-2 text-blue-400" />{" "}
-                          Kigali, Rwanda
-                        </div>
-                        <div className="flex items-center text-gray-400">
-                          <FaClock className="mr-2 text-blue-400" /> Mon-Fri:
-                          9AM-6PM
-                        </div>
+                      <div>
+                        <input
+                          type="tel"
+                          placeholder="Phone"
+                          value={contactData.phone}
+                          onChange={(e) =>
+                            setContactData({
+                              ...contactData,
+                              phone: e.target.value,
+                            })
+                          }
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:border-blue-500"
+                        />
                       </div>
                     </div>
-                  </>
-                )}
+
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Subject *"
+                        value={contactData.subject}
+                        onChange={(e) =>
+                          setContactData({
+                            ...contactData,
+                            subject: e.target.value,
+                          })
+                        }
+                        className={`w-full bg-gray-800 border ${contactErrors.subject ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
+                      />
+                      {contactErrors.subject && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {contactErrors.subject}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <textarea
+                        rows="4"
+                        placeholder="Message *"
+                        value={contactData.message}
+                        onChange={(e) =>
+                          setContactData({
+                            ...contactData,
+                            message: e.target.value,
+                          })
+                        }
+                        className={`w-full bg-gray-800 border ${contactErrors.message ? "border-red-500" : "border-gray-700"} rounded-lg px-4 py-3 text-white focus:border-blue-500`}
+                      />
+                      {contactErrors.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {contactErrors.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={contactSubmitting}
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center"
+                    >
+                      {contactSubmitting ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "Send Message"
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+                <div className="mt-6 pt-4 border-t border-gray-800">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center text-gray-400">
+                      <MdPhone className="mr-2 text-blue-400" /> +250 787 944
+                      577
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                      <MdEmail className="mr-2 text-blue-400" /> info@hotel.com
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                      <MdLocationOn className="mr-2 text-blue-400" /> Kigali,
+                      Rwanda
+                    </div>
+                    <div className="flex items-center text-gray-400">
+                      <MdAccessTime className="mr-2 text-blue-400" /> Mon-Fri:
+                      9AM-6PM
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </>
@@ -1763,22 +1601,6 @@ export const Navbar = () => {
           </>
         )}
       </AnimatePresence>
-
-      {/* Alert */}
-      <Snackbar
-        open={alertMessage.show}
-        autoHideDuration={6000}
-        onClose={() => setAlertMessage({ ...alertMessage, show: false })}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={() => setAlertMessage({ ...alertMessage, show: false })}
-          severity={alertMessage.type}
-          variant="filled"
-        >
-          {alertMessage.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 };

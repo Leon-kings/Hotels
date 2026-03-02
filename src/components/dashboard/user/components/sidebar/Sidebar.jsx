@@ -42,7 +42,7 @@ import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const Layout = ({ children }) => {
+export const UserLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -117,7 +117,7 @@ export const Layout = ({ children }) => {
       icon: (
         <People className="size-5 xsm:size-5 sm:size-5 md:size-5 lg:size-6" />
       ),
-      link: "/UV-2390-389",
+      link: "/User/Dashboard/492",
       color: "from-green-500 to-green-600",
       badge:
         dashboardStats.totalUsers > 0
@@ -129,7 +129,7 @@ export const Layout = ({ children }) => {
       icon: (
         <ShoppingCart className="size-5 xsm:size-5 sm:size-5 md:size-5 lg:size-6" />
       ),
-      link: "/AB-7832-342",
+      link: "/User/dashboard/bookings",
       color: "from-purple-500 to-purple-600",
       badge:
         dashboardStats.totalBookings > 0
@@ -141,7 +141,7 @@ export const Layout = ({ children }) => {
       icon: (
         <Message className="size-5 xsm:size-5 sm:size-5 md:size-5 lg:size-6" />
       ),
-      link: "/MS-3562-922",
+      link: "/User/messages/management",
       color: "from-pink-500 to-pink-600",
       badge:
         dashboardStats.totalMessages > 0
@@ -166,7 +166,7 @@ export const Layout = ({ children }) => {
       icon: (
         <CalendarToday className="size-5 xsm:size-5 sm:size-5 md:size-5 lg:size-6" />
       ),
-      link: "/Calendar/services/90",
+      link: "/User/dashboard/calender",
       color: "from-red-500 to-red-600",
     },
     {
@@ -176,8 +176,8 @@ export const Layout = ({ children }) => {
       ),
       color: "from-gray-500 to-gray-600",
       submenu: [
-        { title: "Profile", link: "/Profile/data", icon: "👤" },
-        { title: "Security", link: "/Security/admin/43", icon: "🔒" },
+        { title: "Profile", link: "/User/dashboard/profile", icon: "👤" },
+        { title: "Security", link: "/User/dashboard/settings", icon: "🔒" },
       ],
     },
   ];

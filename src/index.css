@@ -29,7 +29,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: #ffffff;
+  background-color: #3835c6;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -42,8 +43,8 @@ button {
   }
 
   button {
-    background-color: #cdcfcc;
-    color: #1a1a1a;
+    background-color: #3835c6;
+    color: #ffffff;
     font-weight: 700;
   }
   .button {
@@ -53,8 +54,8 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #c7c0c0;
-    color: #000000;
+    background-color: #3835c6;
+    color: #ffffff;
     cursor: pointer;
     transition: border-color 0.25s;
   }
@@ -68,8 +69,8 @@ button {
   }
 
   button {
-    background-color: #cdcfcc;
-    color: #1a1a1a;
+    background-color: #3835c6;
+    color: #ffffff;
     font-weight: 700;
   }
   .button {
@@ -79,8 +80,8 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #c7c0c0;
-    color: #000000;
+    background-color: #3835c6;
+    color: #ffffff;
     cursor: pointer;
     transition: border-color 0.25s;
   }
