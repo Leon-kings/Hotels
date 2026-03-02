@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Subsc() {
+export default function UserDashboard() {
   return (
     <div>
       

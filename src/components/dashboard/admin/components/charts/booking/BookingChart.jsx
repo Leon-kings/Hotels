@@ -15,36 +15,30 @@ export const BookingChart = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Format month names consistently
-  const formatMonth = (monthString) => {
-    if (!monthString) return "";
-    return monthString.substring(0, 3);
+  // Format month names from date strings
+  const formatMonth = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString('default', { month: 'short' });
   };
 
-  // Generate realistic fallback data
-  const generateFallbackData = () => {
-    const currentMonth = new Date().getMonth();
-    return Array.from({ length: 6 }).map((_, index) => {
-      const monthIndex = (currentMonth - 5 + index + 12) % 12;
-      const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ];
-      return {
-        name: months[monthIndex],
-        bookings: Math.floor(Math.random() * 50) + 30, // 30-80 bookings
-      };
+  // Process bookings data to group by month
+  const processBookingsData = (bookings) => {
+    const monthlyBookings = {};
+    
+    bookings.forEach(booking => {
+      const month = formatMonth(booking.createdAt || booking.checkInDate);
+      if (month) {
+        monthlyBookings[month] = (monthlyBookings[month] || 0) + 1;
+      }
     });
+
+    // Convert to array and sort by month order
+    const monthsOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    return Object.entries(monthlyBookings)
+      .map(([name, bookings]) => ({ name, bookings }))
+      .sort((a, b) => monthsOrder.indexOf(a.name) - monthsOrder.indexOf(b.name));
   };
 
   useEffect(() => {
@@ -52,39 +46,35 @@ export const BookingChart = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://hotel-nodejs-oa32.onrender.com/84383/92823",
-          { timeout: 50000000000 } // 5 second timeout
+          "https://hotel-nodejs-oa32.onrender.com/84383/92823"
         );
 
-        // Debugging: Log actual API response
         console.log("API Response:", response.data);
-        // alert("fetched successfully !!");
-        // Handle multiple possible response structures
-        const rawData =
-          response.data.bookings || response.data.data || response.data || [];
 
-        const processedData = Array.isArray(rawData)
-          ? rawData
-              .map((item) => ({
-                name: formatMonth(item.month || item.date ),
-                bookings:
-                  item.results ?? item.bookings ?? item.count ?? 0,
-              }))
-              .filter((item) => item.name) // Remove invalid entries
-          : generateFallbackData();
+        // Extract bookings array from the nested structure
+        const bookingsArray = response.data?.data?.bookings || [];
+        
+        if (!Array.isArray(bookingsArray)) {
+          throw new Error("Invalid data format received from API");
+        }
 
-        // Ensure we have at least 3 months data
-        const finalData =
-          processedData.length >= 3
-            ? processedData
-            : [...processedData, ...generateFallbackData()].slice(0, 6);
+        if (bookingsArray.length === 0) {
+          throw new Error("No booking data available");
+        }
 
-        setData(finalData);
+        // Process the bookings data to get monthly counts
+        const processedData = processBookingsData(bookingsArray);
+
+        if (processedData.length === 0) {
+          throw new Error("Could not process booking data");
+        }
+
+        setData(processedData);
         setError(null);
       } catch (err) {
         console.error("API Error:", err);
-        setError(err.message);
-        setData(generateFallbackData());
+        setError(err.message || "Failed to fetch booking data");
+        setData([]);
       } finally {
         setLoading(false);
       }
@@ -97,6 +87,37 @@ export const BookingChart = () => {
     return (
       <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500 mb-3"></div>
+        <p className="text-gray-500 text-sm">Loading booking data...</p>
+      </div>
+    );
+  }
+
+  if (error || data.length === 0) {
+    return (
+      <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex justify-between items-center mb-5">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Monthly Bookings
+          </h3>
+          <div className="text-xs text-gray-500">
+            Last updated: {new Date().toLocaleTimeString()}
+          </div>
+        </div>
+        
+        <div className="h-72 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-500 mb-2">No booking data available</p>
+            <p className="text-sm text-red-500">{error}</p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-between items-center text-xs text-gray-500">
+          <div>Source: Hotel Booking API</div>
+          <div className="flex space-x-2">
+            <span className="inline-block w-3 h-3 rounded-full bg-indigo-400"></span>
+            <span>Current Year</span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -106,11 +127,6 @@ export const BookingChart = () => {
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-lg font-semibold text-gray-800">
           Monthly Bookings
-          {error && (
-            <span className="ml-2 text-xs bg-amber-50 text-amber-600 px-2 py-1 rounded">
-              Using sample data
-            </span>
-          )}
         </h3>
         <div className="text-xs text-gray-500">
           Last updated: {new Date().toLocaleTimeString()}
@@ -171,10 +187,10 @@ export const BookingChart = () => {
       </div>
 
       <div className="mt-4 flex justify-between items-center text-xs text-gray-500">
-        <div>{error ? `Error: ${error}` : "Source: Hotel Booking API"}</div>
+        <div>Source: Hotel Booking API</div>
         <div className="flex space-x-2">
           <span className="inline-block w-3 h-3 rounded-full bg-indigo-400"></span>
-          <span>Current Year</span>
+          <span>{new Date().getFullYear()}</span>
         </div>
       </div>
     </div>
