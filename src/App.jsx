@@ -50,6 +50,11 @@ import { UserLayout } from "./components/dashboard/user/components/sidebar/Sideb
 import { UserSecurityManagement } from "./components/dashboard/user/components/managements/security/UserSecurity";
 import { UserProfile } from "./components/dashboard/user/components/managements/profile/UserProfile";
 import { UserCalendar } from "./components/dashboard/user/components/managements/calender/UserCalender";
+import { UserMenu } from "./components/dashboard/user/components/managements/menu/UserMenu";
+import { UserBookingChart } from "./components/dashboard/user/components/managements/chart/UserChart";
+import { UserAmenities } from "./components/dashboard/user/components/managements/UserAmenities.jsx/UserAmenties";
+import { UserMaintenance } from "./components/dashboard/user/components/managements/maintenance/UserMaintenance";
+import { UserRoomTypes } from "./components/dashboard/user/components/managements/roomtypes/UserRoomTypes";
 
 // Add these keyframe animations to your App.css
 const style = document.createElement("style");
@@ -914,6 +919,73 @@ function AppContent() {
               <UserLayout>
                 <RouteLoader loadingType="wave">
                   <DashboardMeManagement />
+                </RouteLoader>
+              </UserLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/User/Dashboard/amenties"
+          element={
+            <PrivateRoute requiredStatus="user">
+              <UserLayout>
+                <RouteLoader loadingType="wave">
+                  <UserAmenities />
+                </RouteLoader>
+              </UserLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/User/Dashboard/maintenance"
+          element={
+            <PrivateRoute requiredStatus="user">
+              <UserLayout>
+                <RouteLoader loadingType="wave">
+                  <UserMaintenance />
+                </RouteLoader>
+              </UserLayout>
+            </PrivateRoute>
+          }
+        />
+
+                <Route
+          path="/User/Dashboard/room/type"
+          element={
+            <PrivateRoute requiredStatus="user">
+              <UserLayout>
+                <RouteLoader loadingType="wave">
+                  <UserRoomTypes />
+                </RouteLoader>
+              </UserLayout>
+            </PrivateRoute>
+          }
+        />
+
+        
+
+        <Route
+          path="/User/Dashboard/menu"
+          element={
+            <PrivateRoute requiredStatus="user">
+              <UserLayout>
+                <RouteLoader loadingType="wave">
+                  <UserMenu />
+                </RouteLoader>
+              </UserLayout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/User/Dashboard/chart"
+          element={
+            <PrivateRoute requiredStatus="user">
+              <UserLayout>
+                <RouteLoader loadingType="wave">
+                  <UserBookingChart />
                 </RouteLoader>
               </UserLayout>
             </PrivateRoute>
