@@ -155,10 +155,7 @@ export const UserLayout = ({ children }) => {
       ),
       color: "from-yellow-500 to-yellow-600",
       submenu: [
-        { title: "Charts", link: "/GD-2761-823", icon: "📊" },
-        // { title: "Reports", link: "/ARG-3832-382", icon: "📈" },
-        // { title: "Revenue Analytics", link: "/RA-4721-563", icon: "💰" },
-        // { title: "User Analytics", link: "/UA-5821-674", icon: "👥" },
+        { title: "Charts", link: "/User/Dashboard/chart", icon: "📊" }
       ],
     },
     {
@@ -191,10 +188,10 @@ export const UserLayout = ({ children }) => {
       ),
       color: "from-indigo-500 to-indigo-600",
       submenu: [
-        { title: "Rooms", link: "/RM-1234-567", icon: "🛏️" },
-        { title: "Room Types", link: "/Room/type/services", icon: "🏨" },
-        { title: "Amenities", link: "/Amenties/services/24", icon: "✨" },
-        { title: "Maintenance", link: "/Maintenance/services", icon: "🔧" },
+        { title: "Rooms", link: "/R-8763-327/34", icon: "🛏️" },
+        { title: "Room Types", link: "/User/Dashboard/room/type", icon: "🏨" },
+        { title: "Amenities", link: "/User/Dashboard/amenties", icon: "✨" },
+        { title: "Maintenance", link: "/User/Dashboard/maintenance", icon: "🔧" },
       ],
     },
     {
@@ -204,8 +201,7 @@ export const UserLayout = ({ children }) => {
       ),
       color: "from-orange-500 to-orange-600",
       submenu: [
-        { title: "Menu", link: "/menu/services/42", icon: "📋" },
-        // { title: "Staff", link: "/ST-0123-456", icon: "👨‍🍳" },
+        { title: "Menu", link: "/User/Dashboard/menu", icon: "📋" }
       ],
     },
 
