@@ -637,7 +637,7 @@ export const Layout = ({ children }) => {
                     scale: [1, 1.1, 1.1, 1.1, 1],
                   }}
                   transition={{ duration: 0.5 }}
-                  className="bg-gradient-to-r from-red-100 to-red-200 w-20 h-20 xsm:w-24 xsm:h-24 rounded-full flex items-center justify-center mx-auto mb-4 xsm:mb-6 shadow-lg"
+                  className="bg-gradient-to-r from-red-500 to-red-700 w-20 h-20 xsm:w-24 xsm:h-24 rounded-full flex items-center justify-center mx-auto mb-4 xsm:mb-6 shadow-lg"
                 >
                   <Logout
                     className="text-red-600 text-3xl xsm:text-4xl"
@@ -757,7 +757,7 @@ export const Layout = ({ children }) => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setShowNotifications(false)}
-                      className="p-1.5 xsm:p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      className="p-1.5 xsm:p-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full transition-colors"
                     >
                       <Close className="text-gray-600 size-5 xsm:size-6" />
                     </motion.button>
@@ -812,7 +812,7 @@ export const Layout = ({ children }) => {
                           onClick={(e) =>
                             deleteNotification(notification.id, e)
                           }
-                          className="p-1 hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                          className="p-1 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full transition-colors shrink-0"
                         >
                           <Delete className="size-3 xsm:size-4 text-gray-500" />
                         </motion.button>
@@ -892,7 +892,7 @@ export const Layout = ({ children }) => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={toggleMenu}
-                className="p-1 hover:bg-gray-700 rounded-lg cursor-pointer shrink-0"
+                className="p-1 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg cursor-pointer shrink-0"
               >
                 <Close className="size-4 xsm:size-5" />
               </motion.button>
@@ -1298,9 +1298,9 @@ export const Layout = ({ children }) => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleMenu}
-              className="lg:hidden p-1.5 xsm:p-2 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+              className="lg:hidden p-1.5 xsm:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg transition-colors shrink-0"
             >
-              <Menu className="text-gray-600 size-4 xsm:size-5" />
+              <Menu className="text-white size-4 xsm:size-5" />
             </motion.button>
 
             <motion.div

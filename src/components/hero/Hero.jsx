@@ -4534,7 +4534,7 @@ const Booking = () => {
   const [statusDetails, setStatusDetails] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const steps = ["Personal Details", "Stay Details", "Confirmation"];
+  const steps = ["Who", "Order", "Confirm"];
 
   const roomTypes = [
     { value: "standard", label: "Standard Room" },

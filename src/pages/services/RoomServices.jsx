@@ -1458,19 +1458,15 @@ export const RoomsServices = () => {
   const cartItemCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   // Pagination buttons generator
-  const renderPaginationButtons = () => {
-    const buttons = [];
-    const maxVisible = 5;
-    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
-
-    for (let i = start; i <= end; i++) {
+const renderPaginationButtons = () => {
+  const buttons = [];
+  const maxVisible = 3;
+  
+  if (totalPages <= maxVisible) {
+    // Show all pages if total pages is less than or equal to maxVisible
+    for (let i = 1; i <= totalPages; i++) {
       buttons.push(
-        <button
+        <div
           key={i}
           onClick={() => handlePageChange(i)}
           className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -1480,12 +1476,88 @@ export const RoomsServices = () => {
           }`}
         >
           {i}
-        </button>
+        </div>
+      );
+    }
+  } else {
+    // Always show first page
+    buttons.push(
+      <div
+        key={1}
+        onClick={() => handlePageChange(1)}
+        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+          currentPage === 1
+            ? "bg-gradient-to-t from-blue-500 to-blue-700 text-white shadow-lg"
+            : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+        }`}
+      >
+        1
+      </div>
+    );
+
+    // Show left ellipsis if needed
+    if (currentPage > 2) {
+      buttons.push(
+        <div key="left-ellipsis" className="px-4 py-2 text-gray-400">
+          ...
+        </div>
       );
     }
 
-    return buttons;
-  };
+    // Calculate middle page (current page or adjacent)
+    let middlePage;
+    if (currentPage === 1) {
+      middlePage = 2;
+    } else if (currentPage === totalPages) {
+      middlePage = totalPages - 1;
+    } else {
+      middlePage = currentPage;
+    }
+
+    // Don't show middle page if it's the same as first or last
+    if (middlePage > 1 && middlePage < totalPages) {
+      buttons.push(
+        <div
+          key={middlePage}
+          onClick={() => handlePageChange(middlePage)}
+          className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            currentPage === middlePage
+              ? "bg-gradient-to-t from-blue-500 to-blue-700 text-white shadow-lg"
+              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+          }`}
+        >
+          {middlePage}
+        </div>
+      );
+    }
+
+    // Show right ellipsis if needed
+    if (currentPage < totalPages - 1) {
+      buttons.push(
+        <div key="right-ellipsis" className="px-4 py-2 text-gray-400">
+          ...
+        </div>
+      );
+    }
+
+    // Always show last page
+    buttons.push(
+      <div
+        key={totalPages}
+        onClick={() => handlePageChange(totalPages)}
+        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+          currentPage === totalPages
+            ? "bg-gradient-to-t from-blue-500 to-blue-700 text-white shadow-lg"
+            : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+        }`}
+      >
+        {totalPages}
+      </div>
+    );
+  }
+
+  return buttons;
+};
 
   if (isLoading) {
     return (
@@ -1563,7 +1635,7 @@ export const RoomsServices = () => {
             transition={{ delay: 0.3 }}
             className="flex justify-center items-center space-x-2 mt-8"
           >
-            <button
+            <div
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -1573,11 +1645,11 @@ export const RoomsServices = () => {
               }`}
             >
               Previous
-            </button>
+            </div>
             
             {renderPaginationButtons()}
             
-            <button
+            <div
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
@@ -1587,7 +1659,7 @@ export const RoomsServices = () => {
               }`}
             >
               Next
-            </button>
+            </div>
           </motion.div>
         )}
 

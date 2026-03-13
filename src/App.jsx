@@ -19,12 +19,8 @@ import Home from "./pages/home/Home";
 import { ContactSection } from "./pages/contact/Contact";
 import { Dashboard } from "./components/dashboard/admin/Dashboard";
 // Dashboard routes
-import { UserViewMe } from "./components/dashboard/userDashComponent/user/UserViewMe";
-import { UserBooking } from "./components/dashboard/userDashComponent/bookings/UserBookingsView";
-import { UserMessageView } from "./components/dashboard/userDashComponent/messages/UserMessageView";
 import NotFound from "./pages/not found/NotFound";
 import { Layout } from "./components/dashboard/admin/components/sidebar/Sidebar";
-import ErrorBoundary from "./pages/errorElement/ErrorElement";
 import user from "./assets/images/logo/276-2763872_hospitality-hotel-icon.png";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -951,7 +947,7 @@ function AppContent() {
           }
         />
 
-                <Route
+        <Route
           path="/User/Dashboard/room/type"
           element={
             <PrivateRoute requiredStatus="user">
@@ -963,8 +959,6 @@ function AppContent() {
             </PrivateRoute>
           }
         />
-
-        
 
         <Route
           path="/User/Dashboard/menu"
@@ -1079,6 +1073,7 @@ function AppContent() {
 }
 
 // FIXED: Main App component with correct hierarchy
+
 export default function App() {
   const [appLoading, setAppLoading] = useState(true);
 
@@ -1114,7 +1109,8 @@ export default function App() {
     );
   }
 
-  // FIXED: Proper nesting - BrowserRouter at the top, then AuthProvider, then AppContent
+  // FIXED: Wrap AppContent with AuthProvider
+  // BrowserRouter is already in main.jsx, so we don't need it here
   return (
     <AuthProvider>
       <AppContent />
